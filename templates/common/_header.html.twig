@@ -1,0 +1,29 @@
+<!-- Boostrap 5 Header -->
+<header class="d-flex mb-2 justify-content-between">
+	<div><a href="{{ path('app_home') }}"><img class="logo" alt="Udaletxearen logoa" src="{{ asset('build/images/logo.jpg') }}"></a></div>
+	<div class="ml-auto mr-auto">
+		<h1>{{ "title.appTitle" | trans({},'messages') }}</h1>
+	</div>
+		<div class="d-flex justify-content-between align-items-center">
+			{% if is_granted('ROLE_USER') %}
+				<div id="span-erabiltzailea" class="mr-1">
+					<div class="dropdown">
+						<a class="dropdown-toggle" id="perfil_menua" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="user">{{ app.user.username }}</span>
+							<img class="avatar" alt="Erabiltzailea" src="{{ asset('build/images/default-avatar.png') }}">
+						</a>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="perfil_menua">
+							<a class="dropdown-item" href="{{ path('user_security_logout') }}">{{ "link.logout" | trans | capitalize }}</a>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			<div {{ stimulus_controller('locale', {
+				'locale' : app.request.locale|split('_')[0]
+			}) }} id="hizkuntza" class="ml-2 mr-1" >
+				<a id="js-locale-es" href="#" data-action="click->locale#changeLocale">es</a>
+				/
+				<a id="js-locale-eu" href="#" data-action="click->locale#changeLocale">eu</a>
+			</div>
+	</div>
+</header>

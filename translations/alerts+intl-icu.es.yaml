@@ -1,0 +1,7 @@
+message.confirmationTitle: "Confirme, por favor"
+message.confirmationText: "¿Está seguro de que desea eliminar el registro?"
+message.error: "Error"
+btn.accept: "Aceptar"
+btn.ok: "Aceptar"
+btn.cancel: "Cancelar"
+error.dateError: "La fecha de inicio de inscripción no puede ser mayor que la fecha de fin de inscripción"

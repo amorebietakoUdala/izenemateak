@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.course.raffle' | trans }}{% endblock %}
+
+{% block body %}
+	<main class="container-fluid">
+        <h1>{{ 'title.course.raffle' | trans }}</h1>
+        <div class="container-fluid row align-items-center">
+            <div class="col-lg">
+                {% if app.request.locale == 'es' %}
+                    <div><b>{{"course.nameEs" | trans }}</b>: {{ course.nameEs }}</div>
+                    <div><b>{{"course.turnEs" | trans }}</b>: {{ course.turnEs }}</div>
+                {% else %}
+                    <div><b>{{"course.nameEu" | trans }}</b>: {{ course.nameEu }}</div>
+                    <div><b>{{"course.turnEu" | trans }}</b>: {{ course.turnEu }}</div>
+                {% endif %}
+                <div><b>{{ 'course.inscriptions' | trans }}</b>: {{ course.registrations | length }}</div>
+                <div><b>{{ 'course.places' | trans }}</b>: {{ course.places }}</div>
+            </div>
+            <div class="col-lg" {{ stimulus_controller('randomize') }}>
+                {% if ( course.places >=  course.registrations | length ) %}
+                    <div class="alert alert-info">{{ 'messages.noNeedToRaffle' | trans }}</div>
+                {% endif %}
+            </div>
+            <div class="row">
+                {{ include('course/_raffleList.html.twig', {
+                    'registrations' : course.registrations,
+                })}}
+            </div>
+            <div class="row">
+                <div class="col-lg">
+                    {% if ( course.places <  course.registrations | length ) %}
+                        <button class="btn btn-primary" data-action="randomize#confirm" data-url={{ path('app_course_raffle_randomize', { 'id': course.id }) }}>{{ 'btn.raffle' | trans }}</button>
+                    {% endif %}
+                    <button class="btn btn-secondary js-back" data-url="{{ path('app_course_index') }}">{{ 'btn.cancel' | trans }}</button>
+                </div>
+            </div>
+        </div>
+            {{ include('common/_alert.html.twig', {
+                'confirmationText' : 'messages.confirmRaffleStart' | trans 
+            })}}
+	</main>
+{% endblock body %}

@@ -1,0 +1,3 @@
+{
+    "translations": {"pt_PT":{"time":{"diff.ago.year":"1 ano atr\u00e1s|%count% anos atr\u00e1s","diff.ago.month":"1 m\u00eas atr\u00e1s|%count% meses atr\u00e1s","diff.ago.day":"1 dia atr\u00e1s|%count% dias atr\u00e1s","diff.ago.hour":"1 hora atr\u00e1s|%count% horas atr\u00e1s","diff.ago.minute":"1 minuto atr\u00e1s|%count% minutos atr\u00e1s","diff.ago.second":"1 segundo atr\u00e1s|%count% segundos atr\u00e1s","diff.empty":"agora","diff.in.second":"em 1 segundo|em %count% segundos","diff.in.hour":"em 1 hora|em %count% horas","diff.in.minute":"em 1 minuto|em %count% minutos","diff.in.day":"em 1 dia|em %count% dias","diff.in.month":"em 1 m\u00eas|em %count% meses","diff.in.year":"em 1 ano|em %count% anos"}}}
+}

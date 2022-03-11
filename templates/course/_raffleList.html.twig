@@ -1,0 +1,31 @@
+{% if registrations is defined and registrations|length > 0 %}
+
+<table class="table" {{ stimulus_controller('table', {
+   'exportName': 'inscriptions',
+   'pageSize': 50,
+}) }}>
+   <thead>
+      <tr>
+            <th data-sortable="true">Id</th>
+            <th data-sortable="true">{{ 'registration.dni' | trans }}</th>
+            <th data-sortable="true">{{ 'registration.fullname' | trans }}</th>
+            <th data-sortable="true">{{ 'registration.representativeFullName' | trans }}</th>
+            <th data-sortable="true">{{ 'registration.createdAt' | trans }}</th>
+
+      </tr>
+   </thead>
+   <tbody>
+   {% for registration in registrations %}
+      <tr>
+            <td>{{ registration.id }}</td>
+            <td>{{ registration.dni }}</td>
+            <td>{{ registration.fullName }}</td>
+            <td>{{ registration.representativeFullName }}</td>
+            <td>{{ registration.createdAt | date('Y-m-d h:i:s')}}</td>
+      </tr>
+   {% endfor %}
+   </tbody>
+</table>
+{% else %}
+   <div class="alert alert-secondary mt-3" role="alert">{{"messages.results0" | trans }}</div>
+{% endif %}

@@ -1,0 +1,28 @@
+<table class="table" {{ stimulus_controller('table', {
+   'exportName': 'activity',
+}) }}>
+   <thead>
+      <tr>
+            <th data-sortable="true">Id</th>
+            <th data-sortable="true">{{ 'activity.name' | trans }}</th>
+            <th data-sortable="true" data-field="options">{{"table.options" | trans | capitalize}}</th>
+      </tr>
+   </thead>
+   <tbody>
+   {% for activity in activities %}
+      <tr>
+            <td>{{ activity.id }}</td>
+            <td>{{ activity.name }}</td>
+            <td>
+               <a href="#" data-action="entity#edit" data-url="{{ path('app_activity_show', {'id': activity.id}) }}"><i class="fa fa-eye" title='{{ "btn.show" | trans | capitalize }}'></i></a>&nbsp;
+               <a href="#" data-action="entity#edit" data-url="{{ path('app_activity_edit', {'id': activity.id}) }}" data-allowEdit="true"><i class="fa fa-edit" title='{{ "btn.edit" | trans | capitalize }}'></i></a>&nbsp;
+               <a href="#" data-action="entity#delete" data-url="{{ path('app_activity_delete', {'id': activity.id}) }}" data-token="{{ csrf_token('delete' ~ activity.id) }}"><i class="fa fa-trash" title='{{ "btn.delete" | trans | capitalize }}'></i></a>&nbsp;
+            </td>
+      </tr>
+   {% else %}
+      <tr>
+            <td colspan="3" class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</td>
+      </tr>
+   {% endfor %}
+   </tbody>
+</table>

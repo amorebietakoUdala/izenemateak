@@ -1,0 +1,3 @@
+{
+    "translations": {"zh_HK":{"time":{"diff.ago.year":"%count% \u5e74\u524d","diff.ago.month":"%count% \u6708\u524d","diff.ago.day":"%count% \u5929\u524d","diff.ago.hour":"%count% \u5c0f\u6642\u524d","diff.ago.minute":"%count% \u5206\u9418\u524d","diff.ago.second":"%count% \u79d2\u524d","diff.empty":"\u525b\u624d","diff.in.second":"%count% \u79d2\u5f8c","diff.in.hour":"%count% \u5c0f\u6642\u5f8c","diff.in.minute":"%count% \u5206\u9418\u5f8c","diff.in.day":"%count% \u5929\u5f8c","diff.in.month":"%count% \u500b\u6708\u5f8c","diff.in.year":"%count% \u5e74\u5f8c"}}}
+}

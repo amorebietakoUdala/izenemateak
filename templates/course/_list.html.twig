@@ -1,0 +1,63 @@
+{% if courses is defined and courses|length > 0 %}
+   <table id="table" {{ stimulus_controller('table', {
+      'exportName': 'courses',
+   }) }}>
+         <thead>
+            <tr>
+               <th data-sortable="true">{{"id" | trans }}</th>
+               {% if app.request.locale == 'es' %}
+                  <th data-sortable="true">{{"course.nameEs" | trans }}</th>
+                  <th data-sortable="true">{{"course.turnEs" | trans }}</th>
+               {% else %}
+                  <th data-sortable="true">{{"course.nameEu" | trans }}</th>
+                  <th data-sortable="true">{{"course.turnEu" | trans }}</th>
+               {% endif %}
+               <th data-sortable="true">{{"course.inscriptionPeriod" | trans }}</th>
+               <th data-sortable="true">{{"course.inscriptions" | trans }}</th>
+               <th data-sortable="true">{{"course.limitedPlaces" | trans }}</th>
+               <th data-sortable="true">{{"course.status" | trans }}</th>
+               <th data-sortable="true">{{"course.active" | trans }}</th>
+               <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for course in courses %}
+               <tr>
+                     <td>{{course.id}}</td>
+                     {% if app.request.locale == 'es' %}
+                        <td>{{course.nameEs}}</td>
+                        <td>{{course.turnEs}}</td>
+                     {% else %}
+                        <td>{{course.nameEu}}</td>
+                        <td>{{course.turnEu}}</td>
+                     {% endif %}
+                     <td>{{course.startDate | date('Y/m/d')}} - {{course.endDate | date('Y/m/d')}}</td>
+                     <td>{{course.registrations | length}}</td>
+                     <td>{{course.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans}}</td>
+                     <td>{{ app.request.locale == 'es' ? course.status.descriptionEs : course.status.descriptionEu }}</td>
+                     <td>{{course.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+                     <td>
+                        <a href="{{ path ("app_course_show",{'id': course.id })}}"  title="{{ 'btn.show' | trans }}">
+                           <i class="fa fa-eye"></i>
+                        </a>
+                        &nbsp;<a href="{{ path ("app_course_edit",{'id': course.id })}}" title="{{ 'btn.edit' | trans }}">
+                           <i class="fa fa-edit"></i>
+                        </a>
+                        &nbsp;<a href="{{ path ('app_course_clone',{'id': course.id })}}" title="{{ 'btn.copy' | trans }}">
+                           <i class="fa fa-clone"></i>
+                        </a>
+                        &nbsp;<a href="{{ path ('app_course_raffle_details',{'id': course.id })}}" title="{{ 'btn.raffle' | trans }}">
+                           <i class="fa fa-random"></i>
+                        </a>
+                     </td>
+               </tr>
+            {% endfor %}
+         </tbody>
+   </table>
+{% else %}
+   <div class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</div>
+{% endif %}
+
+{{ include('common/_alert.html.twig', {
+   'confirmationText' : 'messages.confirmationDetail' | trans 
+}) }}

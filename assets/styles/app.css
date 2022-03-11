@@ -1,0 +1,97 @@
+@import "~bootstrap";
+@import '@fortawesome/fontawesome-free';
+@import '~bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css';
+
+header {
+    display: grid;
+    grid-template-columns: 150px auto 300px;
+    grid-template-areas: "logo titulo erabiltzailea";
+    justify-content: space-beetween;
+    text-align: center;
+    align-items: center;
+}
+
+header a {
+    text-decoration: none;
+}
+
+main {
+	font-size: 0.9rem;
+    width: 100vw;
+}
+
+.logo {
+    height: auto;
+    width: auto;
+}
+
+.titulua {
+    display: flex;
+    text-align: center;
+}
+
+.avatar {
+    float: right;
+    height: 3rem;
+    border-radius: 3rem;
+}
+
+#hizkuntza {
+    margin-left: 20px;
+}
+
+body {
+    background-color: white;
+}
+
+.btn-rounded {
+    border-radius: 1.1rem 1.1rem 1.1rem 1.1rem;
+}
+
+.fixed-bottom-right {
+    position: fixed;
+    right: 20px;
+    bottom: 50px;
+}
+
+span.text-danger ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+span.text-danger ul li {
+	font-size: 0.8rem;
+}
+
+.modal-body button {
+    display: none;
+}
+
+.modal-body label[for="event_form_status"] {
+    display: none;
+}
+
+tbody {
+    line-height: 1rem;
+    font-size: 0.8rem;
+}
+
+tbody a {
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.alert {
+    padding: 0.5rem 0.5rem;
+}
+
+@media (max-width: 767px) {
+    .logo {
+        height: 50px;
+        width: auto;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.activity.show' }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'title.activity.show' }}</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ activity.id }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'activity.name' | trans }}</th>
+                <td>{{ activity.name }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_activity_index') }}">{{'btn.cancel' | trans}}</a>
+
+    <a href="{{ path('app_activity_edit', {'id': activity.id}) }}">{{'btn.edit' | trans}}</a>
+
+    {{ include('activity/_delete_form.html.twig') }}
+{% endblock %}

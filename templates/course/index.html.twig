@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.course.list' | trans }}{% endblock %}
+
+{% block body %}
+	<main class="container-fluid">
+        {{ include('course/_list.html.twig') }}
+        <span class="float-right">
+            <a href="{{ path ('app_course_new') }}" class="btn btn-primary rounded-circle fixed-bottom-right">
+                <i class="fa fa-plus" title='{{ "btn.new" | trans | capitalize }}'></i>
+            </a>
+        </span>
+	</main>
+{% endblock body %}

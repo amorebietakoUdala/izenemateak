@@ -1,0 +1,51 @@
+{% if registrations is defined and registrations|length > 0 %}
+
+<table class="table" {{ stimulus_controller('table', {
+   'exportName': 'register',
+}) }}>
+   <thead>
+      <tr>
+            <th data-sortable="true">Id</th>
+            <th data-sortable="true">{{ 'registration.dni' | trans }}</th>
+            <th data-sortable="true">{{ 'registration.fullname' | trans }}</th>
+            <th data-sortable="true">{{ 'registration.representativeFullName' | trans }}</th>
+            {% if app.request.locale == 'es' %}
+               <th data-sortable="true">{{"course.nameEs" | trans | capitalize}}</th>
+               <th data-sortable="true">{{"course.turnEs" | trans | capitalize}}</th>
+            {% else %}
+               <th data-sortable="true">{{"course.nameEu" | trans | capitalize}}</th>
+               <th data-sortable="true">{{"course.turnEu" | trans | capitalize}}</th>
+            {% endif %}
+            <th data-sortable="true">{{ 'course.active' | trans }}</th>
+            <th data-sortable="true">{{ 'registration.createdAt' | trans }}</th>
+            <th data-sortable="true" data-field="options">{{"table.options" | trans | capitalize}}</th>
+      </tr>
+   </thead>
+   <tbody>
+   {% for registration in registrations %}
+      <tr>
+            <td>{{ registration.id }}</td>
+            <td>{{ registration.dni }}</td>
+            <td>{{ registration.fullName }}</td>
+            <td>{{ registration.representativeFullName }}</td>
+            {% if app.request.locale == 'es' %}
+               <td>{{registration.course.nameEs}}</td>
+               <td>{{registration.course.turnEs}}</td>
+            {% else %}
+               <td>{{registration.course.nameEu}}</td>
+               <td>{{registration.course.turnEu}}</td>
+            {% endif %}
+            <td>{{ registration.course.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+            <td>{{ registration.createdAt | date('Y-m-d h:i:s')}}</td>
+            <td>
+               <a href="{{ path('app_registration_show', {'id': registration.id}) }}"><i class="fa fa-eye" title='{{ "btn.show" | trans | capitalize }}'></i></a>&nbsp;
+               <a href="{{ path('app_registration_edit', {'id': registration.id}) }}"><i class="fa fa-edit" title='{{ "btn.edit" | trans | capitalize }}'></i></a>&nbsp;
+               {#<a href="#" data-action="entity#delete" data-url="{{ path('app_registration_delete', {'id': registration.id}) }}" data-token="{{ csrf_token('delete' ~ registration.id) }}"><i class="fa fa-trash" title='{{ "btn.delete" | trans | capitalize }}'></i></a>&nbsp; #}
+            </td>
+      </tr>
+   {% endfor %}
+   </tbody>
+</table>
+{% else %}
+   <div class="alert alert-secondary mt-3" role="alert">{{"messages.results0" | trans }}</div>
+{% endif %}
