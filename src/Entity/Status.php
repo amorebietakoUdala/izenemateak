@@ -13,9 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 class Status
 {
 
-    public const PREINSCRIPTION = 0;
-    public const RAFFLED = 1;
-    public const CLOSED = 2;
+    const PREINSCRIPTION = 0;
+    const RAFFLED = 1;
+    const CLOSED = 2;
 
     /**
      * @ORM\Id

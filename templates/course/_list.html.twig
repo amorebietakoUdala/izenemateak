@@ -46,9 +46,16 @@
                         &nbsp;<a href="{{ path ('app_course_clone',{'id': course.id })}}" title="{{ 'btn.copy' | trans }}">
                            <i class="fa fa-clone"></i>
                         </a>
-                        &nbsp;<a href="{{ path ('app_course_raffle_details',{'id': course.id })}}" title="{{ 'btn.raffle' | trans }}">
-                           <i class="fa fa-random"></i>
+                        {% if ( course.status.statusNumber == constant('App\\Entity\\Status::PREINSCRIPTION') ) %}
+                           &nbsp;<a href="{{ path ('app_course_raffle_details',{'id': course.id })}}" title="{{ 'btn.raffle' | trans }}">
+                              <i class="fa fa-random"></i>
+                           </a>
+                        {% endif %}
+                        {% if ( course.status.statusNumber != constant('App\\Entity\\Status::CLOSED') ) %}
+                        &nbsp;<a href="{{ path ('app_course_close',{'id': course.id })}}" title="{{ 'btn.close' | trans }}">
+                           <i class="fa fa-times-circle"></i>
                         </a>
+                        {% endif %}
                      </td>
                </tr>
             {% endfor %}

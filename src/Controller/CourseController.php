@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Course;
+use App\Entity\Status;
 use App\Form\CourseType;
 use App\Repository\CourseRepository;
+use App\Repository\StatusRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -170,11 +172,64 @@ class CourseController extends AbstractController
     }
 
     /**
-     * @Route("{_locale}/admin/course/{id}/raffle/randomize", name="app_course_raffle_randomize", methods={"GET"})
+     * @Route("{_locale}/admin/course/{id}/raffle/lottery", name="app_course_raffle_lottery", methods={"GET"})
      * @isGranted("ROLE_ADMIN")
      */
-    public function raffleRandomize(Request $request, Course $course) {
-        dd("TODO randomize");
+    public function raffleRandomize(Request $request, Course $course, EntityManagerInterface $em, StatusRepository $repo) {
+        if ($course->getStatus()->getStatusNumber() === Status::RAFFLED ) {
+            $this->addFlash('error', 'messages.alreadyRaffled');
+            return $this->redirectToRoute('app_course_raffle_details', [
+                'id' => $course->getId(),
+            ]);
+        }
+        $registrations = $course->getRegistrations();
+        $places = $course->getPlaces();
+        if (count($registrations) <= $places ) {
+            foreach ($registrations as $registration) {
+                $registration->setFortunate(true);
+                $em->persist($registration);
+            }
+            $status = $repo->findOneBy(['statusNumber' => Status::RAFFLED]);
+            $course->setStatus($status);
+            $em->persist($course);
+            $this->addFlash('success', 'messages.allAdmited');
+            $em->flush();
+        } else {
+            $fortunates = [];
+            $unfortunates = [];
+            $random_keys = array_rand($registrations->toArray(),$places);
+            for ($i=0; $i < count($registrations); $i++ ) {
+                if ( in_array($i, $random_keys) ) {
+                    $fortunates[] = $registrations[$i];
+                    $registrations[$i]->setFortunate(true);
+                } else {
+                    $unfortunates[] = $registrations[$i];
+                    $registrations[$i]->setFortunate(false);
+                }
+                $em->persist($registrations[$i]);
+            }
+            $status = $repo->findOneBy(['statusNumber' => Status::RAFFLED]);
+            $course->setStatus($status);
+            $em->persist($course);
+            $this->addFlash('success', 'messages.lotterySuccessfull');
+            $em->flush();
+        }
+        return $this->redirectToRoute('app_course_raffle_details', [
+            'id' => $course->getId(),
+        ]);
+    }
+
+    /**
+     * @Route("{_locale}/admin/course/{id}/close", name="app_course_close", methods={"GET"})
+     * @isGranted("ROLE_ADMIN")
+     */
+    public function close(Course $course, EntityManagerInterface $em, StatusRepository $repo) {
+        $status = $repo->findOneBy(['statusNumber' => Status::CLOSED]);
+        $course->setStatus($status);
+        $em->persist($course);
+        $em->flush();
+        $this->addFlash('success', 'course.closed');
+        return $this->redirectToRoute('app_course_index');
     }
 
     private function checkErrors($form): bool {

@@ -3,7 +3,7 @@
 {% block title %}{{ 'title.course.raffle' | trans }}{% endblock %}
 
 {% block body %}
-	<main class="container-fluid">
+	<main class="container-fluid mb-2">
         <h1>{{ 'title.course.raffle' | trans }}</h1>
         <div class="container-fluid row align-items-center">
             <div class="col-lg">
@@ -16,8 +16,9 @@
                 {% endif %}
                 <div><b>{{ 'course.inscriptions' | trans }}</b>: {{ course.registrations | length }}</div>
                 <div><b>{{ 'course.places' | trans }}</b>: {{ course.places }}</div>
+                <div><b>{{ 'course.status' | trans }}</b>: {{ app.request.locale == 'es' ? course.status.descriptionEs : course.status.descriptionEu }}</div>
             </div>
-            <div class="col-lg" {{ stimulus_controller('randomize') }}>
+            <div class="col-lg">
                 {% if ( course.places >=  course.registrations | length ) %}
                     <div class="alert alert-info">{{ 'messages.noNeedToRaffle' | trans }}</div>
                 {% endif %}
@@ -28,9 +29,9 @@
                 })}}
             </div>
             <div class="row">
-                <div class="col-lg">
-                    {% if ( course.places <  course.registrations | length ) %}
-                        <button class="btn btn-primary" data-action="randomize#confirm" data-url={{ path('app_course_raffle_randomize', { 'id': course.id }) }}>{{ 'btn.raffle' | trans }}</button>
+                <div class="col-lg" {{ stimulus_controller('randomize') }}>
+                    {% if ( course.status.statusNumber == constant('App\\Entity\\Status::PREINSCRIPTION') ) %}
+                        <button class="btn btn-primary" data-action="randomize#confirm" data-url={{ path('app_course_raffle_lottery', { 'id': course.id }) }}>{{ 'btn.raffle' | trans }}</button>
                     {% endif %}
                     <button class="btn btn-secondary js-back" data-url="{{ path('app_course_index') }}">{{ 'btn.cancel' | trans }}</button>
                 </div>

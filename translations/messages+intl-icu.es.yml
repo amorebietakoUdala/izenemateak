@@ -31,8 +31,11 @@ user_saved: "El usuario se ha guardado correctamente"
 messages.userDeleted: "El usuario se ha eliminado correctamente"
 messages.existingUser: "El nombre de usuario o el email ya existe"
 messages.noActiveCourses: "No hay cursos activos actualmente"
-messages.noNeedToRaffle: "No hace falta sortear"
+messages.noNeedToRaffle: "Todos los inscritos tienen plaza"
 messages.confirmRaffleStart: "¿Está seguro de que quiere comenzar con el sorteo?"
+messages.allAdmited: "No hay necesidad de sortear. Todos admitidos en el curso."
+messages.lotterySuccessfull: "Sorteado correctamente"
+messages.alreadyRaffled: "El curso ya ha sido sorteado. No se puede volver a sortear."
 
 ROLE_USER: "Usuario"
 ROLE_ADMIN: "Administrador"
@@ -59,6 +62,7 @@ btn.clean: "Limpiar"
 btn.copy: "Copiar"
 btn.register: "Apuntarse"
 btn.raffle: "Sortear"
+btn.close: "Cerrar"
 
 # Titles
 title.register: "Inscribirse"
@@ -85,6 +89,7 @@ label.student: "Solicitante"
 label.representative: "Representante"
 label.course: "Actividad"
 label.paymentData: "Datos para el pago"
+label.unRaffled: "No sorteado"
 
 # Placeholders
 placeholder.choose: "Elije una opción"
@@ -105,6 +110,7 @@ course.inscriptions: "Personas inscritas"
 course.limitPlaces: "¿Limitar Plazas?"
 course.limitedPlaces: "¿Plazas limitadas?"
 course.status: "Estado"
+course.closed: "Curso cerrado"
 
 activity.name: "Nombre"
 
@@ -139,6 +145,7 @@ registration.representativeFullName: "Representante"
 registration.course: "Curso"
 registration.session: "Sessión"
 registration.createdAt: "Fecha de inscripción"
+registration.fortunate: "Admitido"
 
 # Search Forms messages
 searchForm.dni: "Dni"

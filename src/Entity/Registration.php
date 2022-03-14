@@ -106,6 +106,11 @@ class Registration
      */
     private $paymentIBANAccount;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $fortunate;
+
     public function __construct()
     {
         $this->forMe = true;
@@ -358,5 +363,17 @@ class Registration
 
     public function getRepresentativeFullName(): string {
         return $this->representativeName.' '.$this->representativeSurname1.' '.$this->representativeSurname2;
+    }
+
+    public function getFortunate(): ?bool
+    {
+        return $this->fortunate;
+    }
+
+    public function setFortunate(?bool $fortunate): self
+    {
+        $this->fortunate = $fortunate;
+
+        return $this;
     }
 }

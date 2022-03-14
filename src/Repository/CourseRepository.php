@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Course;
+use App\Entity\Status;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\QueryBuilder as ORMQueryBuilder;
@@ -52,9 +53,11 @@ class CourseRepository extends ServiceEntityRepository
     public function findByOpenAndActiveCoursesQB() {
         $now = (new \DateTime())->format('Y-m-d');
         return $this->createQueryBuilder('c')
+            ->innerJoin('c.status', 's')
             ->andWhere('c.startDate < :today')
             ->andWhere('c.endDate >= :today2')
             ->andWhere('c.active = :active')
+            ->andWhere('s.statusNumber != '.Status::CLOSED)
             ->setParameter('active', true)
             ->setParameter('today', $now)
             ->setParameter('today2', $now)
