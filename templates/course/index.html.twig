@@ -4,6 +4,11 @@
 
 {% block body %}
 	<main class="container-fluid">
+        <div class="row">
+            <div class="col">
+                {{ include('course/_searchForm.html.twig') }}
+            </div>
+        </div>
         {{ include('course/_list.html.twig') }}
         <span class="float-right">
             <a href="{{ path ('app_course_new') }}" class="btn btn-primary rounded-circle fixed-bottom-right">

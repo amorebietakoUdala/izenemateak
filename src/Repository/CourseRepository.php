@@ -64,6 +64,30 @@ class CourseRepository extends ServiceEntityRepository
             ->orderBy('c.id', 'ASC');
     }
 
+    public function findCoursesBy(array $criteria) {
+        $qb = $this->createQueryBuilder('c');
+            if ( array_key_exists('active', $criteria) ) {
+                $qb->andWhere('c.active = :active')
+                    ->setParameter('active', $criteria['active']);
+                unset($criteria['active']);
+            }
+            if ( array_key_exists('startDate', $criteria) ) {
+                $qb->andWhere('c.createdAt >= :startDate')
+                    ->setParameter('startDate', $criteria['startDate']);
+                unset($criteria['startDate']);
+            }
+            if ( array_key_exists('endDate', $criteria) ) {
+                $qb->andWhere('c.createdAt <= :endDate')
+                    ->setParameter('endDate', $criteria['endDate']->modify('+1 day'));
+                unset($criteria['endDate']);
+            }
+            foreach ($criteria as $key => $value) {
+                $qb->andWhere("c.$key = :$key")
+                ->setParameter("$key", $value);
+            }
+        $qb->orderBy('c.id', 'DESC');
+        return $qb->getQuery()->getResult();
+    }
     /*
     public function findOneBySomeField($value): ?Course
     {

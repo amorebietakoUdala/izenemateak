@@ -154,6 +154,11 @@ searchForm.active: "Estado"
 choice.active: "Activos"
 choice.unActive: "Inactivos"
 choice.all: "Todos"
+choice.yes: "Sí"
+choice.no: "No"
+searchForm.creationStartDate: "Creado desde"
+searchForm.creationEndDate: "Hasta"
+searchForm.limitPlaces: "¿Plazas limitadas?"
 
 # Successfull messages
 deleted: "Borrado"

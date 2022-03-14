@@ -134,6 +134,7 @@ class RegistrationRepository extends ServiceEntityRepository
         $qb->orderBy('r.id', 'ASC');
         return $qb->getQuery()->getResult();
     }
+
     /*
     public function findOneBySomeField($value): ?Person
     {
