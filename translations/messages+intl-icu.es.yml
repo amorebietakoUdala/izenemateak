@@ -150,7 +150,7 @@ registration.fortunate: "Admitido"
 # Search Forms messages
 searchForm.dni: "Dni"
 searchForm.course: "Curso"
-searchForm.active: "Estado"
+searchForm.active: "Activo"
 choice.active: "Activos"
 choice.unActive: "Inactivos"
 choice.all: "Todos"
