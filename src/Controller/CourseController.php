@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Course;
 use App\Entity\Status;
+use App\Form\CourseSearhFormType;
 use App\Form\CourseType;
 use App\Repository\CourseRepository;
 use App\Repository\StatusRepository;
@@ -55,10 +56,26 @@ class CourseController extends AbstractController
     public function index(Request $request, CourseRepository $repo): Response
     {
         $ajax = $request->get('ajax') !== null ? $request->get('ajax') : "false";
-        $activities = $repo->findAll();
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
-        return $this->render("course/$template", [
-            'courses' => $activities,
+        $form = $this->createForm(CourseSearhFormType::class, null, [
+            'locale' => $request->getLocale(),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $criteria = $this->removeBlankFilters($data);
+            $courses = $repo->findCoursesBy($criteria);
+            return $this->renderForm("course/$template", [
+                'courses' => $courses,
+                'form' => $form
+            ]);
+            }
+
+        $courses = $repo->findBy(['active' => true]);
+        return $this->renderForm("course/$template", [
+            'courses' => $courses,
+            'form' => $form
         ]);
     }
 
@@ -246,5 +263,15 @@ class CourseController extends AbstractController
         }
 
         return false;
+    }
+
+    private function removeBlankFilters($filter) {
+        $criteria = [];
+        foreach ( $filter as $key => $value ) {
+            if (null !== $value) {
+                $criteria[$key] = $value;
+            }
+        }
+        return $criteria;
     }
 }
