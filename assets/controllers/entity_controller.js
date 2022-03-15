@@ -23,7 +23,15 @@ export default class extends Controller {
         useDispatch(this);
     }
 
+    keyPress(event) {
+        //console.log(event);
+        if (event.keyCode === 13) {
+            this.submitForm(event);
+        }
+    }
+
     async openModal(event) {
+        event.preventDefault();
         this.modalBodyTarget.innerHTML = 'Loading...';
         this.modal = new Modal(this.modalTarget);
         this.modal.show();
@@ -31,6 +39,7 @@ export default class extends Controller {
     }
 
     async submitForm(event) {
+        event.preventDefault();
         let $form = $(this.modalBodyTarget).find('form');
         try {
             await $.ajax({

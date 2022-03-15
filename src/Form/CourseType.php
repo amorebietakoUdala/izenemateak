@@ -21,6 +21,7 @@ class CourseType extends AbstractType
     {
         $readonly = $options['readonly'];
         $locale = $options['locale'];
+        $statusNumber = $options['data']->getStatus() !== null ? $options['data']->getStatus()->getStatusNumber() : 0;
         $builder
             ->add('activity',EntityType::class,[
                 'label' => 'course.activity',
@@ -103,8 +104,7 @@ class CourseType extends AbstractType
                 'query_builder' => function( StatusRepository $repo ) {
                     return $repo->findAllQB();
                 },
-
-                'disabled' => $readonly,
+                'disabled' => $readonly || $statusNumber !== Status::PREINSCRIPTION,
             ])
             ->add('active', null, [
                 'label' => 'course.active',

@@ -14,6 +14,7 @@
                   })}} 
                class="container-fluid"
                {# data-action="hidden.bs.modal->entity#modalHidden" #}
+               data-action="keypress->entity#keyPress"
                >
                <div data-reload-content-target="content">
                   {{ include('activity/_list.html.twig', { 'activities': activities }) }}

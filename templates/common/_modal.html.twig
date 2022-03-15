@@ -1,4 +1,4 @@
-<div class="modal" tabindex="-1" data-entity-target="modal">
+<div class="modal" tabindex="-1" data-entity-target="modal" >
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -11,11 +11,8 @@
                 }) }}
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">{{'btn.cancel' | trans}}
-				</button>
-				<button type="button" class="btn btn-primary" data-action="entity#submitForm" data-entity-target="modalSaveButton">
-					{{'btn.save' | trans}}
-				</button>
+				<button type="button" class="btn btn-primary" data-action="entity#submitForm" data-entity-target="modalSaveButton">{{'btn.save' | trans}}</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">{{'btn.cancel' | trans}}</button>
 			</div>
 		</div>
 	</div>

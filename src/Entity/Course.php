@@ -95,9 +95,6 @@ class Course
         return $this->id;
     }
 
-    /**
-     * Get the value of nameEs
-     */ 
     public function getNameEs()
     {
         return $this->nameEs;
@@ -115,9 +112,6 @@ class Course
         return $this;
     }
 
-    /**
-     * Get the value of nameEu
-     */ 
     public function getNameEu()
     {
         return $this->nameEu;
@@ -237,11 +231,6 @@ class Course
         return $this;
     }
 
-        /**
-     * Set the value of registrations
-     *
-     * @return  self
-     */ 
     public function setRegistrations(Collection $registrations)
     {
         $this->registrations = $registrations;
@@ -253,6 +242,9 @@ class Course
         $course = new Course();
         $course->setNameEs($this->nameEs.'_copia');
         $course->setNameEu($this->nameEu.'_kopia');
+        $course->setTurnEs($this->turnEs.'_copia');
+        $course->setTurnEu($this->turnEs.'_kopia');
+        $course->setPlaces($this->places);
         $course->setStartDate($this->startDate);
         $course->setEndDate($this->endDate);
         $course->setActive($this->active);
