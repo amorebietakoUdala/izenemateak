@@ -4,15 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2089a8f7677a1dc756063299d4224d2",
+    "content-hash": "2fb535a44fae211f18426c8786d6b0b7",
     "packages": [
         {
             "name": "amorebietakoudala/user-bundle",
-            "version": "dev-main",
+            "version": "1.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amorebietakoUdala/user-bundle.git",
+                "reference": "1cd74b940fb3f558137f7cf7cc68d6e1a76667f7"
+            },
             "dist": {
-                "type": "path",
-                "url": "../bundles/user-bundle",
-                "reference": "7278a50c2bfdaa211b0eefa65cec784fee4784e9"
+                "type": "zip",
+                "url": "https://api.github.com/repos/amorebietakoUdala/user-bundle/zipball/1cd74b940fb3f558137f7cf7cc68d6e1a76667f7",
+                "reference": "1cd74b940fb3f558137f7cf7cc68d6e1a76667f7",
+                "shasum": ""
             },
             "require": {
                 "doctrine/doctrine-bundle": "^2.1",
@@ -33,11 +39,7 @@
                     "AMREU\\UserBundle\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "AMREU\\UserBundle\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Amorebietako Udala",
@@ -45,92 +47,11 @@
                 }
             ],
             "description": "AmorebietakoUdala erabiltzaile bundlela",
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "babdev/pagerfanta-bundle",
-            "version": "v3.6.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BabDev/PagerfantaBundle.git",
-                "reference": "7faf8d584a5c93d1ddff55fcacd0fede8bc748d5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BabDev/PagerfantaBundle/zipball/7faf8d584a5c93d1ddff55fcacd0fede8bc748d5",
-                "reference": "7faf8d584a5c93d1ddff55fcacd0fede8bc748d5",
-                "shasum": ""
-            },
-            "require": {
-                "pagerfanta/core": "^3.1",
-                "php": "^7.4 || ^8.0",
-                "symfony/config": "^4.4 || ^5.3 || ^6.0",
-                "symfony/dependency-injection": "^4.4 || ^5.3 || ^6.0",
-                "symfony/deprecation-contracts": "^2.1 || ^3.0",
-                "symfony/http-foundation": "^4.4 || ^5.3 || ^6.0",
-                "symfony/http-kernel": "^4.4 || ^5.3 || ^6.0",
-                "symfony/polyfill-php80": "^1.15",
-                "symfony/property-access": "^4.4 || ^5.3 || ^6.0",
-                "symfony/routing": "^4.4 || ^5.3 || ^6.0"
-            },
-            "conflict": {
-                "pagerfanta/twig": "<3.1",
-                "twig/twig": "<1.35 || >=2.0,<2.5",
-                "white-october/pagerfanta-bundle": "*"
-            },
-            "require-dev": {
-                "doctrine/annotations": "^1.8",
-                "jms/serializer": "^3.0",
-                "jms/serializer-bundle": "^3.0 || ^4.0",
-                "matthiasnoback/symfony-dependency-injection-test": "^4.3",
-                "pagerfanta/twig": "^3.1",
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan": "^1.1.2",
-                "phpstan/phpstan-phpunit": "^1.0.0",
-                "phpstan/phpstan-symfony": "^1.0.1",
-                "phpunit/phpunit": "^9.5",
-                "symfony/phpunit-bridge": "^5.3 || ^6.0",
-                "symfony/serializer": "^4.4 || ^5.3 || ^6.0",
-                "symfony/translation": "^4.4 || ^5.3 || ^6.0",
-                "symfony/twig-bridge": "^4.4 || ^5.3 || ^6.0",
-                "symfony/twig-bundle": "^4.4 || ^5.3 || ^6.0",
-                "twig/twig": "^1.35 || ^2.5 || ^3.0"
-            },
-            "suggest": {
-                "jms/serializer-bundle": "To use the Pagerfanta class with the JMS Serializer",
-                "symfony/serializer": "To use the Pagerfanta class with the Symfony Serializer",
-                "symfony/translation": "To use the Twig templates with translation support",
-                "twig/twig": "To integrate Pagerfanta with Twig through extensions"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "BabDev\\PagerfantaBundle\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Bundle integrating Pagerfanta with Symfony",
-            "keywords": [
-                "pagerfanta",
-                "pagination",
-                "symfony"
-            ],
             "support": {
-                "issues": "https://github.com/BabDev/PagerfantaBundle/issues",
-                "source": "https://github.com/BabDev/PagerfantaBundle/tree/v3.6.1"
+                "issues": "https://github.com/amorebietakoUdala/user-bundle/issues",
+                "source": "https://github.com/amorebietakoUdala/user-bundle/tree/1.2.3"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/mbabker",
-                    "type": "github"
-                }
-            ],
-            "time": "2021-12-09T00:39:39+00:00"
+            "time": "2022-03-08T10:49:38+00:00"
         },
         {
             "name": "behat/transliterator",
@@ -2259,149 +2180,6 @@
             "time": "2021-10-06T17:43:30+00:00"
         },
         {
-            "name": "knplabs/knp-markdown-bundle",
-            "version": "1.10.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/KnpLabs/KnpMarkdownBundle.git",
-                "reference": "dc113af8545522c7a57630c6b2fe6e51523f6deb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpMarkdownBundle/zipball/dc113af8545522c7a57630c6b2fe6e51523f6deb",
-                "reference": "dc113af8545522c7a57630c6b2fe6e51523f6deb",
-                "shasum": ""
-            },
-            "require": {
-                "michelf/php-markdown": "^1.9",
-                "php": "^7.4|^8.0",
-                "symfony/dependency-injection": "^4.4|^5.0|^6.0",
-                "symfony/framework-bundle": "^4.4|^5.0|^6.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^1.2",
-                "phpstan/phpstan-symfony": "^1.0",
-                "symfony/phpunit-bridge": "^4.4.11|^5.0|^6.0",
-                "symfony/templating": "^4.4|^5.0|^6.0"
-            },
-            "suggest": {
-                "ext-sundown": "to use optional support for php-sundown extension instead of php implementation",
-                "symfony/twig-bundle": "to use the Twig markdown filter"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.5.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Knp\\Bundle\\MarkdownBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "KnpLabs Team",
-                    "homepage": "http://knplabs.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://github.com/KnpLabs/KnpMarkdownBundle/contributors"
-                }
-            ],
-            "description": "Knplabs markdown bundle transforms markdown into html",
-            "homepage": "http://github.com/KnpLabs/KnpMarkdownBundle",
-            "keywords": [
-                "bundle",
-                "knp",
-                "knplabs",
-                "markdown"
-            ],
-            "support": {
-                "issues": "https://github.com/KnpLabs/KnpMarkdownBundle/issues",
-                "source": "https://github.com/KnpLabs/KnpMarkdownBundle/tree/1.10.0"
-            },
-            "abandoned": "twig/markdown-extra",
-            "time": "2022-01-26T18:46:39+00:00"
-        },
-        {
-            "name": "knplabs/knp-time-bundle",
-            "version": "v1.18.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/KnpLabs/KnpTimeBundle.git",
-                "reference": "239c964c67087f3e1e9dbcfe6fb1d4af36ff884b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/239c964c67087f3e1e9dbcfe6fb1d4af36ff884b",
-                "reference": "239c964c67087f3e1e9dbcfe6fb1d4af36ff884b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2.5",
-                "symfony/config": "^4.3|^5.0|^6.0",
-                "symfony/dependency-injection": "^4.3|^5.0|^6.0",
-                "symfony/translation": "^4.3|^5.0|^6.0"
-            },
-            "conflict": {
-                "phpunit/phpunit": "<8.0"
-            },
-            "require-dev": {
-                "symfony/framework-bundle": "^4.3|^5.0|^6.0",
-                "symfony/phpunit-bridge": "^5.2|^6.0",
-                "symfony/templating": "^4.3|^5.0|^6.0",
-                "symfony/twig-bundle": "^4.3|^5.0|^6.0"
-            },
-            "suggest": {
-                "symfony/twig-bundle": "to use the Twig `time_diff()` function or `|ago` filter"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Knp\\Bundle\\TimeBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "KnpLabs Team",
-                    "homepage": "http://knplabs.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://github.com/KnpLabs/KnpTimeBundle/contributors"
-                }
-            ],
-            "description": "Making your dates look sensible and descriptive",
-            "homepage": "http://github.com/KnpLabs/KnpTimeBundle",
-            "keywords": [
-                "bundle",
-                "date",
-                "descriptive time",
-                "knp",
-                "knplabs",
-                "time"
-            ],
-            "support": {
-                "issues": "https://github.com/KnpLabs/KnpTimeBundle/issues",
-                "source": "https://github.com/KnpLabs/KnpTimeBundle/tree/v1.18.0"
-            },
-            "time": "2022-02-07T18:02:40+00:00"
-        },
-        {
             "name": "laminas/laminas-code",
             "version": "4.5.1",
             "source": {
@@ -2538,59 +2316,6 @@
             "time": "2021-12-22T16:42:49+00:00"
         },
         {
-            "name": "michelf/php-markdown",
-            "version": "1.9.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/michelf/php-markdown.git",
-                "reference": "5024d623c1a057dcd2d076d25b7d270a1d0d55f3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/michelf/php-markdown/zipball/5024d623c1a057dcd2d076d25b7d270a1d0d55f3",
-                "reference": "5024d623c1a057dcd2d076d25b7d270a1d0d55f3",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": ">=4.3 <5.8"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Michelf\\": "Michelf/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Michel Fortin",
-                    "email": "michel.fortin@michelf.ca",
-                    "homepage": "https://michelf.ca/",
-                    "role": "Developer"
-                },
-                {
-                    "name": "John Gruber",
-                    "homepage": "https://daringfireball.net/"
-                }
-            ],
-            "description": "PHP Markdown",
-            "homepage": "https://michelf.ca/projects/php-markdown/",
-            "keywords": [
-                "markdown"
-            ],
-            "support": {
-                "issues": "https://github.com/michelf/php-markdown/issues",
-                "source": "https://github.com/michelf/php-markdown/tree/1.9.1"
-            },
-            "time": "2021-11-24T02:52:38+00:00"
-        },
-        {
             "name": "monolog/monolog",
             "version": "2.4.0",
             "source": {
@@ -2688,149 +2413,6 @@
                 }
             ],
             "time": "2022-03-14T12:44:37+00:00"
-        },
-        {
-            "name": "pagerfanta/core",
-            "version": "v3.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Pagerfanta/core.git",
-                "reference": "b2b7dd66e0ddcefd6631ae22fad1ef98cdf70e5a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Pagerfanta/core/zipball/b2b7dd66e0ddcefd6631ae22fad1ef98cdf70e5a",
-                "reference": "b2b7dd66e0ddcefd6631ae22fad1ef98cdf70e5a",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "php": "^7.4 || ^8.0",
-                "symfony/deprecation-contracts": "^2.1 || ^3.0",
-                "symfony/polyfill-php80": "^1.15"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.5",
-                "symfony/phpunit-bridge": "^5.4 || ^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Pagerfanta\\": "./"
-                },
-                "exclude-from-classmap": [
-                    "Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Core Pagerfanta API",
-            "keywords": [
-                "pagerfanta"
-            ],
-            "support": {
-                "source": "https://github.com/Pagerfanta/core/tree/v3.6.0"
-            },
-            "time": "2022-03-09T00:03:03+00:00"
-        },
-        {
-            "name": "pagerfanta/doctrine-orm-adapter",
-            "version": "v3.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Pagerfanta/doctrine-orm-adapter.git",
-                "reference": "592926e29e280f30a8912030247960f396faece7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Pagerfanta/doctrine-orm-adapter/zipball/592926e29e280f30a8912030247960f396faece7",
-                "reference": "592926e29e280f30a8912030247960f396faece7",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/orm": "^2.8",
-                "pagerfanta/core": "^3.0",
-                "php": "^7.4 || ^8.0",
-                "symfony/deprecation-contracts": "^2.1 || ^3.0"
-            },
-            "require-dev": {
-                "doctrine/annotations": "^1.11.1",
-                "doctrine/cache": "^1.11 || ^2.0",
-                "phpunit/phpunit": "^9.5",
-                "symfony/cache": "^4.4 || ^5.4 || ^6.0",
-                "symfony/phpunit-bridge": "^5.4 || ^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Pagerfanta\\Doctrine\\ORM\\": "./"
-                },
-                "exclude-from-classmap": [
-                    "Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Pagerfanta adapter for Doctrine ORM",
-            "keywords": [
-                "doctrine",
-                "orm",
-                "pagerfanta"
-            ],
-            "support": {
-                "source": "https://github.com/Pagerfanta/doctrine-orm-adapter/tree/v3.6.0"
-            },
-            "time": "2022-03-09T00:03:03+00:00"
-        },
-        {
-            "name": "pagerfanta/twig",
-            "version": "v3.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Pagerfanta/twig.git",
-                "reference": "0d7af77b027ffd613212abb434a40f4520f4e9d5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Pagerfanta/twig/zipball/0d7af77b027ffd613212abb434a40f4520f4e9d5",
-                "reference": "0d7af77b027ffd613212abb434a40f4520f4e9d5",
-                "shasum": ""
-            },
-            "require": {
-                "pagerfanta/core": "^3.0",
-                "php": "^7.4 || ^8.0",
-                "symfony/polyfill-php80": "^1.15",
-                "twig/twig": "^1.35 || ^2.5 || ^3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.5",
-                "symfony/phpunit-bridge": "^5.4 || ^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Pagerfanta\\Twig\\": "./"
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Twig integration for Pagerfanta",
-            "keywords": [
-                "pagerfanta"
-            ],
-            "support": {
-                "source": "https://github.com/Pagerfanta/twig/tree/v3.6.0"
-            },
-            "time": "2022-01-18T04:22:14+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -9842,9 +9424,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "amorebietakoudala/user-bundle": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
