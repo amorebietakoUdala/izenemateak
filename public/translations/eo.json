@@ -1,3 +1,0 @@
-{
-    "translations": {"eo":{"time":{"diff.ago.year":"anta\u016d 1 jaro|anta\u016d %count% jaroj","diff.ago.month":"anta\u016d 1 monato|anta\u016d %count% monatoj","diff.ago.day":"anta\u016d 1 tago|anta\u016d %count% tagoj","diff.ago.hour":"anta\u016d 1 horo|anta\u016d %count% horoj","diff.ago.minute":"anta\u016d 1 minuto|anta\u016d %count% minutoj","diff.ago.second":"anta\u016d 1 sekundo|anta\u016d %count% sekundoj","diff.empty":"nun","diff.in.second":"post 1 sekundo|post %count% sekundoj","diff.in.hour":"post 1 horo|post %count% horoj","diff.in.minute":"post 1 minuto|post %count% minutoj","diff.in.day":"post 1 tago|post %count% tagoj","diff.in.month":"post 1 monato|post %count% monatoj","diff.in.year":"post 1 jaro|post %count% jaroj"}}}
-}

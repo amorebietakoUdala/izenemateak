@@ -1,3 +1,0 @@
-{
-    "translations": {"bs_Latn_BA":{"time":{"diff.ago.year":"prije 1 godine|%count% godina","diff.ago.month":"prije 1 mjeseca|%count% mjeseci","diff.ago.day":"prije 1 dan|%count% dana","diff.ago.hour":"prije 1 sat|%count% sati","diff.ago.minute":"prije 1 minute|%count% minuta","diff.ago.second":"prije 1 sekunde|%count% sekundi","diff.empty":"trenutno","diff.in.second":"u 1 sekundi|%count% sekundi","diff.in.hour":" u 1 satu|%count% sati","diff.in.minute":"u 1 minuti|%count% minuti","diff.in.day":"u 1 danu|%count% dana","diff.in.month":"u 1 mjesecu|%count% mjeseca","diff.in.year":"u 1 godini|%count% godine"}}}
-}

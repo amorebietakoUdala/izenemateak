@@ -1,3 +1,0 @@
-{
-    "translations": {"zh":{"time":{"diff.ago.year":"%count% \u5e74\u524d","diff.ago.month":"%count% \u4e2a\u6708\u524d","diff.ago.day":"%count% \u5929\u524d","diff.ago.hour":"%count% \u5c0f\u65f6\u524d","diff.ago.minute":"%count% \u5206\u949f\u524d","diff.ago.second":"%count% \u79d2\u524d","diff.empty":"\u521a\u624d","diff.in.second":"%count% \u79d2\u540e","diff.in.hour":"%count% \u5c0f\u65f6\u540e","diff.in.minute":"%count% \u5206\u949f\u540e","diff.in.day":"%count% \u5929\u540e","diff.in.month":"%count% \u4e2a\u6708\u540e","diff.in.year":"%count% \u5e74\u540e"}}}
-}
