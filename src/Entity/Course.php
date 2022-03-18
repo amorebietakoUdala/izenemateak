@@ -14,6 +14,12 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class Course
 {
 
+    const STATUS_PREINSCRIPTION = 0;
+    const STATUS_RAFFLED = 1;
+    const STATUS_WAITING_CONFIRMATIONS = 2;
+    const STATUS_WAITING_LIST = 3;
+    const STATUS_CLOSED = 4;
+
     use TimestampableEntity;
 
     /**
@@ -80,9 +86,25 @@ class Course
     private $limitPlaces;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="courses")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $status;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cost;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $deposit;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Clasification::class, inversedBy="courses")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $clasification;
 
     public function __construct()
     {
@@ -250,6 +272,9 @@ class Course
         $course->setActive($this->active);
         $course->setRegistrations($this->registrations);
         $course->setActivity($this->activity);
+        $course->setDeposit($this->deposit);
+        $course->setCost($this->cost);
+        $course->setClasification($this->clasification);
         return $course;
     }
 
@@ -284,15 +309,80 @@ class Course
         return $this;
     }
 
-    public function getStatus(): ?Status
+    public function getCost(): ?float
+    {
+        return $this->cost;
+    }
+
+    public function setCost(?float $cost): self
+    {
+        $this->cost = $cost;
+
+        return $this;
+    }
+
+    public function getDeposit(): ?float
+    {
+        return $this->deposit;
+    }
+
+    public function setDeposit(?float $deposit): self
+    {
+        $this->deposit = $deposit;
+
+        return $this;
+    }
+
+    public function getClasification(): ?Clasification
+    {
+        return $this->clasification;
+    }
+
+    public function setClasification(?Clasification $clasification): self
+    {
+        $this->clasification = $clasification;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
     {
         return $this->status;
     }
 
-    public function setStatus(?Status $status): self
+    public function setStatus($status): self
     {
         $this->status = $status;
 
         return $this;
     }
+
+    public function countConfirmed(): int {
+        $confirmed = array_reduce($this->getRegistrations()->toArray(),function($carry, Registration $item){
+            if ( $item->getConfirmed()) {
+                $carry += 1;
+            } else {
+                $carry += 0;
+            }
+            return $carry;
+        });
+        return $confirmed;
+    }
+
+    public function countRejected(): int {
+        $confirmed = array_reduce($this->getRegistrations()->toArray(),function($carry, Registration $item){
+            if ($item->getConfirmed() !== null && !$item->getConfirmed()) {
+                $carry += 1;
+            } else {
+                $carry += 0;
+            }
+            return $carry;
+        });
+        return $confirmed;
+    }
+
+    public function isFull() {
+        return $this->countConfirmed() >= $this->places ? true : false; 
+    }
+
 }

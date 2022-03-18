@@ -62,6 +62,16 @@
                     {{ form_label(form.dateOfBirth) }}
                     {{ form_widget(form.dateOfBirth) }}
                 </div>
+                {% if is_granted('ROLE_ADMIN') and admin %}
+                    <div class="col-lg">
+                        {{ form_label(form.fortunate) }}
+                        {{ form_widget(form.fortunate) }}
+                    </div>
+                    <div class="col-lg">
+                        {{ form_label(form.confirmed) }}
+                        {{ form_widget(form.confirmed) }}
+                    </div>
+                {% endif %}
             </div>
         </fieldset>
         <div class="{{ form.vars.value.forMe is not null and form.vars.value.forMe ? 'visually-hidden' : '' }}" data-toggle-target="hiddenContent">
@@ -90,7 +100,7 @@
         <fieldset id="courseData" class="border border-secondary border-2 p-2 rounded mt-1">
             <legend class="alert alert-info fs-5 lh-1">{{ 'label.course' | trans }}</legend>
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-auto">
                     {{ form_label(form.course) }}
                     {{ form_widget(form.course) }}
                     {{ form_errors(form.course) }}

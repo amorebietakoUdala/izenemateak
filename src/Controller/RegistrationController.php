@@ -31,6 +31,13 @@ class RegistrationController extends AbstractController
     }
 
     /**
+     * @Route("/", name="app_home")
+     */
+    public function home() {
+        return $this->redirectToRoute('app_active_courses');
+    }
+
+    /**
      * @Route("/{_locale}/active/courses", name="app_active_courses")
      */ 
     public function listActiveCourses(CourseRepository $repo) {
@@ -63,6 +70,7 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationType::class, $registration,[
             'locale' => $request->getLocale(),
             'disabled' => false,
+            'admin' => false,
         ]);
 
         $form->handleRequest($request);
@@ -73,10 +81,10 @@ class RegistrationController extends AbstractController
             if (!$this->checkForErrors($data, $em)) {
                 $em->persist($data);
                 $em->flush();
-                $html = $this->renderView('register/registrationEmail.html.twig', [
+                $html = $this->renderView('mailing/registrationEmail.html.twig', [
                     'registration' => $data,
                 ]);
-                $subject = $this->translator->trans('mail.subject', [], 'messages', $request->getLocale());
+                $subject = $this->translator->trans('mail.subject', [], 'mail', $request->getLocale());
                 $this->sendEmail($data->getEmail(), $subject, $html, $this->getParameter('mailerSendBcc'));
                 $this->addFlash('success', 'registration.saved');
                 if (null === $course) {
@@ -93,6 +101,7 @@ class RegistrationController extends AbstractController
             'form' => $form->createView(),
             'activeCourses' => $activeCourses,
             'readonly' => false,
+            'admin' => false,
             'returnUrl' => $router->generate('app_active_courses'),
         ]);
     }
@@ -122,28 +131,6 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("{_locale}/admin/registration/{id}", name="app_registration_show")
-     * @isGranted("ROLE_ADMIN")
-     */
-    public function show(Request $request, Registration $registration): Response
-    {
-        $form = $this->createForm(RegistrationType::class, $registration, [
-            'disabled' => true,
-        ]);
-        $returnUrl = $this->getReturnURL($request);
-
-        return $this->renderForm('register/edit.html.twig', [
-            'form' => $form,
-            'new' => false,
-            'readonly' => true,
-            'disabled' => true,
-            'registration' => $registration,
-            'returnUrl' => $returnUrl,
-
-        ]);
-    }
-
-    /**
      * @Route("{_locale}/admin/registration/{id}/edit", name="app_registration_edit")
      * @isGranted("ROLE_ADMIN")
      */
@@ -152,6 +139,7 @@ class RegistrationController extends AbstractController
 
         $form = $this->createForm(RegistrationType::class, $registration, [
             'disabled' => false,
+            'admin' => true,
         ]);
         $returnUrl = $this->getReturnURL($request);
         $form->handleRequest($request);
@@ -192,6 +180,159 @@ class RegistrationController extends AbstractController
                 'id' => $registration->getId(),
             ]);
         }            
+    }
+
+    /**
+     * @Route("{_locale}/admin/registration/{id}/confirm", name="app_registration_confirm", methods={"GET"})
+     */
+    public function confirm(Request $request, EntityManagerInterface $em, Registration $registration): Response
+    {
+        $token = $request->get('token');
+        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        if ($registration->getToken() !== $token) {
+            $this->addFlash('error', 'error.invalidConfirmationToken');
+            return $this->render('register/confirmation.html.twig', [
+                'error' => true,
+                'admin' => $admin,
+                'registration' => $registration,
+            ]);
+        }
+        if ( $registration->getConfirmed() === false ) {
+            $this->addFlash('error', 'error.alreadyRejected');
+            return $this->render('register/confirmation.html.twig', [
+                'error' => true,
+                'admin' => $admin,
+                'registration' => $registration,
+            ]);
+        }
+        if ($registration->getCourse()->isFull()) {
+            $this->addFlash('error', 'error.courseIsFull');
+            return $this->render('register/confirmation.html.twig', [
+                'error' => true,
+                'admin' => $admin,
+                'registration' => $registration,
+
+            ]);
+        }
+        if ($registration->getConfirmed() ) {
+            $this->addFlash('success', 'messages.alreadyConfirmed');
+            return $this->render('register/confirmation.html.twig', [
+                'error' => false,
+                'registration' => $registration,
+                'admin' => $admin,
+            ]);
+        }
+        $registration->setConfirmed(true);
+        $registration->setConfirmationDate(new \DateTime());
+        $em->persist($registration);
+        $em->flush();
+        $this->sendConfirmationEmail($request->getLocale(), $registration);
+        $this->addFlash('success', 'messages.successfullyConfirmed');
+        return $this->render('register/confirmation.html.twig', [
+            'error' => false,
+            'registration' => $registration,
+            'admin' => $admin,
+        ]);
+    }
+
+    /**
+     * @Route("{_locale}/admin/registration/{id}/reject", name="app_registration_reject", methods={"GET"})
+     */
+    public function reject(Request $request, EntityManagerInterface $em, Registration $registration, RegistrationRepository $repo): Response
+    {
+        $token = $request->get('token');
+        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        if ($registration->getToken() !== $token) {
+            $this->addFlash('error', 'error.invalidRejectToken');
+            return $this->render('register/confirmation.html.twig', [
+                'error' => true,
+                'admin' => $admin,
+                'registration' => $registration,
+            ]);
+        }
+        if ( $registration->getConfirmed() !== null && $registration->getConfirmed() === true ) {
+            $this->addFlash('error', 'error.alreadyConfirmed');
+            return $this->render('register/confirmation.html.twig', [
+                'error' => true,
+                'admin' => $admin,
+                'registration' => $registration,
+            ]);
+        }
+        if ( $registration->getConfirmed() !== null && !$registration->getConfirmed() ) {
+            $this->addFlash('success', 'messages.alreadyRejected');
+            return $this->render('register/confirmation.html.twig', [
+                'error' => false,
+                'admin' => $admin,
+                'registration' => $registration,
+            ]);
+        }
+        $registration->setConfirmed(false);
+        $registration->setConfirmationDate(new \DateTime());
+        $em->persist($registration);
+        $em->flush();
+        if ($registration->getCourse()->getStatus() === Course::STATUS_WAITING_CONFIRMATIONS) {
+            $next = $repo->findNextOnWaitingListCourse($registration->getCourse());
+            $this->sendFortunateEmail($request->getLocale(), $next);
+        }
+        $this->addFlash('success', 'messages.successfullyRejected');
+        return $this->render('register/confirmation.html.twig', [
+            'error' => false,
+            'registration' => $registration,
+            'admin' => $admin,
+        ]);
+    }
+
+    /**
+     * @Route("{_locale}/admin/registration/{id}/mailing", name="app_registration_send_confirm_message")
+     * @isGranted("ROLE_ADMIN")
+     */
+    public function mailing (Request $request, Registration $registration, RegistrationRepository $repo): Response {
+        $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($registration->getCourse());
+
+        dd('TODO');
+        $this->addFlash('success','messages.successfullyMailed');
+        return $this->redirectToRoute('app_course_raffle_details');
+    }
+
+    /**
+     * @Route("{_locale}/admin/registration/{id}", name="app_registration_show")
+     * @isGranted("ROLE_ADMIN")
+     */
+    public function show(Request $request, Registration $registration): Response
+    {
+        $form = $this->createForm(RegistrationType::class, $registration, [
+            'disabled' => true,
+            'admin' => true,
+        ]);
+        $returnUrl = $this->getReturnURL($request);
+
+        return $this->renderForm('register/edit.html.twig', [
+            'form' => $form,
+            'new' => false,
+            'readonly' => true,
+            'disabled' => true,
+            'registration' => $registration,
+            'returnUrl' => $returnUrl,
+
+        ]);
+    }
+
+    private function sendConfirmationEmail ($locale, $registration) {
+        $subject = $this->translator->trans('mail.confirmationEmail.subject', [], 'mail', $locale);
+        $html = $this->renderView('mailing/confirmationEmail.html.twig', [
+            'registration' => $registration,
+            'cancelation' => false,
+        ]);
+        $this->sendEmail($registration->getEmail(), $subject, $html, false);
+    }
+
+    private function sendFortunateEmail ($locale, $fortunate) {
+        $subject = $this->translator->trans('mail.fortunate.subject', [], 'mail', $locale);
+        $html = $this->renderView('mailing/fortunateEmail.html.twig', [
+            'registration' => $fortunate,
+            'cancelation' => true,
+        ]);
+        $this->sendEmail($fortunate->getEmail(), $subject, $html, false);
     }
 
     private function sendEmail($to, $subject, $html, bool $sendToHHRR)

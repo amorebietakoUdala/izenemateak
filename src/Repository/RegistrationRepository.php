@@ -77,6 +77,40 @@ class RegistrationRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return Registration[]|null Returns not confirmed and not fortunate registrations
+     */
+    public function findNotConfirmedAndNotFortunate($course)
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.course = :course')
+            ->andWhere('r.fortunate = :fortunate')
+            ->andWhere('r.confirmed IS NULL')
+            ->setParameter('course', $course)
+            ->setParameter('fortunate', false)
+            ->orderBy('r.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * @return Registration|null Returns the next on WaitingList
+     */
+    public function findNextOnWaitingListCourse($course)
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.course = :course')
+            ->andWhere('r.fortunate = :fortunate')
+            ->andWhere('r.confirmed IS NULL')
+            ->setParameter('course', $course)
+            ->setParameter('fortunate', false)
+            ->orderBy('r.createdAt', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    /**
      * @return Registration|null Returns an array of Registration objects
      */
     public function findOneByNameSurnamesCourse($name, $surname1, $surname2, $course) {

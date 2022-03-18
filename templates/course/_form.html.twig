@@ -24,6 +24,9 @@
     <div class="container-fluid" {{ stimulus_controller('toggle') }} >
         <div class="row">
             <div class="col-lg-3">
+                {{ form_row(form.clasification) }}
+            </div>
+            <div class="col-lg-3">
                 {{ form_row(form.activity) }}
             </div>
             <div class="col-lg-3">
@@ -40,7 +43,13 @@
             <div class="col-lg-3">
                 {{ form_row(form.turnEu) }}
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-1">
+                {{ form_row(form.cost) }}
+            </div>
+            <div class="col-lg-1">
+                {{ form_row(form.deposit) }}
+            </div>
+            <div class="col-lg-1">
                 {{ form_row(form.places) }}
             </div>
             <div class="col-lg-2">

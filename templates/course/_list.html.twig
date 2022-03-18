@@ -34,7 +34,8 @@
                      <td>{{course.startDate | date('Y/m/d')}} - {{course.endDate | date('Y/m/d')}}</td>
                      <td>{{course.registrations | length}}</td>
                      <td>{{course.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans}}</td>
-                     <td>{{ app.request.locale == 'es' ? course.status.descriptionEs : course.status.descriptionEu }}</td>
+                     {% set statusLabel = 'course.status.' ~ course.status %}
+                     <td>{{ statusLabel | trans }}</td>
                      <td>{{course.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
                      <td>
                         <a href="{{ path ("app_course_show",{'id': course.id })}}"  title="{{ 'btn.show' | trans }}">
@@ -46,12 +47,10 @@
                         &nbsp;<a href="{{ path ('app_course_clone',{'id': course.id })}}" title="{{ 'btn.copy' | trans }}">
                            <i class="fa fa-clone"></i>
                         </a>
-                        {% if ( course.status.statusNumber == constant('App\\Entity\\Status::PREINSCRIPTION') ) %}
-                           &nbsp;<a href="{{ path ('app_course_raffle_details',{'id': course.id })}}" title="{{ 'btn.raffle' | trans }}">
-                              <i class="fa fa-random"></i>
-                           </a>
-                        {% endif %}
-                        {% if ( course.status.statusNumber != constant('App\\Entity\\Status::CLOSED') ) %}
+                        &nbsp;<a href="{{ path ('app_course_raffle_details',{'id': course.id })}}" title="{{ 'btn.raffleDetails' | trans }}">
+                           <i class="fa fa-random"></i>
+                        </a>
+                        {% if ( course.status != constant('App\\Entity\\Course::STATUS_CLOSED') ) %}
                         &nbsp;<a href="{{ path ('app_course_close',{'id': course.id })}}" title="{{ 'btn.close' | trans }}">
                            <i class="fa fa-times-circle"></i>
                         </a>

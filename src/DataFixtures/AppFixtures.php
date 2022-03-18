@@ -7,6 +7,7 @@ use App\Entity\Question;
 use App\Entity\Tag;
 use App\Factory\ActivityFactory;
 use App\Factory\AnswerFactory;
+use App\Factory\ClasificationFactory;
 use App\Factory\CourseFactory;
 use App\Factory\CourseSessionFactory;
 use App\Factory\QuestionFactory;
@@ -24,25 +25,18 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         ActivityFactory::createMany(10);
-        StatusFactory::createOne([
-            'statusNumber' => 0,
-            'descriptionEs' => 'Preinscripción',
-            'descriptionEu' => 'Aurre izen-ematea',
+        ClasificationFactory::createOne([
+            'descriptionEs' => 'Zelaieta',
+            'descriptionEu' => 'Zelaieta',
         ]);
-        StatusFactory::createOne([
-            'statusNumber' => 1,
-            'descriptionEs' => 'Sorteado',
-            'descriptionEu' => 'Zozketatua',
-        ]);
-        StatusFactory::createOne([
-            'statusNumber' => 2,
-            'descriptionEs' => 'Cerrado',
-            'descriptionEu' => 'Itxia',
+        ClasificationFactory::createOne([
+            'descriptionEs' => 'Larrea',
+            'descriptionEu' => 'Larrea',
         ]);
         CourseFactory::createMany(10, function () {
             return [
                 'activity' => ActivityFactory::random(),
-                'status' => StatusFactory::random(),
+                'clasification' => ClasificationFactory::random(),
             ];
         });
 

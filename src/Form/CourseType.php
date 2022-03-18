@@ -3,14 +3,15 @@
 namespace App\Form;
 
 use App\Entity\Activity;
+use App\Entity\Clasification;
 use App\Entity\Course;
-use App\Entity\Status;
-use App\Repository\StatusRepository;
+use App\Repository\ClasificationRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -21,8 +22,26 @@ class CourseType extends AbstractType
     {
         $readonly = $options['readonly'];
         $locale = $options['locale'];
-        $statusNumber = $options['data']->getStatus() !== null ? $options['data']->getStatus()->getStatusNumber() : 0;
+        $status = $options['data']->getStatus() !== null ? $options['data']->getStatus() : 0;
         $builder
+            ->add('clasification',EntityType::class,[
+                'label' => 'course.clasification',
+                'class' => Clasification::class,
+                'constraints' => [
+                    new NotBlank(),
+                ],
+                'choice_label' => function ($type) use ($locale) {
+                    if ('es' === $locale) {
+                        return $type->getDescriptionEs();
+                    } else {
+                        return $type->getDescriptionEu();
+                    }
+                },
+                'query_builder' => function( ClasificationRepository $repo ) {
+                    return $repo->findAllQB();
+                },
+                'disabled' => $readonly,
+            ])
             ->add('activity',EntityType::class,[
                 'label' => 'course.activity',
                 'class' => Activity::class,
@@ -89,22 +108,28 @@ class CourseType extends AbstractType
             ->add('limitPlaces', null, [
                 'label' => 'course.limitPlaces',
                 'disabled' => $readonly,
-                'data' => false,
+                'empty_data' => false,
             ])
-            ->add('status',EntityType::class,[
+            ->add('status', ChoiceType::class,[
                 'label' => 'course.status',
-                'class' => Status::class,
-                'choice_label' => function ($type) use ($locale) {
-                    if ('es' === $locale) {
-                        return $type->getDescriptionEs();
-                    } else {
-                        return $type->getDescriptionEu();
-                    }
-                },
-                'query_builder' => function( StatusRepository $repo ) {
-                    return $repo->findAllQB();
-                },
-                'disabled' => $readonly || $statusNumber !== Status::PREINSCRIPTION,
+                'choices' => [
+                    'course.status.'.Course::STATUS_PREINSCRIPTION => Course::STATUS_PREINSCRIPTION,
+                    'course.status.'.Course::STATUS_RAFFLED => Course::STATUS_RAFFLED,
+                    'course.status.'.Course::STATUS_WAITING_CONFIRMATIONS => Course::STATUS_WAITING_CONFIRMATIONS,
+                    'course.status.'.Course::STATUS_WAITING_LIST => Course::STATUS_WAITING_LIST,
+                    'course.status.'.Course::STATUS_CLOSED => Course::STATUS_CLOSED,
+                ],
+                'disabled' => $readonly || $status !== Course::STATUS_PREINSCRIPTION,
+            ])
+            ->add('cost', NumberType::class, [
+                'label' => 'course.cost',
+                'disabled' => $readonly,
+                'required' => false,
+            ])
+            ->add('deposit', NumberType::class, [
+                'label' => 'course.deposit',
+                'disabled' => $readonly,
+                'required' => false,
             ])
             ->add('active', null, [
                 'label' => 'course.active',

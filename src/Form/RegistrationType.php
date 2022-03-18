@@ -25,6 +25,7 @@ class RegistrationType extends AbstractType
         $disabled = $options['disabled'];
         $registration = $options['data'];
         $forMe = $registration->getForMe();
+        $admin = $options['admin'];
         $builder
             ->add('forMe', CheckboxType::class,[
                 'label' => $forMe ? 'register.forMe' : 'register.notForMe',
@@ -89,9 +90,9 @@ class RegistrationType extends AbstractType
                 'placeholder' => 'placeholder.choose',
                 'choice_label' => function ($type) use ($locale) {
                     if ('es' === $locale) {
-                        return $type->getNameEs();
+                        return $type->getNameEs().' '.$type->getTurnEs();
                     } else {
-                        return $type->getNameEu();
+                        return $type->getNameEu().' '.$type->getTurnEu();
                     }
                 },
                 'query_builder' => function( CourseRepository $repo ) {
@@ -135,8 +136,19 @@ class RegistrationType extends AbstractType
                     new IsValidIBAN(),
                 ],
                 'disabled' => $disabled,
-            ])
-        ;
+            ]);
+            if ( $admin ) {
+                $builder
+                    ->add('fortunate', CheckboxType::class,[
+                        'label' => 'registration.fortunate',
+                        'disabled' => true 
+                    ])
+                    ->add('confirmed', CheckboxType::class,[
+                        'label' => 'registration.confirmed',
+                        'disabled' => true 
+                    ])
+                ;
+            } 
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -145,6 +157,7 @@ class RegistrationType extends AbstractType
             'data_class' => Registration::class,
             'locale' => 'es',
             'disabled' => false,
+            'admin' => false,
         ]);
     }
 }

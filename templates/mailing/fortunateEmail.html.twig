@@ -1,0 +1,29 @@
+{% trans_default_domain 'mail' %}
+{% block body_html %}
+	<!DOCTYPE html>
+	<html lang="{{app.request.locale}}">
+		<head>
+			<meta charset="utf-8">
+			<title>{{'mail.fortunate.title' | trans }}</title>
+			<style>
+				{{ include('mailing/_emailStyles.html.twig') }}
+			</style>
+		</head>
+		<body>
+         <header>
+            <img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
+            <h1>{{ 'title.appTitle' | trans({},'messages') }}</h1>
+         </header>
+			{% if cancelation is defined and cancelation == true %}
+				<div class="alert alert-success">{{ 'mail.fortunateForCancelation' | trans }}</div>
+			{% else %}
+				<div class="alert alert-success">{{ 'mail.fortunateText' | trans }}</div>
+			{% endif %}
+			<div>{{ 'mail.fortunateTextExplanation' | trans | raw }}</div>
+
+			<a class="btn btn-primary" href="{{ absolute_url(path('app_registration_confirm',{'id': registration.id, 'token': registration.token })) }}">{{ 'mail.accept' | trans }}</a> / <a class="btn btn-danger" href="{{ absolute_url(path('app_registration_reject',{'id': registration.id, 'token': registration.token })) }}">{{ 'mail.reject' | trans }}</a>
+
+			{{ include('register/_registrationDetails.html.twig') }}
+		</body>
+	</html>
+{% endblock %}

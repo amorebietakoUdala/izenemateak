@@ -41,7 +41,10 @@ final class CourseFactory extends ModelFactory
             'endDate' => self::faker()->dateTimeBetween('now', '+1 Month'),
             'active' => self::faker()->boolean(),
             'places' => self::faker()->numberBetween(10,30),
+            'status' => self::faker()->numberBetween(0,2),
             'limitPlaces' => self::faker()->boolean(),
+            'cost' => self::faker()->randomFloat(2,10,30),
+            'deposit' => self::faker()->boolean() ? self::faker()->randomFloat(2,5,10) : null,
         ];
     }
 

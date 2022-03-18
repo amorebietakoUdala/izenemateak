@@ -30,13 +30,6 @@ class GiltzaController extends AbstractController
     }
 
     /**
-     * @Route("/", name="app_home")
-     */
-    public function home() {
-        return $this->redirectToRoute('app_giltza');
-    }
-
-    /**
      * @Route("/giltza/{_locale}", name="app_giltza", requirements={"_locale"="es|eu|en"})
      */
     public function giltza(string $_locale = 'es', Request $request): Response

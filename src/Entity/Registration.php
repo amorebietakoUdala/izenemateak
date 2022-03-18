@@ -111,6 +111,21 @@ class Registration
      */
     private $fortunate;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $confirmed;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $token;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $confirmationDate;
+
     public function __construct()
     {
         $this->forMe = true;
@@ -373,6 +388,42 @@ class Registration
     public function setFortunate(?bool $fortunate): self
     {
         $this->fortunate = $fortunate;
+
+        return $this;
+    }
+
+    public function getConfirmed(): ?bool
+    {
+        return $this->confirmed;
+    }
+
+    public function setConfirmed(?bool $confirmed): self
+    {
+        $this->confirmed = $confirmed;
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function getConfirmationDate(): ?\DateTimeInterface
+    {
+        return $this->confirmationDate;
+    }
+
+    public function setConfirmationDate(?\DateTimeInterface $confirmationDate): self
+    {
+        $this->confirmationDate = $confirmationDate;
 
         return $this;
     }

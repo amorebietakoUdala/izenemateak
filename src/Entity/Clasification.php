@@ -2,21 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\StatusRepository;
+use App\Repository\ClasificationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=StatusRepository::class)
+ * @ORM\Entity(repositoryClass=ClasificationRepository::class)
  */
-class Status
+class Clasification
 {
-
-    const PREINSCRIPTION = 0;
-    const RAFFLED = 1;
-    const CLOSED = 2;
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -25,24 +20,19 @@ class Status
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=25)
+     * @ORM\Column(type="string", length=255)
      */
     private $descriptionEs;
 
     /**
-     * @ORM\Column(type="string", length=25)
+     * @ORM\Column(type="string", length=255)
      */
     private $descriptionEu;
 
     /**
-     * @ORM\OneToMany(targetEntity=Course::class, mappedBy="status")
+     * @ORM\OneToMany(targetEntity=Course::class, mappedBy="clasification")
      */
     private $courses;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $statusNumber;
 
     public function __construct()
     {
@@ -90,7 +80,7 @@ class Status
     {
         if (!$this->courses->contains($course)) {
             $this->courses[] = $course;
-            $course->setStatus($this);
+            $course->setClasification($this);
         }
 
         return $this;
@@ -100,24 +90,11 @@ class Status
     {
         if ($this->courses->removeElement($course)) {
             // set the owning side to null (unless already changed)
-            if ($course->getStatus() === $this) {
-                $course->setStatus(null);
+            if ($course->getClasification() === $this) {
+                $course->setClasification(null);
             }
         }
 
         return $this;
     }
-
-    public function getStatusNumber(): ?int
-    {
-        return $this->statusNumber;
-    }
-
-    public function setStatusNumber(?int $statusNumber): self
-    {
-        $this->statusNumber = $statusNumber;
-
-        return $this;
-    }
-
 }

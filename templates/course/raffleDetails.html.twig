@@ -16,11 +16,17 @@
                 {% endif %}
                 <div><b>{{ 'course.inscriptions' | trans }}</b>: {{ course.registrations | length }}</div>
                 <div><b>{{ 'course.places' | trans }}</b>: {{ course.places }}</div>
-                <div><b>{{ 'course.status' | trans }}</b>: {{ app.request.locale == 'es' ? course.status.descriptionEs : course.status.descriptionEu }}</div>
             </div>
             <div class="col-lg">
-                {% if ( course.places >=  course.registrations | length ) %}
+                {% set statusLabel = 'course.status.' ~ course.status %}
+                <div><b>{{ 'course.status' | trans }}</b>: {{ statusLabel | trans }}</div>
+                <div><b>{{ 'course.confirmedRegistrations' | trans }}</b>: {{  confirmedRegistrations }} ( {{ confirmedRegistrations == 0 ? 0~' %' : ( ( confirmedRegistrations / course.places ) * 100 ) | number_format(2, '.', ',') ~ ' %'}} )</div>
+                <div><b>{{ 'course.rejectedRegistrations' | trans }}</b>: {{  rejectedRegistrations }}</div>
+                {% if ( course.places >=  course.registrations | length and course.status == constant('App\\Entity\\Course::STATUS_PREINSCRIPTION') ) %}
                     <div class="alert alert-info">{{ 'messages.noNeedToRaffle' | trans }}</div>
+                {% endif %}
+                {% if ( course.isFull and course.status == constant('App\\Entity\\Course::STATUS_WAITING_LIST') ) %}
+                    <div class="alert alert-warning">{{ 'messages.courseIsFull' | trans }}</div>
                 {% endif %}
             </div>
             <div class="row">
@@ -29,9 +35,43 @@
                 })}}
             </div>
             <div class="row">
-                <div class="col-lg" {{ stimulus_controller('randomize') }}>
-                    {% if ( course.status.statusNumber == constant('App\\Entity\\Status::PREINSCRIPTION') ) %}
-                        <button class="btn btn-primary" data-action="randomize#confirm" data-url={{ path('app_course_raffle_lottery', { 'id': course.id }) }}>{{ 'btn.raffle' | trans }}</button>
+                <div class="col-lg">
+                    {% if ( course.status == constant('App\\Entity\\Course::STATUS_PREINSCRIPTION') and not course.limitPlaces ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmRaffleStart' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_course_raffle_lottery', { 'id': course.id }) }}">
+                            {{ 'btn.raffle' | trans }}
+                        </button>
+                    {% endif %}
+                    {% if ( course.status == constant('App\\Entity\\Course::STATUS_RAFFLED') ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmEmailingStart' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_course_raffle_mailing', { 'id': course.id }) }}">{{ 'btn.notify' | trans }}</button>
+                    {% endif %}
+                    {% if ( course.status == constant('App\\Entity\\Course::STATUS_WAITING_CONFIRMATIONS') ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmChangeToWaitingList' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_course_change_to_waiting-list', { 'id': course.id }) }}">{{ 'btn.changeToWaitingList' | trans }}</button>
+                    {% endif %}
+                    {% if ( course.status == constant('App\\Entity\\Course::STATUS_WAITING_LIST') and not course.isFull ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmEmailWaitingList' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_course_email_waiting_list', { 'id': course.id }) }}">{{ 'btn.emailWaitingList' | trans }}</button>
+                    {% endif %}
+                    {% if ( course.status == constant('App\\Entity\\Course::STATUS_WAITING_LIST') or course.limitPlaces ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmClose' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_course_close', { 'id': course.id }) }}">{{ 'btn.close' | trans }}</button>
                     {% endif %}
                     <button class="btn btn-secondary js-back" data-url="{{ path('app_course_index') }}">{{ 'btn.cancel' | trans }}</button>
                 </div>

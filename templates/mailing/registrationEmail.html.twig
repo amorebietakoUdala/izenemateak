@@ -1,0 +1,20 @@
+{% block body_html %}
+	<!DOCTYPE html>
+	<html lang="{{app.request.locale}}">
+		<head>
+			<meta charset="utf-8">
+			<title>{{'mail.message.title' | trans }}</title>
+			<style>
+				{{ include('mailing/_emailStyles.html.twig') }}
+			</style>
+		</head>
+
+		<body>
+         <header>
+            <img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
+            <h1>{{ 'title.appTitle' | trans }}</h1>
+         </header>
+			{{ include('register/_registrationDetails.html.twig') }}
+		</body>
+	</html>
+{% endblock %}

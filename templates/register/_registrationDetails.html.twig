@@ -1,0 +1,29 @@
+   <h2>{{ 'label.registrationDetails' | trans }}</h2>
+   <div class="indented"><b>{{ 'registration.id' | trans }}</b>:&nbsp;{{registration.id}}</div>
+   <div class="indented"><b>{{ 'register.forMe' | trans}}</b>:&nbsp;{{ registration.forMe ? 'messages.si' | trans : 'messages.no' | trans }}</div>
+   <div class="indented"><b>{{ 'register.dni' | trans }}</b>:&nbsp;{{registration.dni}}
+   <div class="indented"><b>{{ 'register.name' | trans }}</b>:&nbsp;{{registration.name}}</div>
+   <div class="indented"><b>{{ 'register.surname1' | trans }}</b>:&nbsp;{{registration.surname1}}</div>
+   <div class="indented"><b>{{ 'register.surname2' | trans }}</b>:&nbsp;{{registration.surname2}}</div>
+   <div class="indented"><b>{{ 'register.telephone1' | trans }}</b>:&nbsp;{{registration.telephone1}}</div>
+   <div class="indented"><b>{{ 'register.telephone2' | trans }}</b>:&nbsp;{{registration.telephone2}}</div>
+   <div class="indented"><b>{{ 'register.dateOfBirth' | trans }}</b>:&nbsp;{{registration.dateOfBirth | date('Y-m-d')}}</div>
+   <div class="indented"><b>{{ 'register.subscriber' | trans }}</b>:&nbsp;{{registration.subscriber ? 'messages.si' | trans : 'messages.no' | trans }}</div>
+   <div class="indented"><b>{{ 'register.course' | trans}}</b>:&nbsp;{{ app.request.locale == 'es' ? registration.course.nameEs : registration.course.nameEu }}</div>
+   <div class="indented"><b>{{ 'register.turn' | trans}}</b>:&nbsp;{{ app.request.locale == 'es' ? registration.course.turnEs : registration.course.turnEu }}</div>
+   {% if registration.representativeDni is not null %}
+      <h2>{{ 'label.representativeDetails' | trans }}</h2>
+      <div class="indented"><b>{{ 'register.representativeDni' | trans}}</b>:&nbsp;{{registration.representativeDni}}</div>
+   {% endif %}
+   {% if registration.representativeName is not null %}
+      <div class="indented"><b>{{ 'register.representativeName' | trans}}</b>:&nbsp;{{registration.representativeName}}</div>
+   {% endif %}
+   {% if registration.representativeSurname1 is not null %}
+      <div class="indented"><b>{{ 'register.representativeSurname1' | trans}}</b>:&nbsp;{{registration.representativeSurname1}}</div>
+   {% endif %}
+   {% if registration.representativeSurname2 is not null %}
+      <div class="indented"><b>{{ 'register.representativeSurname2' | trans}}</b>:&nbsp;{{registration.representativeSurname2}}</div>
+   {% endif %}
+   <h2>{{ 'label.paymentData' | trans }}</h2>
+   <div class="indented"><b>{{ 'register.paymentDni' | trans}}</b>:&nbsp;{{ registration.paymentDni }}</div>
+   <div class="indented"><b>{{ 'register.paymentIBANAccount' | trans}}</b>:&nbsp;{{ registration.paymentIBANAccount }}</div>

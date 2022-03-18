@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Activity;
-use App\Entity\Status;
+use App\Entity\Course;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -59,15 +59,18 @@ class CourseSearhFormType extends AbstractType
             'placeholder' => '',
             'required' => false,
         ])
-        ->add('status', EntityType::class, [
-            'class' => Status::class,
+        ->add('status', ChoiceType::class,[
             'label' => 'course.status',
-            'choice_label' => function ($type) use ($locale) {
-                return ($locale === 'es' ? $type->getDescriptionEs() : $type->getDescriptionEu());
-            },
+            'choices' => [
+                'course.status.'.Course::STATUS_PREINSCRIPTION => Course::STATUS_PREINSCRIPTION,
+                'course.status.'.Course::STATUS_RAFFLED => Course::STATUS_RAFFLED,
+                'course.status.'.Course::STATUS_WAITING_CONFIRMATIONS => Course::STATUS_WAITING_CONFIRMATIONS,
+                'course.status.'.Course::STATUS_WAITING_LIST => Course::STATUS_WAITING_LIST,
+                'course.status.'.Course::STATUS_CLOSED => Course::STATUS_CLOSED,
+            ],
             'required' => false,
         ])
-        ;
+    ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

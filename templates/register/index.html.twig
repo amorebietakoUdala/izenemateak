@@ -9,12 +9,6 @@
       <div data-reload-content-target="content">
          {{ include('register/_list.html.twig', { 'registrations': registrations }) }}
       </div>
-      {# {{ include('common/_modal.html.twig', {
-            'modalTitle': 'title.activity' | trans,
-            'formTemplate': 'activity/_form.html.twig'
-         }) 
-      }} #}
-      {# <div class="float-right fixed-bottom-right"><btn class="btn btn-primary rounded-circle" data-action="click->entity#openModal"><i class="fa fa-plus" title='{{ "btn.new" | trans | capitalize }}'></i></btn></div> #}
       {{ include('common/_alert.html.twig', {
          'confirmationText' : 'messages.confirmationDetail' | trans 
       }) }}
