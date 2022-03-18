@@ -47,8 +47,8 @@
                         &nbsp;<a href="{{ path ('app_course_clone',{'id': course.id })}}" title="{{ 'btn.copy' | trans }}">
                            <i class="fa fa-clone"></i>
                         </a>
-                        &nbsp;<a href="{{ path ('app_course_raffle_details',{'id': course.id })}}" title="{{ 'btn.raffleDetails' | trans }}">
-                           <i class="fa fa-random"></i>
+                        &nbsp;<a href="{{ path ('app_course_status_details',{'id': course.id })}}" title="{{ 'btn.details' | trans }}">
+                           <i class="fa fa-info"></i>
                         </a>
                         {% if ( course.status != constant('App\\Entity\\Course::STATUS_CLOSED') ) %}
                         &nbsp;<a href="{{ path ('app_course_close',{'id': course.id })}}" title="{{ 'btn.close' | trans }}">

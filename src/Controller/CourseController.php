@@ -192,13 +192,13 @@ class CourseController extends AbstractController
     }
 
     /**
-     * @Route("{_locale}/admin/course/{id}/raffle/details", name="app_course_raffle_details")
+     * @Route("{_locale}/admin/course/{id}/details", name="app_course_status_details")
      * @isGranted("ROLE_ADMIN")
      */
     public function raffleDetails(Course $course) {
         $confirmedRegistrations = $course->countConfirmed();
         $rejectedRegistrations = $course->countRejected();
-        return $this->renderForm('course/raffleDetails.html.twig', [
+        return $this->renderForm('course/statusDetails.html.twig', [
             'course' => $course,
             'confirmedRegistrations' => $confirmedRegistrations,
             'rejectedRegistrations' => $rejectedRegistrations,
