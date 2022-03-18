@@ -22,7 +22,7 @@
                   <th data-sortable="true">{{"course.places" | trans }}</th>
                   <th data-sortable="true">{{"course.inscriptions" | trans }}</th>
                   <th data-sortable="true">{{"course.cost" | trans }}</th>
-                  <th data-sortable="true">{{"course.deposit" | trans }}</th>
+                  {# <th data-sortable="true">{{"course.deposit" | trans }}</th> #}
                   <th data-sortable="true">{{"course.limitedPlaces" | trans }}</th>
                   <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
                </tr>
@@ -41,7 +41,7 @@
                         <td>{{course.places is not null ? course.places: '' }}</td>
                         <td>{{course.registrations | length }}</td>
                         <td>{{course.cost != null ? course.cost | number_format(2, ',', '.')~' €' : '' }} </td>
-                        <td>{{course.deposit != null ? course.deposit | number_format(2, ',', '.')~' €': '' }} </td>
+                        {# <td>{{course.deposit != null ? course.deposit | number_format(2, ',', '.')~' €': '' }} </td> #}
                         <td>{{course.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td>
                         <td>
                            {% if not (course.limitPlaces and course.registrations | length >= course.places) %}

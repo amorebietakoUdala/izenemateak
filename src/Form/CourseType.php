@@ -126,11 +126,11 @@ class CourseType extends AbstractType
                 'disabled' => $readonly,
                 'required' => false,
             ])
-            ->add('deposit', NumberType::class, [
-                'label' => 'course.deposit',
-                'disabled' => $readonly,
-                'required' => false,
-            ])
+            // ->add('deposit', NumberType::class, [
+            //     'label' => 'course.deposit',
+            //     'disabled' => $readonly,
+            //     'required' => false,
+            // ])
             ->add('active', null, [
                 'label' => 'course.active',
                 'disabled' => $readonly,
