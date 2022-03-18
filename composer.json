@@ -5,7 +5,7 @@
         "php": "^7.4.1 || ^8.0.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "amorebietakoudala/user-bundle": "dev-main",
+        "amorebietakoudala/user-bundle": "^1.2.3",
         "babdev/pagerfanta-bundle": "^3.3",
         "composer/package-versions-deprecated": "^1.11",
         "doctrine/annotations": "^1.0",
@@ -64,8 +64,7 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/",
-            "AMREU\\UserBundle\\": "../bundles/user-bundle/src/"
+            "App\\": "src/"
         }
     },
     "autoload-dev": {
@@ -104,11 +103,5 @@
             "allow-contrib": false,
             "require": "5.4.*"
         }
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../bundles/user-bundle"
-        }
-    ]
+    }
 }
