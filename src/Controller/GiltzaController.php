@@ -15,10 +15,12 @@ class GiltzaController extends AbstractController
 {
 
     private $options;
+    private $giltzaLogoutRedirectRoute;
 
     public function __construct(UrlGeneratorInterface $urlGenerator, ParameterBagInterface $paramBag, HttpClientInterface $client)
     {
         $this->client = $client;
+        $this->giltzaLogoutRedirectRoute = $paramBag->get('giltzaLogoutRedirectRoute');
         $this->provider = new GiltzaProvider(        [
             'clientId'                => $paramBag->get('clientId'),    // The client ID assigned to you by the provider
             'clientSecret'            => $paramBag->get('clientSecret'),    // The client password assigned to you by the provider
@@ -87,6 +89,6 @@ class GiltzaController extends AbstractController
     public function logout(Request $request): Response
     {
         $request->getSession()->invalidate();
-        return $this->json('logout');
+        return $this->redirectToRoute($this->giltzaLogoutRedirectRoute);
     }
 }

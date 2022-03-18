@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\DTO\RegistrationSearchFormDTO;
 use App\Entity\Course;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -67,7 +66,6 @@ class RegistrationSearchFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            //'class' => RegistrationSearchFormDTO::class,
             'locale' => 'es',
         ]);
     }
