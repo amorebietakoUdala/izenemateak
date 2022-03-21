@@ -8,6 +8,7 @@ use App\Entity\Course;
 use App\Repository\ClasificationRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -65,7 +66,7 @@ class CourseType extends AbstractType
                 'disabled' => $readonly,
             ])
             ->add('turnEs',null,[
-                'label' => 'course.turnEu',
+                'label' => 'course.turnEs',
                 'constraints' => [
                     new NotBlank(),
                 ],
@@ -105,10 +106,10 @@ class CourseType extends AbstractType
                 'disabled' => $readonly,
                 'required' => false,
             ])
-            ->add('limitPlaces', null, [
+            ->add('limitPlaces', CheckboxType::class, [
                 'label' => 'course.limitPlaces',
                 'disabled' => $readonly,
-                'empty_data' => false,
+                'required' => false,
             ])
             ->add('status', ChoiceType::class,[
                 'label' => 'course.status',

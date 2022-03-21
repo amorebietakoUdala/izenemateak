@@ -26,6 +26,7 @@
 						or app.request.attributes.get('_route') == 'app_registration_index'
 						or app.request.attributes.get('_route') == 'app_registration_edit'
 						or app.request.attributes.get('_route') == 'app_registration_show'
+						or app.request.attributes.get('_route') == 'app_clasification_index'
 						 )	
 					? ' active' : '' 
 				}}"
@@ -34,6 +35,7 @@
 				<li><a class="dropdown-item" href="{{ path('admin_user_list') }}">{{"navitem.users" | trans | capitalize}}</a></li>
 				<li><a class="dropdown-item" href="{{ path('app_course_index') }}">{{"navitem.courses" | trans | capitalize}}</a></li>
 				<li><a class="dropdown-item" href="{{ path('app_activity_index') }}">{{"navitem.activities" | trans | capitalize}}</a></li>
+				<li><a class="dropdown-item" href="{{ path('app_clasification_index') }}">{{"navitem.clasifications" | trans | capitalize}}</a></li>
 				<li><a class="dropdown-item" href="{{ path('app_registration_index') }}">{{"navitem.registrations" | trans | capitalize}}</a></li>
 			</ul>
 		</li>

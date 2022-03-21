@@ -110,6 +110,7 @@ class Course
     {
         $this->registrations = new ArrayCollection();
         $this->sessions = new ArrayCollection();
+        $this->limitPlaces = false;
     }
 
     public function getId(): ?int
@@ -265,7 +266,7 @@ class Course
         $course->setNameEs($this->nameEs.'_copia');
         $course->setNameEu($this->nameEu.'_kopia');
         $course->setTurnEs($this->turnEs.'_copia');
-        $course->setTurnEu($this->turnEs.'_kopia');
+        $course->setTurnEu($this->turnEu.'_kopia');
         $course->setPlaces($this->places);
         $course->setStartDate($this->startDate);
         $course->setEndDate($this->endDate);

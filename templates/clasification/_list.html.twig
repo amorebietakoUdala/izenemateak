@@ -1,0 +1,30 @@
+<table class="table" {{ stimulus_controller('table', {
+   'exportName': 'clasification',
+}) }}>
+   <thead>
+      <tr>
+            <th data-sortable="true">Id</th>
+            <th data-sortable="true">{{ 'clasification.descriptionEs' | trans }}</th>
+            <th data-sortable="true">{{ 'clasification.descriptionEu' | trans }}</th>
+            <th data-sortable="true" data-field="options">{{"table.options" | trans | capitalize}}</th>
+      </tr>
+   </thead>
+   <tbody>
+   {% for clasification in clasifications %}
+      <tr>
+            <td>{{ clasification.id }}</td>
+            <td>{{ clasification.descriptionEs }}</td>
+            <td>{{ clasification.descriptionEu }}</td>
+            <td>
+               <a href="#" data-action="entity#edit" data-url="{{ path('app_clasification_show', {'id': clasification.id}) }}"><i class="fa fa-eye" title='{{ "btn.show" | trans | capitalize }}'></i></a>&nbsp;
+               <a href="#" data-action="entity#edit" data-url="{{ path('app_clasification_edit', {'id': clasification.id}) }}" data-allowEdit="true"><i class="fa fa-edit" title='{{ "btn.edit" | trans | capitalize }}'></i></a>&nbsp;
+               <a href="#" data-action="entity#delete" data-url="{{ path('app_clasification_delete', {'id': clasification.id}) }}" data-token="{{ csrf_token('delete' ~ clasification.id) }}"><i class="fa fa-trash" title='{{ "btn.delete" | trans | capitalize }}'></i></a>&nbsp;
+            </td>
+      </tr>
+   {% else %}
+      <tr>
+            <td colspan="3" class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</td>
+      </tr>
+   {% endfor %}
+   </tbody>
+</table>

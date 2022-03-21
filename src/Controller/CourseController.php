@@ -44,7 +44,7 @@ class CourseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!$this->checkIfErrorInscriptionDates($form)){
+            if (!$this->checkErrors($form)){
                 /** @var Course $data */
                 $data = $form->getData();
                 $em->persist($data);

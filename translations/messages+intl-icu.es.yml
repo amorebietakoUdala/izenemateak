@@ -62,6 +62,7 @@ navitem.users: "Usuarios"
 navitem.courses: "Cursos"
 navitem.activities: "Actividades"
 navitem.registrations: "Inscripciones"
+navitem.clasifications: "Clasificaciones"
 link.logout: "Salir"
 
 # Buttons
@@ -104,6 +105,8 @@ title.registration.show: "Ver inscripción"
 title.registration.new: "Nueva inscripción"
 title.registration.confirm: "Confirmar inscripción"
 title.course.details: "Detalles de estado"
+title.clasifications: "Clasificación de cursos"
+title.clasification: "Nueva clasificación"
 
 # Labels
 table.options: "Opciones"
@@ -141,7 +144,7 @@ course.status.2: "Esperando confirmaciones"
 course.status.3: "En lista de espera"
 course.status.4: "Cerrado"
 course.closed: "Curso cerrado"
-course.clasification: "Clasification"
+course.clasification: "Clasificación"
 course.cost: "Coste"
 course.deposit: "Fianza"
 course.confirmedRegistrations: "Inscripciones confirmadas"
@@ -186,6 +189,9 @@ registration.createdAt: "F. inscripción"
 registration.fortunate: "Afortunado"
 registration.confirmed: "Confirmado"
 registration.confirmationDate: "F. conf."
+
+clasification.descriptionEs: "Descripción (Castellano)"
+clasification.descriptionEu: "Descripción (Euskera)"
 
 # Search Forms messages
 searchForm.dni: "Dni"
