@@ -62,6 +62,26 @@ class CourseRepository extends ServiceEntityRepository
             ->orderBy('c.id', 'ASC');
     }
 
+    /**
+    * @return Registration[] Returns an array of Registration objects
+    */
+    public function findByOpenAndActiveCoursesClasification($clasification = null) {
+        return $this->findByOpenAndActiveCoursesClasificationQB($clasification)->getQuery()->getResult();
+    }
+
+    /**
+     * @return QueryBuilder Returns an array of Registration objects
+    */
+    public function findByOpenAndActiveCoursesClasificationQB($clasification = null) {
+        $qb = $this->findByOpenAndActiveCoursesQB();
+        if ( $clasification !== null ) {
+            $qb->andWhere('c.clasification = :clasification')
+            ->setParameter('clasification', $clasification);
+
+        }
+        return $qb;
+    }
+
     public function findCoursesBy(array $criteria) {
         $qb = $this->createQueryBuilder('c');
             if ( array_key_exists('active', $criteria) ) {

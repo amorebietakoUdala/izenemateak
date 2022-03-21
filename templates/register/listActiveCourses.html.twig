@@ -4,6 +4,9 @@
 
 {% block body %}
    <h1 class="h2">{{'title.activeCourses' | trans }}</h1>
+   <div {{ stimulus_controller('active_courses_filter') }}>
+      {{ include('register/_activeCoursesSearchForm.html.twig') }}
+   </div>
    <div class="container-fluid">
    {% if activeCourses is defined and activeCourses|length > 0 %}
       <table id="table" {{ stimulus_controller('table', {
@@ -11,6 +14,7 @@
       }) }}>
             <thead>
                <tr>
+                  {# <th data-sortable="true">{{"course.clasification" | trans }}</th> #}
                   {% if app.request.locale == 'es' %}
                      <th data-sortable="true">{{"course.nameEs" | trans }}</th>
                      <th data-sortable="true">{{"course.turnEs" | trans }}</th>
@@ -31,9 +35,11 @@
                {% for course in activeCourses %}
                   <tr>
                         {% if app.request.locale == 'es' %}
+                           {# <td>{{course.clasification.descriptionEs}}</td> #}
                            <td>{{course.nameEs}}</td>
                            <td>{{course.turnEs}}</td>
                         {% else %}
+                           {# <td>{{course.clasification.descriptionEu}}</td> #}
                            <td>{{course.nameEu}}</td>
                            <td>{{course.turnEu}}</td>
                         {% endif %}

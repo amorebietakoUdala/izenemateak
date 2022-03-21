@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Course;
 use App\Entity\Registration;
+use App\Form\ActiveCourseSearchFormType;
 use App\Form\RegistrationSearchFormType;
 use App\Form\RegistrationType;
 use App\Repository\CourseRepository;
@@ -40,10 +41,23 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/{_locale}/active/courses", name="app_active_courses")
      */ 
-    public function listActiveCourses(CourseRepository $repo) {
-        $activeCourses = $repo->findByOpenAndActiveCourses();
-        return $this->render('register/listActiveCourses.html.twig', [
+    public function listActiveCourses(Request $request, CourseRepository $repo) {
+        $form = $this->createForm(ActiveCourseSearchFormType::class, null,[
+            'locale' => $request->getLocale(),
+        ]);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var array $data */
+            $data = $form->getData();
+            $activeCourses = $repo->findByOpenAndActiveCoursesClasification($data['clasification']);
+        } else {
+            $activeCourses = $repo->findByOpenAndActiveCourses();
+        }
+
+        return $this->renderForm('register/listActiveCourses.html.twig', [
             'activeCourses' => $activeCourses,
+            'form' => $form,
+
         ]);
     }
 
