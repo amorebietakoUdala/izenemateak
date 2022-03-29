@@ -96,9 +96,8 @@ class RegistrationRepository extends ServiceEntityRepository
     /**
      * @return Registration|null Returns the next on WaitingList
      */
-    public function findNextOnWaitingListCourse($course)
-    {
-        return $this->createQueryBuilder('r')
+    public function findNextOnWaitingListCourse($course) {
+        $result = $this->createQueryBuilder('r')
             ->andWhere('r.course = :course')
             ->andWhere('r.fortunate = :fortunate')
             ->andWhere('r.confirmed IS NULL')
@@ -106,8 +105,12 @@ class RegistrationRepository extends ServiceEntityRepository
             ->setParameter('fortunate', false)
             ->orderBy('r.createdAt', 'ASC')
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->setMaxResults(1)
+            ->getResult();
+        if (count($result) === 0) {
+            return null;
+        }
+        return $result[0];
     }
 
     /**

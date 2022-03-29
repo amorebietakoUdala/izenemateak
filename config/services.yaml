@@ -15,6 +15,7 @@ parameters:
     mailerSendBcc: "%env(bool:MAILER_SEND_BCC)%"
     mailerBCC: "%env(MAILER_BCC)%"
     giltzaLogoutRedirectRoute: 'app_active_courses'
+    giltzaSuccessLoginRedirectRoute: 'app_register_new'
 
 services:
     # default configuration for services in *this* file

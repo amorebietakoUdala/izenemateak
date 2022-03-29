@@ -68,6 +68,7 @@ class RegistrationController extends AbstractController
     {
         $registration = new Registration();
         if ( $request->getSession()->get('giltzaUser') === null ) {
+            $request->getSession()->set('returnUrl',$this->getActualUrl($request)); 
             return $this->redirectToRoute('app_giltza');
         }
         if ( $request->getMethod() === Request::METHOD_GET ) {
@@ -150,7 +151,7 @@ class RegistrationController extends AbstractController
      */
     public function edit(Registration $registration, Request $request, EntityManagerInterface $em): Response
     {
-
+        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
         $form = $this->createForm(RegistrationType::class, $registration, [
             'disabled' => false,
             'admin' => true,
@@ -174,6 +175,7 @@ class RegistrationController extends AbstractController
             'readonly' => false,
             'registration' => $registration,
             'returnUrl' => $returnUrl,
+            'admin' => $admin,
         ]);
     }
 
@@ -295,18 +297,22 @@ class RegistrationController extends AbstractController
             'admin' => $admin,
         ]);
     }
-
+/*
     /**
      * @Route("{_locale}/admin/registration/{id}/mailing", name="app_registration_send_confirm_message")
      * @isGranted("ROLE_ADMIN")
      */
-    public function mailing (Request $request, Registration $registration, RegistrationRepository $repo): Response {
-        $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($registration->getCourse());
 
-        dd('TODO');
-        $this->addFlash('success','messages.successfullyMailed');
-        return $this->redirectToRoute('app_course_raffle_details');
-    }
+    // public function mailing (Request $request, Registration $registration, RegistrationRepository $repo): Response {
+    //     $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($registration->getCourse());
+        
+    //     foreach ( $orderedWaitingList as $registration) {
+    //         $this->send
+    //     }
+
+    //     $this->addFlash('success','messages.successfullyMailed');
+    //     return $this->redirectToRoute('app_course_status_details');
+    // }
 
     /**
      * @Route("{_locale}/admin/registration/{id}", name="app_registration_show")
@@ -314,6 +320,7 @@ class RegistrationController extends AbstractController
      */
     public function show(Request $request, Registration $registration): Response
     {
+        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
         $form = $this->createForm(RegistrationType::class, $registration, [
             'disabled' => true,
             'admin' => true,
@@ -327,6 +334,7 @@ class RegistrationController extends AbstractController
             'disabled' => true,
             'registration' => $registration,
             'returnUrl' => $returnUrl,
+            'admin' => $admin,
 
         ]);
     }

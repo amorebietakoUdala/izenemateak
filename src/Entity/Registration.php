@@ -372,6 +372,11 @@ class Registration
         return $this;
     }
 
+    public function getPaymentIBANAccountMasked(): ?string
+    {
+        return mb_strcut($this->paymentIBANAccount,0,4).'****************'.mb_strcut($this->paymentIBANAccount,-4);
+    }
+
     public function getFullName(): string {
         return $this->name.' '.$this->surname1.' '.$this->surname2;
     }

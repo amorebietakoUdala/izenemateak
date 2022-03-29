@@ -31,12 +31,12 @@
          <td>{{ registration.confirmed is null ? 'label.unConfirmed' | trans : (registration.confirmed ? 'messages.si' | trans : 'messages.no' | trans) }}</td>
          <td>{{ registration.confirmationDate is null ? '' : registration.confirmationDate | date('Y-m-d h:i:s') }}</td>
          <td>
-            {% if not registration.confirmed and registration.course.status == constant('App\\Entity\\Course::STATUS_WAITING_LIST') and not course.isFull %}
+            {% if registration.confirmed is null and registration.course.status == constant('App\\Entity\\Course::STATUS_WAITING_LIST') and not course.isFull %}
             <a href="{{ path ('app_registration_confirm',{'id': registration.id, 'token': registration.token, 'admin' : true })}}" title="{{ 'btn.confirm' | trans }}">
                <i class="fa fa-check-double"></i>
             </a>
             {% endif %}
-            {% if not registration.confirmed and registration.course.status == constant('App\\Entity\\Course::STATUS_WAITING_LIST') and not course.isFull %}
+            {% if registration.confirmed is null and registration.course.status == constant('App\\Entity\\Course::STATUS_WAITING_LIST') and not course.isFull %}
             <a href="{{ path ('app_registration_reject',{'id': registration.id, 'token': registration.token, 'admin' : true })}}" title="{{ 'btn.reject' | trans }}">
                <i class="fa fa-times"></i>
             </a>

@@ -213,7 +213,7 @@ class CourseController extends AbstractController
     public function raffleRandomize(Request $request, Course $course, EntityManagerInterface $em) {
         if ($course->getStatus() === Course::STATUS_RAFFLED ) {
             $this->addFlash('error', 'messages.alreadyRaffled');
-            return $this->redirectToRoute('app_course_raffle_details', [
+            return $this->redirectToRoute('app_course_status_details', [
                 'id' => $course->getId(),
             ]);
         }
@@ -251,7 +251,7 @@ class CourseController extends AbstractController
         }
         $em->flush();
         
-        return $this->redirectToRoute('app_course_raffle_details', [
+        return $this->redirectToRoute('app_course_status_details', [
             'id' => $course->getId(),
         ]);
     }
@@ -282,7 +282,7 @@ class CourseController extends AbstractController
             $this->addFlash('success', 'messages.mailingSuccessfull');
         }
         
-        return $this->redirectToRoute('app_course_raffle_details', [
+        return $this->redirectToRoute('app_course_status_details', [
             'id' => $course->getId(),
         ]);
     }
@@ -296,7 +296,7 @@ class CourseController extends AbstractController
         $em->persist($course);
         $em->flush();
         $this->addFlash('success', 'messages.statusChangedToWaitingList');
-        return $this->redirectToRoute('app_course_raffle_details', [
+        return $this->redirectToRoute('app_course_status_details', [
             'id' => $course->getid(),
         ]);
     }
@@ -314,7 +314,7 @@ class CourseController extends AbstractController
             $this->sendFillGapsEmail($orderedWaitingList[$i], $request->getLocale());
         }
         $this->addFlash('success', 'messages.waitingListEmailed');
-        return $this->redirectToRoute('app_course_raffle_details', [
+        return $this->redirectToRoute('app_course_status_details', [
             'id' => $course->getid(),
         ]);
     }
