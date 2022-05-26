@@ -52,7 +52,7 @@ class CourseRepository extends ServiceEntityRepository
     public function findByOpenAndActiveCoursesQB() {
         $now = (new \DateTime())->format('Y-m-d');
         return $this->createQueryBuilder('c')
-            ->andWhere('c.startDate < :today')
+            ->andWhere('c.startDate <= :today')
             ->andWhere('c.endDate >= :today2')
             ->andWhere('c.active = :active')
             ->andWhere('c.status != '.Course::STATUS_CLOSED)
