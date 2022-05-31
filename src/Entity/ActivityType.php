@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\ClasificationRepository;
+use App\Repository\ActivityTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ClasificationRepository::class)
+ * @ORM\Entity(repositoryClass=ActivityTypeRepository::class)
  */
-class Clasification
+class ActivityType
 {
     /**
      * @ORM\Id
@@ -22,15 +22,10 @@ class Clasification
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $descriptionEs;
+    private $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $descriptionEu;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Activity::class, mappedBy="clasification")
+     * @ORM\OneToMany(targetEntity=Activity::class, mappedBy="activityType")
      */
     private $activitys;
 
@@ -44,33 +39,26 @@ class Clasification
         return $this->id;
     }
 
-    public function setId(int $id): self
+    /**
+     * Set the value of id
+     *
+     * @return  self
+     */ 
+    public function setId($id)
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getDescriptionEs(): ?string
+    public function getName(): ?string
     {
-        return $this->descriptionEs;
+        return $this->name;
     }
 
-    public function setDescriptionEs(string $descriptionEs): self
+    public function setName(string $name): self
     {
-        $this->descriptionEs = $descriptionEs;
-
-        return $this;
-    }
-
-    public function getDescriptionEu(): ?string
-    {
-        return $this->descriptionEu;
-    }
-
-    public function setDescriptionEu(string $descriptionEu): self
-    {
-        $this->descriptionEu = $descriptionEu;
+        $this->name = $name;
 
         return $this;
     }
@@ -86,8 +74,8 @@ class Clasification
     public function addActivity(Activity $activity): self
     {
         if (!$this->activitys->contains($activity)) {
-            $this->acitivitys[] = $activity;
-            $activity->setClasification($this);
+            $this->activitys[] = $activity;
+            $activity->setActivityType($this);
         }
 
         return $this;
@@ -97,19 +85,23 @@ class Clasification
     {
         if ($this->activitys->removeElement($activity)) {
             // set the owning side to null (unless already changed)
-            if ($activity->getClasification() === $this) {
-                $activity->setClasification(null);
+            if ($activity->getActivityType() === $this) {
+                $activity->setActivityType(null);
             }
         }
 
         return $this;
     }
 
-    public function fill(Clasification $data): self
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    public function fill(ActivityType $data): self
     {
         $this->id = $data->getId();
-        $this->descriptionEs = $data->getDescriptionEs();
-        $this->descriptionEu = $data->getDescriptionEu();
+        $this->name = $data->getName();
         return $this;
     }
 

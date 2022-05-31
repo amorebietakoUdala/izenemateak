@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.activity.details' | trans }}{% endblock %}
+
+{% block body %}
+	<main class="container-fluid mb-2">
+        <h1>{{ 'title.activity.details' | trans }}</h1>
+        <div class="container-fluid row align-items-center">
+            <div class="col-lg">
+                {% if app.request.locale == 'es' %}
+                    <div><b>{{"activity.nameEs" | trans }}</b>: {{ activity.nameEs }}</div>
+                    <div><b>{{"activity.turnEs" | trans }}</b>: {{ activity.turnEs }}</div>
+                {% else %}
+                    <div><b>{{"activity.nameEu" | trans }}</b>: {{ activity.nameEu }}</div>
+                    <div><b>{{"activity.turnEu" | trans }}</b>: {{ activity.turnEu }}</div>
+                {% endif %}
+                <div><b>{{ 'activity.inscriptions' | trans }}</b>: {{ activity.registrations | length }}</div>
+                <div><b>{{ 'activity.places' | trans }}</b>: {{ activity.places }}</div>
+            </div>
+            <div class="col-lg">
+                {% set statusLabel = 'activity.status.' ~ activity.status %}
+                <div><b>{{ 'activity.status' | trans }}</b>: {{ statusLabel | trans }}</div>
+                <div><b>{{ 'activity.confirmedRegistrations' | trans }}</b>: {{  confirmedRegistrations }} ( {{ confirmedRegistrations == 0 ? 0~' %' : ( ( confirmedRegistrations / activity.places ) * 100 ) | number_format(2, '.', ',') ~ ' %'}} )</div>
+                <div><b>{{ 'activity.rejectedRegistrations' | trans }}</b>: {{  rejectedRegistrations }}</div>
+                {% if ( activity.places >=  activity.registrations | length and activity.status == constant('App\\Entity\\Activity::STATUS_PREINSCRIPTION') ) %}
+                    <div class="alert alert-info">{{ 'messages.noNeedToRaffle' | trans }}</div>
+                {% endif %}
+                {% if ( activity.isFull and activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_LIST') ) %}
+                    <div class="alert alert-warning">{{ 'messages.activityIsFull' | trans }}</div>
+                {% endif %}
+            </div>
+            <div class="row">
+                {{ include('activity/_raffleList.html.twig', {
+                    'registrations' : activity.registrations,
+                })}}
+            </div>
+            <div class="row">
+                <div class="col-lg">
+                    {% if ( activity.status == constant('App\\Entity\\Activity::STATUS_PREINSCRIPTION') and not activity.limitPlaces ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmRaffleStart' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_activity_raffle_lottery', { 'id': activity.id }) }}">
+                            {{ 'btn.raffle' | trans }}
+                        </button>
+                    {% endif %}
+                    {% if ( activity.status == constant('App\\Entity\\Activity::STATUS_RAFFLED') ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmEmailingStart' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_activity_raffle_mailing', { 'id': activity.id }) }}">{{ 'btn.notify' | trans }}</button>
+                    {% endif %}
+                    {% if ( activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_CONFIRMATIONS') ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmChangeToWaitingList' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_activity_change_to_waiting-list', { 'id': activity.id }) }}">{{ 'btn.changeToWaitingList' | trans }}</button>
+                    {% endif %}
+                    {% if ( activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_LIST') and not activity.isFull ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmEmailWaitingList' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_activity_email_waiting_list', { 'id': activity.id }) }}">{{ 'btn.emailWaitingList' | trans }}</button>
+                    {% endif %}
+                    {% if ( activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_LIST') or activity.limitPlaces ) %}
+                        <button class="btn btn-primary" {{ stimulus_controller('alert', {
+                            confirmationText: 'messages.confirmClose' | trans,
+                        }) }}
+                            data-action="alert#confirm" 
+                            data-url="{{ path('app_activity_close', { 'id': activity.id }) }}">{{ 'btn.close' | trans }}</button>
+                    {% endif %}
+                    <button class="btn btn-secondary js-back" data-url="{{ path('app_activity_index') }}">{{ 'btn.cancel' | trans }}</button>
+                </div>
+            </div>
+        </div>
+            {{ include('common/_alert.html.twig', {
+                'confirmationText' : 'messages.confirmRaffleStart' | trans 
+            })}}
+	</main>
+{% endblock body %}

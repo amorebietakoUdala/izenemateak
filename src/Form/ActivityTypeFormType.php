@@ -2,14 +2,14 @@
 
 namespace App\Form;
 
-use App\Entity\Activity;
+use App\Entity\ActivityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class ActivityType extends AbstractType
+class ActivityTypeFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -19,7 +19,7 @@ class ActivityType extends AbstractType
                 'disabled' => $readonly,
             ])
             ->add('name',null,[
-                'label' => 'activity.name',
+                'label' => 'activityType.name',
                 'constraints' => [
                     new NotBlank(),
                 ],
@@ -31,7 +31,7 @@ class ActivityType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Activity::class,
+            'data_class' => ActivityType::class,
             'readonly' => false,
         ]);
     }

@@ -1,28 +1,69 @@
-<table class="table" {{ stimulus_controller('table', {
-   'exportName': 'activity',
-}) }}>
-   <thead>
-      <tr>
-            <th data-sortable="true">Id</th>
-            <th data-sortable="true">{{ 'activity.name' | trans }}</th>
-            <th data-sortable="true" data-field="options">{{"table.options" | trans | capitalize}}</th>
-      </tr>
-   </thead>
-   <tbody>
-   {% for activity in activities %}
-      <tr>
-            <td>{{ activity.id }}</td>
-            <td>{{ activity.name }}</td>
-            <td>
-               <a href="#" data-action="entity#edit" data-url="{{ path('app_activity_show', {'id': activity.id}) }}"><i class="fa fa-eye" title='{{ "btn.show" | trans | capitalize }}'></i></a>&nbsp;
-               <a href="#" data-action="entity#edit" data-url="{{ path('app_activity_edit', {'id': activity.id}) }}" data-allowEdit="true"><i class="fa fa-edit" title='{{ "btn.edit" | trans | capitalize }}'></i></a>&nbsp;
-               <a href="#" data-action="entity#delete" data-url="{{ path('app_activity_delete', {'id': activity.id}) }}" data-token="{{ csrf_token('delete' ~ activity.id) }}"><i class="fa fa-trash" title='{{ "btn.delete" | trans | capitalize }}'></i></a>&nbsp;
-            </td>
-      </tr>
-   {% else %}
-      <tr>
-            <td colspan="3" class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</td>
-      </tr>
-   {% endfor %}
-   </tbody>
-</table>
+{% if activitys is defined and activitys|length > 0 %}
+   <table id="table" {{ stimulus_controller('table', {
+      'exportName': 'activitys',
+   }) }}>
+         <thead>
+            <tr>
+               <th data-sortable="true">{{"id" | trans }}</th>
+               {% if app.request.locale == 'es' %}
+                  <th data-sortable="true">{{"activity.nameEs" | trans }}</th>
+                  <th data-sortable="true">{{"activity.turnEs" | trans }}</th>
+               {% else %}
+                  <th data-sortable="true">{{"activity.nameEu" | trans }}</th>
+                  <th data-sortable="true">{{"activity.turnEu" | trans }}</th>
+               {% endif %}
+               <th data-sortable="true">{{"activity.inscriptionPeriod" | trans }}</th>
+               <th data-sortable="true">{{"activity.inscriptions" | trans }}</th>
+               <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th>
+               <th data-sortable="true">{{"activity.status" | trans }}</th>
+               <th data-sortable="true">{{"activity.active" | trans }}</th>
+               <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for activity in activitys %}
+               <tr>
+                     <td>{{activity.id}}</td>
+                     {% if app.request.locale == 'es' %}
+                        <td>{{activity.nameEs}}</td>
+                        <td>{{activity.turnEs}}</td>
+                     {% else %}
+                        <td>{{activity.nameEu}}</td>
+                        <td>{{activity.turnEu}}</td>
+                     {% endif %}
+                     <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
+                     <td>{{activity.registrations | length}}</td>
+                     <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans}}</td>
+                     {% set statusLabel = 'activity.status.' ~ activity.status %}
+                     <td>{{ statusLabel | trans }}</td>
+                     <td>{{activity.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+                     <td>
+                        <a href="{{ path ("app_activity_show",{'id': activity.id })}}"  title="{{ 'btn.show' | trans }}">
+                           <i class="fa fa-eye"></i>
+                        </a>
+                        &nbsp;<a href="{{ path ("app_activity_edit",{'id': activity.id })}}" title="{{ 'btn.edit' | trans }}">
+                           <i class="fa fa-edit"></i>
+                        </a>
+                        &nbsp;<a href="{{ path ('app_activity_clone',{'id': activity.id })}}" title="{{ 'btn.copy' | trans }}">
+                           <i class="fa fa-clone"></i>
+                        </a>
+                        &nbsp;<a href="{{ path ('app_activity_status_details',{'id': activity.id })}}" title="{{ 'btn.details' | trans }}">
+                           <i class="fa fa-info"></i>
+                        </a>
+                        {% if ( activity.status != constant('App\\Entity\\activity::STATUS_CLOSED') ) %}
+                        &nbsp;<a href="{{ path ('app_activity_close',{'id': activity.id })}}" title="{{ 'btn.close' | trans }}">
+                           <i class="fa fa-times-circle"></i>
+                        </a>
+                        {% endif %}
+                     </td>
+               </tr>
+            {% endfor %}
+         </tbody>
+   </table>
+{% else %}
+   <div class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</div>
+{% endif %}
+
+{{ include('common/_alert.html.twig', {
+   'confirmationText' : 'messages.confirmationDetail' | trans 
+}) }}

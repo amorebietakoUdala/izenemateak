@@ -86,10 +86,10 @@ class Registration
     private $representativeSurname2;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Course::class, inversedBy="registrations")
+     * @ORM\ManyToOne(targetEntity=Activity::class, inversedBy="registrations")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $course;
+    private $activity;
 
     /**
      * @ORM\Column(type="boolean")
@@ -245,14 +245,14 @@ class Registration
         return $this;
     }
 
-    public function getCourse(): ?Course
+    public function getActivity(): ?Activity
     {
-        return $this->course;
+        return $this->activity;
     }
 
-    public function setCourse(?Course $course): self
+    public function setActivity(?Activity $activity): self
     {
-        $this->course = $course;
+        $this->activity = $activity;
 
         return $this;
     }

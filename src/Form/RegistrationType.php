@@ -2,10 +2,10 @@
 
 namespace App\Form;
 
-use App\Entity\Course;
+use App\Entity\Activity;
 use App\Entity\Registration;
 use App\Entity\Session;
-use App\Repository\CourseRepository;
+use App\Repository\ActivityRepository;
 use App\Validator\IsValidDNI;
 use App\Validator\IsValidIBAN;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -84,9 +84,9 @@ class RegistrationType extends AbstractType
                 'required' => false,
                 'disabled' => $disabled,
             ])
-            ->add('course', EntityType::class, [
-                'class' => Course::class,
-                'label' => 'register.course',
+            ->add('activity', EntityType::class, [
+                'class' => Activity::class,
+                'label' => 'register.activity',
                 'placeholder' => 'placeholder.choose',
                 'choice_label' => function ($type) use ($locale) {
                     if ('es' === $locale) {
@@ -95,8 +95,8 @@ class RegistrationType extends AbstractType
                         return $type->getNameEu().' '.$type->getTurnEu();
                     }
                 },
-                'query_builder' => function( CourseRepository $repo ) {
-                    return $repo->findByOpenAndActiveCoursesQB();
+                'query_builder' => function( ActivityRepository $repo ) {
+                    return $repo->findByOpenAndActiveActivitysQB();
                 },
                 'disabled' => $disabled,
             ])

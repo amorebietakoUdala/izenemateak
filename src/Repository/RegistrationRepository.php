@@ -23,16 +23,16 @@ class RegistrationRepository extends ServiceEntityRepository
     /**
     * @return Registration[] Returns an array of Registration objects
     */
-    public function findByActiveCourses() {
-        return $this->findByActiveCoursesQB()->getQuery()->getResult();
+    public function findByActiveActivitys() {
+        return $this->findByActiveActivitysQB()->getQuery()->getResult();
     }
 
     /**
      * @return QueryBuilder Returns an array of Registration objects
     */
-    public function findByActiveCoursesQB() {
+    public function findByActiveActivitysQB() {
         return $this->createQueryBuilder('r')
-            ->innerJoin('r.course', 'c')
+            ->innerJoin('r.activity', 'c')
             ->andWhere('c.active = :active')
             ->setParameter('active', true)
             ->orderBy('r.id', 'ASC');
@@ -41,17 +41,17 @@ class RegistrationRepository extends ServiceEntityRepository
     /**
     * @return Registration[] Returns an array of Registration objects
     */
-    public function findByOpenAndActiveCourses() {
-        return $this->findByOpenAndActiveCoursesQB()->getQuery()->getResult();
+    public function findByOpenAndActiveActivitys() {
+        return $this->findByOpenAndActiveActivitysQB()->getQuery()->getResult();
     }
 
     /**
      * @return QueryBuilder Returns an array of Registration objects
     */
-    public function findByOpenAndActiveCoursesQB() {
+    public function findByOpenAndActiveActivitysQB() {
         $now = new \DateTime();
         return $this->createQueryBuilder('r')
-            ->innerJoin('r.course', 'c')
+            ->innerJoin('r.activity', 'c')
             ->andWhere('c.startDate' <= ':today')
             ->andWhere('c.endDate' > ':today2')
             ->andWhere('c.active = :active')
@@ -64,13 +64,13 @@ class RegistrationRepository extends ServiceEntityRepository
     /**
      * @return Registration|null Returns an array of Registration objects
      */
-    public function findOneByDniCourse($dni, $course)
+    public function findOneByDniActivity($dni, $activity)
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.dni = :dni')
-            ->andWhere('r.course = :course')
+            ->andWhere('r.activity = :activity')
             ->setParameter('dni', $dni)
-            ->setParameter('course', $course)
+            ->setParameter('activity', $activity)
             ->getQuery()
             ->getOneOrNullResult()
         ;
@@ -79,13 +79,13 @@ class RegistrationRepository extends ServiceEntityRepository
     /**
      * @return Registration[]|null Returns not confirmed and not fortunate registrations
      */
-    public function findNotConfirmedAndNotFortunate($course)
+    public function findNotConfirmedAndNotFortunate($activity)
     {
         return $this->createQueryBuilder('r')
-            ->andWhere('r.course = :course')
+            ->andWhere('r.activity = :activity')
             ->andWhere('r.fortunate = :fortunate')
             ->andWhere('r.confirmed IS NULL')
-            ->setParameter('course', $course)
+            ->setParameter('activity', $activity)
             ->setParameter('fortunate', false)
             ->orderBy('r.createdAt', 'ASC')
             ->getQuery()
@@ -96,12 +96,12 @@ class RegistrationRepository extends ServiceEntityRepository
     /**
      * @return Registration|null Returns the next on WaitingList
      */
-    public function findNextOnWaitingListCourse($course) {
+    public function findNextOnWaitingListActivity($activity) {
         $result = $this->createQueryBuilder('r')
-            ->andWhere('r.course = :course')
+            ->andWhere('r.activity = :activity')
             ->andWhere('r.fortunate = :fortunate')
             ->andWhere('r.confirmed IS NULL')
-            ->setParameter('course', $course)
+            ->setParameter('activity', $activity)
             ->setParameter('fortunate', false)
             ->orderBy('r.createdAt', 'ASC')
             ->getQuery()
@@ -116,31 +116,31 @@ class RegistrationRepository extends ServiceEntityRepository
     /**
      * @return Registration|null Returns an array of Registration objects
      */
-    public function findOneByNameSurnamesCourse($name, $surname1, $surname2, $course) {
+    public function findOneByNameSurnamesActivity($name, $surname1, $surname2, $activity) {
         return $this->createQueryBuilder('r')
             ->andWhere('r.name = :name')
             ->andWhere('r.surname1 = :surname1')
             ->andWhere('r.surname2 = :surname2')
-            ->andWhere('r.course = :course')
+            ->andWhere('r.activity = :activity')
             ->setParameter('name', $name)
             ->setParameter('surname1', $surname1)
             ->setParameter('surname2', $surname2)
-            ->setParameter('course', $course)
+            ->setParameter('activity', $activity)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
 
-    public function findOneByNameSurname1DateOfBirthCourse($name,$surname1, $dateOfBirth, $course) {
+    public function findOneByNameSurname1DateOfBirthActivity($name,$surname1, $dateOfBirth, $activity) {
         return $this->createQueryBuilder('r')
             ->andWhere('r.name = :name')
             ->andWhere('r.surname1 = :surname1')
             ->andWhere('r.dateOfBirth = :dateOfBirth')
-            ->andWhere('r.course = :course')
+            ->andWhere('r.activity = :activity')
             ->setParameter('name', $name)
             ->setParameter('surname1', $surname1)
             ->setParameter('dateOfBirth', $dateOfBirth)
-            ->setParameter('course', $course)
+            ->setParameter('activity', $activity)
             ->getQuery()
             ->getOneOrNullResult()
         ;
@@ -148,7 +148,7 @@ class RegistrationRepository extends ServiceEntityRepository
 
     public function findRegistrationsBy(array $criteria) {
         $qb = $this->createQueryBuilder('r')
-            ->innerJoin('r.course', 'c');
+            ->innerJoin('r.activity', 'c');
             if ( array_key_exists('active', $criteria) ) {
                 $qb->andWhere('c.active = :active')
                     ->setParameter('active', $criteria['active']);

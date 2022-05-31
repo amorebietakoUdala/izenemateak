@@ -1,0 +1,6 @@
+<div style="display: inline;" {{ stimulus_controller('delete-form')}}>
+<form class="form-inline" method="post" action="{{ path('app_activity_delete', {'id': activity.id}) }}" data-delete-form-target="deleteForm">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ activity.id) }}">
+    <button class="btn btn-danger" type="button" data-action="delete-form#onSubmit">{{'btn.delete' | trans}}</button>
+</form>
+</div>

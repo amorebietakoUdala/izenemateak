@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{'title.activityType.edit' | trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{'title.activityType.edit' | trans }}</h1>
+
+    {{ include('activityType/_form.html.twig', {'button_label': 'btn.save'| trans}) }}
+
+    <a href="{{ path('app_activity_type_index') }}">{{ 'btn.cancel' | trans }}</a>
+
+    {{ include('activityType/_delete_form.html.twig') }}
+{% endblock %}

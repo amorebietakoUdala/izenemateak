@@ -65,10 +65,10 @@ export default class extends Controller {
             }).then((response) => {
                 this.modal = new Modal(this.modalTarget);
                 this.modalBodyTarget.innerHTML = response;
-                if (allowEdit == "false") {
-                    $(this.modalSaveButtonTarget).hide();
+                if (allowEdit == "true") {
+                    $(this.modalSaveButtonTarget).show();
                 } else {
-                    $(this.modalSaveButtonTarget).show(); 
+                    $(this.modalSaveButtonTarget).hide(); 
                 }
                 this.modal.show();
             });

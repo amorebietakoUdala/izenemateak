@@ -97,13 +97,13 @@
                 </div>
             </fieldset>
         </div>
-        <fieldset id="courseData" class="border border-secondary border-2 p-2 rounded mt-1">
-            <legend class="alert alert-info fs-5 lh-1">{{ 'label.course' | trans }}</legend>
+        <fieldset id="activityData" class="border border-secondary border-2 p-2 rounded mt-1">
+            <legend class="alert alert-info fs-5 lh-1">{{ 'label.activity' | trans }}</legend>
             <div class="row">
                 <div class="col-lg-auto">
-                    {{ form_label(form.course) }}
-                    {{ form_widget(form.course) }}
-                    {{ form_errors(form.course) }}
+                    {{ form_label(form.activity) }}
+                    {{ form_widget(form.activity) }}
+                    {{ form_errors(form.activity) }}
                 </div>
             </div>
         </fieldset>
@@ -128,7 +128,7 @@
                 {% if not readonly %}
                     <button class="btn btn-primary">{{ 'btn.save' | trans }}</button>
                 {% endif %}
-                {# <button class="btn btn-secondary js-back" data-url="{{ path('app_active_courses') }}">{{ 'btn.cancel' | trans }}</button> #}
+                {# <button class="btn btn-secondary js-back" data-url="{{ path('app_active_activitys') }}">{{ 'btn.cancel' | trans }}</button> #}
                 <button class="btn btn-secondary js-back" data-url="{{ returnUrl }}">{{ 'btn.cancel' | trans }}</button>
             </div>
         </div>

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.activityType.new' | trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'title.activityType.new' | trans }}</h1>
+
+    {{ include('activityType/_form.html.twig') }}
+
+    <a href="{{ path('app_activity_type_index') }}">{{ 'btn.cancel' | trans }}</a>
+{% endblock %}

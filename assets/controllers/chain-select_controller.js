@@ -42,7 +42,7 @@ export default class extends Controller {
    async refreshOptions(event) {
       let mainOption = $(event.currentTarget).val();
       if ( mainOption !== "") {
-          let url = app_base + Routing.generate('api_course_sessions', { id: mainOption });
+          let url = app_base + Routing.generate('api_activity_sessions', { id: mainOption });
           await fetch(url)
               .then( result => result.json() )
               .then( chainOptions => {

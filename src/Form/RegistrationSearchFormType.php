@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Course;
+use App\Entity\Activity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -20,9 +20,9 @@ class RegistrationSearchFormType extends AbstractType
                 'label' => 'searchForm.dni',
                 'required' => false,
             ] )
-            ->add('course',EntityType::class,[
-                'class' => Course::class,
-                'label' => 'searchForm.course',
+            ->add('activity',EntityType::class,[
+                'class' => Activity::class,
+                'label' => 'searchForm.activity',
                 'placeholder' => 'placeholder.choose',
                 'choice_label' => function ($type) use ($locale) {
                     if ('es' === $locale) {
@@ -48,7 +48,7 @@ class RegistrationSearchFormType extends AbstractType
                 'html5' => false,
                 'format' => 'yyyy-MM-dd',
                 'attr' => ['class' => 'js-datepicker'],
-                'label' => 'course.startDate',
+                'label' => 'activity.startDate',
                 'required' => false,
             ])
             ->add('endDate', DateType::class, [
@@ -56,7 +56,7 @@ class RegistrationSearchFormType extends AbstractType
                 'html5' => false,
                 'format' => 'yyyy-MM-dd',
                 'attr' => ['class' => 'js-datepicker'],
-                'label' => 'course.endDate',
+                'label' => 'activity.endDate',
                 'required' => false,
             ])
 

@@ -1,13 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{'title.activity.edit' | trans }}{% endblock %}
+{% block title %}
+    {% if new %}
+        {% set title = 'title.activity.new' | trans | capitalize %}
+    {% elseif readonly %}
+        {% set title = 'title.activity.show' | trans | capitalize %}
+    {% else %}
+        {% set title = 'title.activity.edit' | trans | capitalize %}
+    {% endif %}
+    {{ title }}
+{% endblock %}
 
 {% block body %}
-    <h1>{{'title.activity.edit' | trans }}</h1>
+    {% if new %}
+        {% set title = 'title.activity.new' | trans | capitalize %}
+    {% elseif readonly %}
+        {% set title = 'title.activity.show' | trans | capitalize %}
+    {% else %}
+        {% set title = 'title.activity.edit' | trans | capitalize %}
+    {% endif %}
+    <div class="d-flex align-items-center">
+        <h1>{{ title }}</h1>
+        {% if not new and not readonly %}
+            &nbsp;<span>{{ include('activity/_delete_form.html.twig') }}</span>
+        {% endif %}
+    </div>
 
-    {{ include('activity/_form.html.twig', {'button_label': 'btn.save'| trans}) }}
+    {{ include('activity/_form.html.twig') }}
 
-    <a href="{{ path('app_activity_index') }}">{{ 'btn.cancel' | trans }}</a>
+    {{ include('common/_alert.html.twig', {
+        'confirmationText' : 'messages.confirmationDetail' | trans 
+    }) }}
 
-    {{ include('activity/_delete_form.html.twig') }}
 {% endblock %}

@@ -19,13 +19,13 @@ class SessionRepository extends ServiceEntityRepository
         parent::__construct($registry, Session::class);
     }
 
-    public function findAllActiveSessions($course)
+    public function findAllActiveSessions($activity)
     {
         return $this->createQueryBuilder('c')
             ->andWhere('s.active = :active')
-            ->andWhere('s.course = :course')
+            ->andWhere('s.activity = :activity')
             ->setParameter('active', true)
-            ->setParameter('course', $course)
+            ->setParameter('activity', $activity)
             ->getQuery()
             ->getResult()
         ;

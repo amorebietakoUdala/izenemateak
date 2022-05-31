@@ -10,13 +10,13 @@
             <th data-sortable="true">{{ 'registration.fullname' | trans }}</th>
             <th data-sortable="true">{{ 'registration.representativeFullName' | trans }}</th>
             {% if app.request.locale == 'es' %}
-               <th data-sortable="true">{{"course.nameEs" | trans | capitalize}}</th>
-               <th data-sortable="true">{{"course.turnEs" | trans | capitalize}}</th>
+               <th data-sortable="true">{{"activity.nameEs" | trans | capitalize}}</th>
+               <th data-sortable="true">{{"activity.turnEs" | trans | capitalize}}</th>
             {% else %}
-               <th data-sortable="true">{{"course.nameEu" | trans | capitalize}}</th>
-               <th data-sortable="true">{{"course.turnEu" | trans | capitalize}}</th>
+               <th data-sortable="true">{{"activity.nameEu" | trans | capitalize}}</th>
+               <th data-sortable="true">{{"activity.turnEu" | trans | capitalize}}</th>
             {% endif %}
-            <th data-sortable="true">{{ 'course.active' | trans }}</th>
+            <th data-sortable="true">{{ 'activity.active' | trans }}</th>
             <th data-sortable="true">{{ 'registration.createdAt' | trans }}</th>
             <th data-sortable="true" data-field="options">{{"table.options" | trans | capitalize}}</th>
       </tr>
@@ -29,13 +29,13 @@
             <td>{{ registration.fullName }}</td>
             <td>{{ registration.representativeFullName }}</td>
             {% if app.request.locale == 'es' %}
-               <td>{{registration.course.nameEs}}</td>
-               <td>{{registration.course.turnEs}}</td>
+               <td>{{registration.activity.nameEs}}</td>
+               <td>{{registration.activity.turnEs}}</td>
             {% else %}
-               <td>{{registration.course.nameEu}}</td>
-               <td>{{registration.course.turnEu}}</td>
+               <td>{{registration.activity.nameEu}}</td>
+               <td>{{registration.activity.turnEu}}</td>
             {% endif %}
-            <td>{{ registration.course.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+            <td>{{ registration.activity.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
             <td>{{ registration.createdAt | date('Y-m-d h:i:s')}}</td>
             <td>
                <a href="{{ path('app_registration_show', {'id': registration.id, 'admin': true}) }}"><i class="fa fa-eye" title='{{ "btn.show" | trans | capitalize }}'></i></a>&nbsp;

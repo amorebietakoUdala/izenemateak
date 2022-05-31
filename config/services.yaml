@@ -14,7 +14,7 @@ parameters:
     mailerFrom: "%env(MAILER_FROM)%"
     mailerSendBcc: "%env(bool:MAILER_SEND_BCC)%"
     mailerBCC: "%env(MAILER_BCC)%"
-    giltzaLogoutRedirectRoute: 'app_active_courses'
+    giltzaLogoutRedirectRoute: 'app_active_activitys'
     giltzaSuccessLoginRedirectRoute: 'app_register_new'
 
 services:

@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.activeActivitys' | trans }}{% endblock %}
+
+{% block body %}
+   <h1 class="h2">{{'title.activeActivitys' | trans }}</h1>
+   <div {{ stimulus_controller('active-activitys-filter') }}>
+      {{ include('register/_activeActivitysSearchForm.html.twig') }}
+   </div>
+   <div class="container-fluid">
+   {% if activeActivitys is defined and activeActivitys|length > 0 %}
+      <table id="table" {{ stimulus_controller('table', {
+         'exportName': 'activitys',
+      }) }}>
+            <thead>
+               <tr>
+                  {# <th data-sortable="true">{{"activity.clasification" | trans }}</th> #}
+                  {% if app.request.locale == 'es' %}
+                     <th data-sortable="true">{{"activity.nameEs" | trans }}</th>
+                     <th data-sortable="true">{{"activity.turnEs" | trans }}</th>
+                  {% else %}
+                     <th data-sortable="true">{{"activity.nameEu" | trans }}</th>
+                     <th data-sortable="true">{{"activity.turnEu" | trans }}</th>
+                  {% endif %}
+                  <th data-sortable="true">{{"activity.inscriptionPeriod" | trans }}</th>
+                  <th data-sortable="true">{{"activity.places" | trans }}</th>
+                  <th data-sortable="true">{{"activity.inscriptions" | trans }}</th>
+                  <th data-sortable="true">{{"activity.cost" | trans }}</th>
+                  {# <th data-sortable="true">{{"activity.deposit" | trans }}</th> #}
+                  <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th>
+                  <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
+               </tr>
+            </thead>
+            <tbody>
+               {% for activity in activeActivitys %}
+                  <tr>
+                        {% if app.request.locale == 'es' %}
+                           {# <td>{{activity.clasification.descriptionEs}}</td> #}
+                           <td>{{activity.nameEs}}</td>
+                           <td>{{activity.turnEs}}</td>
+                        {% else %}
+                           {# <td>{{activity.clasification.descriptionEu}}</td> #}
+                           <td>{{activity.nameEu}}</td>
+                           <td>{{activity.turnEu}}</td>
+                        {% endif %}
+                        <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
+                        <td>{{activity.places is not null ? activity.places: '' }}</td>
+                        <td>{{activity.registrations | length }}</td>
+                        <td>{{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }} </td>
+                        {# <td>{{activity.deposit != null ? activity.deposit | number_format(2, ',', '.')~' €': '' }} </td> #}
+                        <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+                        <td>
+                           {% if not (activity.limitPlaces and activity.registrations | length >= activity.places) %}
+                           <a href="{{ path ("app_register_new", {'activity': activity.id })}}"  title="{{ 'btn.register' | trans }}"
+                              class="btn btn-primary">{{ 'btn.register' | trans }}
+                           </a>
+                           {% endif %}
+                        </td>
+                  </tr>
+               {% endfor %}
+            </tbody>
+      </table>
+   {% else %}
+      <div class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</div>
+   {% endif %}
+</div>
+{% endblock %}

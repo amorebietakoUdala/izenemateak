@@ -2,9 +2,9 @@
 
 namespace App\Form;
 
-use App\Entity\Activity;
+use App\Entity\ActivityType;
 use App\Entity\Clasification;
-use App\Entity\Course;
+use App\Entity\Activity;
 use App\Repository\ClasificationRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -17,7 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class CourseType extends AbstractType
+class ActivityFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -26,7 +26,7 @@ class CourseType extends AbstractType
         $status = $options['data']->getStatus() !== null ? $options['data']->getStatus() : 0;
         $builder
             ->add('clasification',EntityType::class,[
-                'label' => 'course.clasification',
+                'label' => 'activity.clasification',
                 'class' => Clasification::class,
                 'constraints' => [
                     new NotBlank(),
@@ -43,37 +43,37 @@ class CourseType extends AbstractType
                 },
                 'disabled' => $readonly,
             ])
-            ->add('activity',EntityType::class,[
-                'label' => 'course.activity',
-                'class' => Activity::class,
+            ->add('activityType',EntityType::class,[
+                'label' => 'activity.activityType',
+                'class' => ActivityType::class,
                 'constraints' => [
                     new NotBlank(),
                 ],
                 'disabled' => $readonly,
             ])
             ->add('nameEs',null,[
-                'label' => 'course.nameEs',
+                'label' => 'activity.nameEs',
                 'constraints' => [
                     new NotBlank(),
                 ],
                 'disabled' => $readonly,
             ])
             ->add('nameEu',null,[
-                'label' => 'course.nameEu',
+                'label' => 'activity.nameEu',
                 'constraints' => [
                     new NotBlank(),
                 ],
                 'disabled' => $readonly,
             ])
             ->add('turnEs',null,[
-                'label' => 'course.turnEs',
+                'label' => 'activity.turnEs',
                 'constraints' => [
                     new NotBlank(),
                 ],
                 'disabled' => $readonly,
             ])
             ->add('turnEu',null,[
-                'label' => 'course.turnEu',
+                'label' => 'activity.turnEu',
                 'constraints' => [
                     new NotBlank(),
                 ],
@@ -84,7 +84,7 @@ class CourseType extends AbstractType
                 'html5' => false,
                 'format' => 'yyyy-MM-dd',
                 'attr' => ['class' => 'js-datepicker'],
-                'label' => 'course.startDate',
+                'label' => 'activity.startDate',
                 'constraints' => [
                     new NotBlank(),
                 ],
@@ -95,45 +95,45 @@ class CourseType extends AbstractType
                 'html5' => false,
                 'format' => 'yyyy-MM-dd',
                 'attr' => ['class' => 'js-datepicker'],
-                'label' => 'course.endDate',
+                'label' => 'activity.endDate',
                 'constraints' => [
                     new NotBlank(),
                 ],
                 'disabled' => $readonly,
             ])
             ->add('places', IntegerType::class, [
-                'label' => 'course.places',
+                'label' => 'activity.places',
                 'disabled' => $readonly,
                 'required' => false,
             ])
             ->add('limitPlaces', CheckboxType::class, [
-                'label' => 'course.limitPlaces',
+                'label' => 'activity.limitPlaces',
                 'disabled' => $readonly,
                 'required' => false,
             ])
             ->add('status', ChoiceType::class,[
-                'label' => 'course.status',
+                'label' => 'activity.status',
                 'choices' => [
-                    'course.status.'.Course::STATUS_PREINSCRIPTION => Course::STATUS_PREINSCRIPTION,
-                    'course.status.'.Course::STATUS_RAFFLED => Course::STATUS_RAFFLED,
-                    'course.status.'.Course::STATUS_WAITING_CONFIRMATIONS => Course::STATUS_WAITING_CONFIRMATIONS,
-                    'course.status.'.Course::STATUS_WAITING_LIST => Course::STATUS_WAITING_LIST,
-                    'course.status.'.Course::STATUS_CLOSED => Course::STATUS_CLOSED,
+                    'activity.status.'.Activity::STATUS_PREINSCRIPTION => Activity::STATUS_PREINSCRIPTION,
+                    'activity.status.'.Activity::STATUS_RAFFLED => Activity::STATUS_RAFFLED,
+                    'activity.status.'.Activity::STATUS_WAITING_CONFIRMATIONS => Activity::STATUS_WAITING_CONFIRMATIONS,
+                    'activity.status.'.Activity::STATUS_WAITING_LIST => Activity::STATUS_WAITING_LIST,
+                    'activity.status.'.Activity::STATUS_CLOSED => Activity::STATUS_CLOSED,
                 ],
-                'disabled' => $readonly || $status !== Course::STATUS_PREINSCRIPTION,
+                'disabled' => $readonly || $status !== Activity::STATUS_PREINSCRIPTION,
             ])
             ->add('cost', NumberType::class, [
-                'label' => 'course.cost',
+                'label' => 'activity.cost',
                 'disabled' => $readonly,
                 'required' => false,
             ])
             // ->add('deposit', NumberType::class, [
-            //     'label' => 'course.deposit',
+            //     'label' => 'activity.deposit',
             //     'disabled' => $readonly,
             //     'required' => false,
             // ])
             ->add('active', null, [
-                'label' => 'course.active',
+                'label' => 'activity.active',
                 'disabled' => $readonly,
             ])
         ;
@@ -142,7 +142,7 @@ class CourseType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Course::class,
+            'data_class' => Activity::class,
             'readonly'  => false,
             'locale'  => false,
         ]);

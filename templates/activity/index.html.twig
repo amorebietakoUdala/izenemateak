@@ -1,33 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'title.activities' | trans }}{% endblock %}
+{% block title %}{{ 'title.activity.list' | trans }}{% endblock %}
 
 {% block body %}
-    <h1>{{'title.activities' | trans }}</h1>
-      <div {{ stimulus_controller('reload-content', 
-               { 'url': path('app_activity_index', { 'ajax' : 'true'}),
-                  'locale': app.request.locale|split('_')[0] })}} data-action="entity:success->reload-content#refreshContent entity:init->reload-content#refreshContent">
-
-         <div {{ stimulus_controller('entity', 
-                  { 'locale': app.request.locale|split('_')[0], 
-                  'entitySaveUrl': path('app_activity_save'),
-                  })}} 
-               class="container-fluid"
-               {# data-action="hidden.bs.modal->entity#modalHidden" #}
-               data-action="keypress->entity#keyPress"
-               >
-               <div data-reload-content-target="content">
-                  {{ include('activity/_list.html.twig', { 'activities': activities }) }}
-               </div>
-            {{ include('common/_modal.html.twig', {
-                  'modalTitle': 'title.activity' | trans,
-                  'formTemplate': 'activity/_form.html.twig'
-               }) 
-            }}
-            <div class="float-right fixed-bottom-right"><btn class="btn btn-primary rounded-circle" data-action="click->entity#openModal"><i class="fa fa-plus" title='{{ "btn.new" | trans | capitalize }}'></i></btn></div>
-            {{ include('common/_alert.html.twig', {
-                'confirmationText' : 'messages.confirmationDetail' | trans 
-            }) }}
-         </div>
-   </div>
-{% endblock %}
+	<main class="container-fluid">
+        <div class="row">
+            <div class="col">
+                {{ include('activity/_searchForm.html.twig') }}
+            </div>
+        </div>
+        {{ include('activity/_list.html.twig') }}
+        <span class="float-right">
+            <a href="{{ path ('app_activity_new') }}" class="btn btn-primary rounded-circle fixed-bottom-right">
+                <i class="fa fa-plus" title='{{ "btn.new" | trans | capitalize }}'></i>
+            </a>
+        </span>
+	</main>
+{% endblock body %}

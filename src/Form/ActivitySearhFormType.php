@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Activity;
-use App\Entity\Course;
+use App\Entity\ActivityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -11,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CourseSearhFormType extends AbstractType
+class ActivitySearhFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -53,20 +53,20 @@ class CourseSearhFormType extends AbstractType
             'data' => null,
             'required' => false,
         ])
-        ->add('activity', EntityType::class, [
-            'class' => Activity::class,
-            'label' => 'course.activity',
+        ->add('activityType', EntityType::class, [
+            'class' => ActivityType::class,
+            'label' => 'activity.activityType',
             'placeholder' => '',
             'required' => false,
         ])
         ->add('status', ChoiceType::class,[
-            'label' => 'course.status',
+            'label' => 'activity.status',
             'choices' => [
-                'course.status.'.Course::STATUS_PREINSCRIPTION => Course::STATUS_PREINSCRIPTION,
-                'course.status.'.Course::STATUS_RAFFLED => Course::STATUS_RAFFLED,
-                'course.status.'.Course::STATUS_WAITING_CONFIRMATIONS => Course::STATUS_WAITING_CONFIRMATIONS,
-                'course.status.'.Course::STATUS_WAITING_LIST => Course::STATUS_WAITING_LIST,
-                'course.status.'.Course::STATUS_CLOSED => Course::STATUS_CLOSED,
+                'activity.status.'.Activity::STATUS_PREINSCRIPTION => Activity::STATUS_PREINSCRIPTION,
+                'activity.status.'.Activity::STATUS_RAFFLED => Activity::STATUS_RAFFLED,
+                'activity.status.'.Activity::STATUS_WAITING_CONFIRMATIONS => Activity::STATUS_WAITING_CONFIRMATIONS,
+                'activity.status.'.Activity::STATUS_WAITING_LIST => Activity::STATUS_WAITING_LIST,
+                'activity.status.'.Activity::STATUS_CLOSED => Activity::STATUS_CLOSED,
             ],
             'required' => false,
         ])

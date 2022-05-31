@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Course;
+use App\Entity\Activity;
 use App\Entity\Registration;
-use App\Form\ActiveCourseSearchFormType;
+use App\Form\ActiveActivitysSearchFormType;
 use App\Form\RegistrationSearchFormType;
 use App\Form\RegistrationType;
-use App\Repository\CourseRepository;
+use App\Repository\ActivityRepository;
 use App\Repository\RegistrationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,27 +35,27 @@ class RegistrationController extends AbstractController
      * @Route("/", name="app_home")
      */
     public function home() {
-        return $this->redirectToRoute('app_active_courses');
+        return $this->redirectToRoute('app_active_activitys');
     }
 
     /**
-     * @Route("/{_locale}/active/courses", name="app_active_courses")
+     * @Route("/{_locale}/active/activitys", name="app_active_activitys")
      */ 
-    public function listActiveCourses(Request $request, CourseRepository $repo) {
-        $form = $this->createForm(ActiveCourseSearchFormType::class, null,[
+    public function listActiveActivitys(Request $request, ActivityRepository $repo) {
+        $form = $this->createForm(ActiveActivitysSearchFormType::class, null,[
             'locale' => $request->getLocale(),
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array $data */
             $data = $form->getData();
-            $activeCourses = $repo->findByOpenAndActiveCoursesClasification($data['clasification']);
+            $activeActivitys = $repo->findByOpenAndActiveActivitysClasification($data['clasification']);
         } else {
-            $activeCourses = $repo->findByOpenAndActiveCourses();
+            $activeActivitys = $repo->findByOpenAndActiveActivitys();
         }
 
-        return $this->renderForm('register/listActiveCourses.html.twig', [
-            'activeCourses' => $activeCourses,
+        return $this->renderForm('register/listActiveActivitys.html.twig', [
+            'activeActivitys' => $activeActivitys,
             'form' => $form,
 
         ]);
@@ -64,7 +64,7 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/{_locale}/register", name="app_register_new")
      */
-    public function new(Request $request, EntityManagerInterface $em, CourseRepository $courseRepo, RouterInterface $router): Response
+    public function new(Request $request, EntityManagerInterface $em, ActivityRepository $activityRepo, RouterInterface $router): Response
     {
         $registration = new Registration();
         if ( $request->getSession()->get('giltzaUser') === null ) {
@@ -75,12 +75,12 @@ class RegistrationController extends AbstractController
             $giltzaUser = $request->getSession()->get('giltzaUser');
             $registration->fillWithGiltzaUser($giltzaUser);
         }
-        $course = null;
-        if ( null !== $request->get('course') ) {
-            $course = $courseRepo->find($request->get('course'));
+        $activity = null;
+        if ( null !== $request->get('activity') ) {
+            $activity = $activityRepo->find($request->get('activity'));
         }
-        $registration->setCourse($course);
-        $activeCourses = $courseRepo->findByOpenAndActiveCourses();
+        $registration->setActivity($activity);
+        $activeActivitys = $activityRepo->findByOpenAndActiveActivitys();
 
         $form = $this->createForm(RegistrationType::class, $registration,[
             'locale' => $request->getLocale(),
@@ -102,11 +102,11 @@ class RegistrationController extends AbstractController
                 $subject = $this->translator->trans('mail.subject', [], 'mail', $request->getLocale());
                 $this->sendEmail($data->getEmail(), $subject, $html, $this->getParameter('mailerSendBcc'));
                 $this->addFlash('success', 'registration.saved');
-                if (null === $course) {
+                if (null === $activity) {
                     return $this->redirectToRoute('app_register_new');
                 } else {
                     return $this->redirectToRoute('app_register_new', [
-                        'course' => $course->getId(),
+                        'activity' => $activity->getId(),
                     ]);
                 }
             }
@@ -114,10 +114,10 @@ class RegistrationController extends AbstractController
 
         return $this->render('register/new.html.twig', [
             'form' => $form->createView(),
-            'activeCourses' => $activeCourses,
+            'activeActivitys' => $activeActivitys,
             'readonly' => false,
             'admin' => false,
-            'returnUrl' => $router->generate('app_active_courses'),
+            'returnUrl' => $router->generate('app_active_activitys'),
         ]);
     }
 
@@ -130,7 +130,7 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationSearchFormType::class, null, [
             'locale' => $request->getLocale(),
         ]);
-        $registrations = $repo->findByActiveCourses();
+        $registrations = $repo->findByActiveActivitys();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -221,8 +221,8 @@ class RegistrationController extends AbstractController
                 'registration' => $registration,
             ]);
         }
-        if ($registration->getCourse()->isFull()) {
-            $this->addFlash('error', 'error.courseIsFull');
+        if ($registration->getActivity()->isFull()) {
+            $this->addFlash('error', 'error.ActivityIsFull');
             return $this->render('register/confirmation.html.twig', [
                 'error' => true,
                 'admin' => $admin,
@@ -286,8 +286,8 @@ class RegistrationController extends AbstractController
         $registration->setConfirmationDate(new \DateTime());
         $em->persist($registration);
         $em->flush();
-        if ($registration->getCourse()->getStatus() === Course::STATUS_WAITING_CONFIRMATIONS) {
-            $next = $repo->findNextOnWaitingListCourse($registration->getCourse());
+        if ($registration->getActivity()->getStatus() === Activity::STATUS_WAITING_CONFIRMATIONS) {
+            $next = $repo->findNextOnWaitingListActivity($registration->getActivity());
             $this->sendFortunateEmail($request->getLocale(), $next);
         }
         $this->addFlash('success', 'messages.successfullyRejected');
@@ -304,14 +304,14 @@ class RegistrationController extends AbstractController
      */
 
     // public function mailing (Request $request, Registration $registration, RegistrationRepository $repo): Response {
-    //     $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($registration->getCourse());
+    //     $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($registration->getActivity());
         
     //     foreach ( $orderedWaitingList as $registration) {
     //         $this->send
     //     }
 
     //     $this->addFlash('success','messages.successfullyMailed');
-    //     return $this->redirectToRoute('app_course_status_details');
+    //     return $this->redirectToRoute('app_activity_status_details');
     // }
 
     /**
@@ -376,7 +376,7 @@ class RegistrationController extends AbstractController
 
     private function checkForErrors(Registration $registration, EntityManagerInterface $em) {
         $repo = $em->getRepository(Registration::class);
-        $course = $registration->getCourse();
+        $activity = $registration->getActivity();
         $name = $registration->getName();
         $surname1 = $registration->getSurname1();
         $surname2 = $registration->getSurname2();
@@ -384,29 +384,29 @@ class RegistrationController extends AbstractController
         $now = new \DateTime();
         $today = new \DateTime($now->format('Y-m-d'));
         
-        if( !$course->canRegister($today) ) {
+        if( !$activity->canRegister($today) ) {
             $this->addFlash('error', 'error.canNotRegisterToday');
             return true;
         }
 
-        $registration = $repo->findOneByDniCourse($registration->getDni(),$course);
+        $registration = $repo->findOneByDniActivity($registration->getDni(),$activity);
         if ( null !== $registration ) {
             $this->addFlash('error', 'error.alreadyRegistered');
             return true;
         }
-        $registration = $repo->findOneByNameSurnamesCourse($name, $surname1, $surname2, $course);
-        if ( null !== $registration ) {
-            $this->addFlash('error', 'error.alreadyRegistered');
-            return true;
-        }
-
-        $registration = $repo->findOneByNameSurname1DateOfBirthCourse($name,$surname1,$dateOfBirth,$course);
+        $registration = $repo->findOneByNameSurnamesActivity($name, $surname1, $surname2, $activity);
         if ( null !== $registration ) {
             $this->addFlash('error', 'error.alreadyRegistered');
             return true;
         }
 
-        if ( $course->getLimitPlaces() && ( count($course->getRegistrations()) >= $course->getPlaces()) ) {
+        $registration = $repo->findOneByNameSurname1DateOfBirthActivity($name,$surname1,$dateOfBirth,$activity);
+        if ( null !== $registration ) {
+            $this->addFlash('error', 'error.alreadyRegistered');
+            return true;
+        }
+
+        if ( $activity->getLimitPlaces() && ( count($activity->getRegistrations()) >= $activity->getPlaces()) ) {
             $this->addFlash('error', 'error.maxRegistrationsReached');
             return true;
         }

@@ -6,12 +6,22 @@ use App\Repository\ActivityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * @ORM\Entity(repositoryClass=ActivityRepository::class)
  */
 class Activity
 {
+
+    const STATUS_PREINSCRIPTION = 0;
+    const STATUS_RAFFLED = 1;
+    const STATUS_WAITING_CONFIRMATIONS = 2;
+    const STATUS_WAITING_LIST = 3;
+    const STATUS_CLOSED = 4;
+
+    use TimestampableEntity;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -22,16 +32,85 @@ class Activity
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $nameEs;
+
+        /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $nameEu;
 
     /**
-     * @ORM\OneToMany(targetEntity=Course::class, mappedBy="activity")
+     * @ORM\Column(type="string", length=255)
      */
-    private $courses;
+    private $turnEs;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $turnEu;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $startDate;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $endDate;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $active;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Registration::class, mappedBy="activity")
+     */
+    private $registrations;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=ActivityType::class, inversedBy="activitys")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $activityType;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $places;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $limitPlaces;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cost;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $deposit;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Clasification::class, inversedBy="activitys")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $clasification;
 
     public function __construct()
     {
-        $this->courses = new ArrayCollection();
+        $this->registrations = new ArrayCollection();
+        $this->sessions = new ArrayCollection();
+        $this->limitPlaces = false;
     }
 
     public function getId(): ?int
@@ -39,70 +118,278 @@ class Activity
         return $this->id;
     }
 
+    public function getNameEs()
+    {
+        return $this->nameEs;
+    }
+
     /**
-     * Set the value of id
+     * Set the value of nameEs
      *
      * @return  self
      */ 
-    public function setId($id)
+    public function setNameEs($nameEs)
     {
-        $this->id = $id;
+        $this->nameEs = $nameEs;
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getNameEu()
     {
-        return $this->name;
+        return $this->nameEu;
     }
 
-    public function setName(string $name): self
+    /**
+     * Set the value of nameEu
+     *
+     * @return  self
+     */ 
+    public function setNameEu($nameEu)
     {
-        $this->name = $name;
+        $this->nameEu = $nameEu;
+
+        return $this;
+    }
+
+    public function getTurnEs(): ?string
+    {
+        return $this->turnEs;
+    }
+
+    public function setTurnEs(string $turnEs): self
+    {
+        $this->turnEs = $turnEs;
+
+        return $this;
+    }
+
+    public function getTurnEu(): ?string
+    {
+        return $this->turnEu;
+    }
+
+    public function setTurnEu(string $turnEu): self
+    {
+        $this->turnEu = $turnEu;
+
+        return $this;
+    }
+
+    public function getStartDate(): ?\DateTimeInterface
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?\DateTimeInterface $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?\DateTimeInterface $endDate): self
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    public function getActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(?bool $active): self
+    {
+        $this->active = $active;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, Course>
+     * @return Collection|Registration[]
      */
-    public function getCourses(): Collection
+    public function getRegistrations(): Collection
     {
-        return $this->courses;
+        return $this->registrations;
     }
 
-    public function addCourse(Course $course): self
+    public function addRegistration(Registration $registration): self
     {
-        if (!$this->courses->contains($course)) {
-            $this->courses[] = $course;
-            $course->setActivity($this);
+        if (!$this->registrations->contains($registration)) {
+            $this->registrations[] = $registration;
+            $registration->setActivity($this);
         }
 
         return $this;
     }
 
-    public function removeCourse(Course $course): self
+    public function removeRegistration(Registration $registration): self
     {
-        if ($this->courses->removeElement($course)) {
+        if ($this->registrations->removeElement($registration)) {
             // set the owning side to null (unless already changed)
-            if ($course->getActivity() === $this) {
-                $course->setActivity(null);
+            if ($registration->getActivity() === $this) {
+                $registration->setActivity(null);
             }
         }
 
         return $this;
     }
 
-    public function __toString()
+    public function getActivityType(): ?ActivityType
     {
-        return $this->name;
+        return $this->activityType;
     }
 
-    public function fill(Activity $data): self
+    public function setActivityType(?ActivityType $activityType): self
     {
-        $this->id = $data->getId();
-        $this->name = $data->getName();
+        $this->activityType = $activityType;
+
         return $this;
+    }
+
+    public function setRegistrations(Collection $registrations)
+    {
+        $this->registrations = $registrations;
+
+        return $this;
+    }
+
+    public function clone() {
+        $activity = new Activity();
+        $activity->setNameEs($this->nameEs.'_copia');
+        $activity->setNameEu($this->nameEu.'_kopia');
+        $activity->setTurnEs($this->turnEs.'_copia');
+        $activity->setTurnEu($this->turnEu.'_kopia');
+        $activity->setPlaces($this->places);
+        $activity->setStartDate($this->startDate);
+        $activity->setEndDate($this->endDate);
+        $activity->setActive($this->active);
+        $activity->setRegistrations($this->registrations);
+        $activity->setActivityType($this->activityType);
+        $activity->setDeposit($this->deposit);
+        $activity->setCost($this->cost);
+        $activity->setClasification($this->clasification);
+        return $activity;
+    }
+
+    public function canRegister(\DateTime $date) {
+        if ($this->startDate > $date || $this->endDate < $date ) {
+            return false;
+        }
+        return true;
+    }
+
+    public function getPlaces(): ?int
+    {
+        return $this->places;
+    }
+
+    public function setPlaces(?int $places): self
+    {
+        $this->places = $places;
+
+        return $this;
+    }
+
+    public function getLimitPlaces(): ?bool
+    {
+        return $this->limitPlaces;
+    }
+
+    public function setLimitPlaces(?bool $limitPlaces): self
+    {
+        $this->limitPlaces = $limitPlaces;
+
+        return $this;
+    }
+
+    public function getCost(): ?float
+    {
+        return $this->cost;
+    }
+
+    public function setCost(?float $cost): self
+    {
+        $this->cost = $cost;
+
+        return $this;
+    }
+
+    public function getDeposit(): ?float
+    {
+        return $this->deposit;
+    }
+
+    public function setDeposit(?float $deposit): self
+    {
+        $this->deposit = $deposit;
+
+        return $this;
+    }
+
+    public function getClasification(): ?Clasification
+    {
+        return $this->clasification;
+    }
+
+    public function setClasification(?Clasification $clasification): self
+    {
+        $this->clasification = $clasification;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function countConfirmed(): int {
+        $confirmed = array_reduce($this->getRegistrations()->toArray(),function($carry, Registration $item){
+            if ( $item->getConfirmed()) {
+                $carry += 1;
+            } else {
+                $carry += 0;
+            }
+            return $carry;
+        });
+        if ( $confirmed === null ) {
+            return 0;
+        }
+        return $confirmed;
+    }
+
+    public function countRejected(): int {
+        $confirmed = array_reduce($this->getRegistrations()->toArray(),function($carry, Registration $item){
+            if ($item->getConfirmed() !== null && !$item->getConfirmed()) {
+                $carry += 1;
+            } else {
+                $carry += 0;
+            }
+            return $carry;
+        });
+        if ( $confirmed === null ) {
+            return 0;
+        }
+        return $confirmed;
+    }
+
+    public function isFull() {
+        return $this->countConfirmed() >= $this->places ? true : false; 
     }
 
 }

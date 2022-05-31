@@ -9,6 +9,6 @@
       {{ include('register/_registrationDetails.html.twig') }}
    {% endif %}
    {% if admin is defined and admin == true %}
-      <a class="btn btn-secondary js-back" data-url="{{ path('app_course_status_details', {'id': registration.course.id }) }}">{{ 'btn.cancel' | trans }}</button>
+      <a class="btn btn-secondary js-back" data-url="{{ path('app_activity_status_details', {'id': registration.activity.id }) }}">{{ 'btn.cancel' | trans }}</button>
    {% endif %}
 {% endblock body %}

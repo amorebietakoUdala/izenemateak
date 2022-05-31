@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'title.course.clone' | trans | capitalize }}{% endblock %}
+{% block title %}{{ 'title.activity.clone' | trans | capitalize }}{% endblock %}
 
 {% block body %}
-    <h1>{{ 'title.course.clone' | trans | capitalize }}</h1>
+    <h1>{{ 'title.activity.clone' | trans | capitalize }}</h1>
 
-    {{ include('course/_form.html.twig') }}
+    {{ include('activity/_form.html.twig') }}
 
     {{ include('common/_alert.html.twig', {
         'confirmationText' : 'messages.confirmationDetail' | trans 
