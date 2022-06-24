@@ -35,6 +35,7 @@ class RegistrationExtraFieldType extends AbstractType
             ])
             ->add('value', null, [
                 'label' => 'registrationExtraField.value',
+                'required' => true,
             ])
         ;
     }
