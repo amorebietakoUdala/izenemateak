@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../bundles/user-bundle"
+			"path": "..\\erreziboak"
 		}
 	],
 	"settings": {}

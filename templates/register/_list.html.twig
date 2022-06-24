@@ -40,6 +40,7 @@
             <td>
                <a href="{{ path('app_registration_show', {'id': registration.id, 'admin': true}) }}"><i class="fa fa-eye" title='{{ "btn.show" | trans | capitalize }}'></i></a>&nbsp;
                <a href="{{ path('app_registration_edit', {'id': registration.id, 'admin': true}) }}"><i class="fa fa-edit" title='{{ "btn.edit" | trans | capitalize }}'></i></a>&nbsp;
+               <a href="{{ path('app_registration_pdf', {'id': registration.id, 'admin': true}) }}"><i class="fa fa-file-pdf" title='{{ "btn.pdf" | trans | capitalize }}'></i></a>&nbsp;
                {#<a href="#" data-action="entity#delete" data-url="{{ path('app_registration_delete', {'id': registration.id}) }}" data-token="{{ csrf_token('delete' ~ registration.id) }}"><i class="fa fa-trash" title='{{ "btn.delete" | trans | capitalize }}'></i></a>&nbsp; #}
             </td>
       </tr>

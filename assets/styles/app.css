@@ -72,7 +72,7 @@ span.text-danger ul li {
     display: none;
 }
 
-tbody {
+tbody, thead {
     line-height: 1rem;
     font-size: 0.8rem;
 }

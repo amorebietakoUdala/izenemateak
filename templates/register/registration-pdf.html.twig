@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{app.request.locale}}">
+	<head>
+		<meta charset="utf-8">
+		<title>{{'mail.message.title' | trans }}</title>
+		{% for path in encore_entry_css_files('app') %}
+			<link rel="stylesheet" href="{{ absolute_url(path) }}">
+		{% endfor %}
+	</head>
+
+	<body>
+		<header>
+			<img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
+			<h1>{{ 'label.registrationDetails' | trans }}</h1>
+		</header>
+		{{ include('register/_registrationDetails.html.twig') }}
+	</body>
+</html>
+

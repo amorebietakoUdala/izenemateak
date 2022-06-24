@@ -5,6 +5,9 @@
 		<head>
 			<meta charset="utf-8">
 			<title>{{'mail.confirmationEmail.title' | trans }}</title>
+			{# {% for path in encore_entry_css_files('app') %}
+				<link rel="stylesheet" href="{{ absolute_url(path) }}">
+			{% endfor %} #}
 			<style>
 				{{ include('mailing/_emailStyles.html.twig') }}
 			</style>

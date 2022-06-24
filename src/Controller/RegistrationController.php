@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Activity;
 use App\Entity\Registration;
+use App\Entity\RegistrationExtraField;
 use App\Form\ActiveActivitysSearchFormType;
 use App\Form\RegistrationSearchFormType;
 use App\Form\RegistrationType;
@@ -18,17 +19,30 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Knp\Snappy\Pdf;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class RegistrationController extends AbstractController
 {
-    private $mailer = null;
-    private $translator = null;
+    private MailerInterface $mailer;
+    private TranslatorInterface $translator;
+    private Security $security;
+    private Pdf $pdf;
+    private HttpClientInterface $client;
 
-    public function __construct(MailerInterface $mailer, TranslatorInterface $translator)
+    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, Security $security, Pdf $pdf, HttpClientInterface $client)
     {
         $this->mailer = $mailer;
         $this->translator = $translator;
+        $this->security = $security;
+        $this->pdf = $pdf;
+        $this->client = $client;
     }
 
     /**
@@ -67,17 +81,24 @@ class RegistrationController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em, ActivityRepository $activityRepo, RouterInterface $router): Response
     {
         $registration = new Registration();
-        if ( $request->getSession()->get('giltzaUser') === null ) {
+        if ( $request->getSession()->get('giltzaUser') === null && !$this->security->isGranted('ROLE_USER', $this->getUser()) ) {
             $request->getSession()->set('returnUrl',$this->getActualUrl($request)); 
             return $this->redirectToRoute('app_giltza');
         }
-        if ( $request->getMethod() === Request::METHOD_GET ) {
+        if ( null !== $request->getSession()->get('giltzaUser') && $request->getMethod() === Request::METHOD_GET ) {
             $giltzaUser = $request->getSession()->get('giltzaUser');
             $registration->fillWithGiltzaUser($giltzaUser);
         }
         $activity = null;
+        $extraFields = null;
         if ( null !== $request->get('activity') ) {
             $activity = $activityRepo->find($request->get('activity'));
+            $extraFields = $activity->getExtraFields();
+            foreach ($extraFields as $extraField) {
+                $ref = new RegistrationExtraField();
+                $ref->setExtraField($extraField);
+                $registration->addRegistrationExtraField($ref);
+            }
         }
         $registration->setActivity($activity);
         $activeActivitys = $activityRepo->findByOpenAndActiveActivitys();
@@ -86,14 +107,21 @@ class RegistrationController extends AbstractController
             'locale' => $request->getLocale(),
             'disabled' => false,
             'admin' => false,
+            'roleUser' => $this->security->isGranted('ROLE_USER', $this->getUser()),
+            'activity' => $activity,
         ]);
-
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
             /** @var Registration $data */
+            $data = $form->getData();
             if (!$this->checkForErrors($data, $em)) {
+                $data->setUser($this->getUser());
+                $data = $form->getData();
+                $registrationExtraFields = $data->getRegistrationExtraFields();
+                /** @var RegistrationExtraField ref */
+                foreach ($registrationExtraFields as $ref) {
+                    $ref->setRegistration($data);
+                }
                 $em->persist($data);
                 $em->flush();
                 $html = $this->renderView('mailing/registrationEmail.html.twig', [
@@ -152,15 +180,24 @@ class RegistrationController extends AbstractController
     public function edit(Registration $registration, Request $request, EntityManagerInterface $em): Response
     {
         $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        $activity = $registration->getActivity();
+        $new = false;
         $form = $this->createForm(RegistrationType::class, $registration, [
             'disabled' => false,
             'admin' => true,
+            'new' => $new,
+            'activity' => $activity,
         ]);
         $returnUrl = $this->getReturnURL($request);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Registration $data */
             $data = $form->getData();
+            $registrationExtraFields = $data->getRegistrationExtraFields();
+            /** @var RegistrationExtraField ref */
+            foreach ($registrationExtraFields as $ref) {
+                $ref->setRegistration($data);
+            }
             $em->persist($data);
             $em->flush();
             $this->addFlash('success', 'registration.saved');
@@ -171,7 +208,7 @@ class RegistrationController extends AbstractController
 
         return $this->renderForm('register/edit.html.twig', [
             'form' => $form,
-            'new' => false,
+            'new' => $new,
             'readonly' => false,
             'registration' => $registration,
             'returnUrl' => $returnUrl,
@@ -199,56 +236,92 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("{_locale}/admin/registration/{id}/confirm", name="app_registration_confirm", methods={"GET"})
+     * @Route("{_locale}/admin/registration/{id}/pdf", name="app_registration_pdf", methods={"GET", "POST"})
+     * @isGranted("ROLE_ADMIN")
+     */
+    public function pdf(Request $request, Registration $registration): Response
+    {
+        
+        $html =  $this->renderView('register/registration-pdf.html.twig',[
+            'registration' => $registration,
+        ]);
+        $pdf = $this->pdf->getOutputFromHtml($html);
+        $response = new Response($pdf);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            'registration.pdf'
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+        return $response;
+    }
+
+    /**
+     * @Route("{_locale}/registration/{id}/confirm", name="app_registration_confirm", methods={"GET"})
      */
     public function confirm(Request $request, EntityManagerInterface $em, Registration $registration): Response
     {
-        $token = $request->get('token');
         $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        $token = $request->get('token');
+        $error = $this->checkConfirmationRequest($token, $registration);
+        if ( $error ) {
+            return $this->renderConfirmation(true, $registration, $admin);        
+        }
+        if ( $registration->getConfirmed() ) {
+            $this->addFlash('success', 'messages.alreadyConfirmed');
+            return $this->renderConfirmation(false, $registration, $admin);
+        }
+        if ($registration->getActivity()->isFree()) {
+            // $registration->setConfirmed(true);
+            // $registration->setConfirmationDate(new \DateTime());
+            // $em->persist($registration);
+            // $em->flush();
+        } else {
+            $response = $this->createReceipt($registration);
+            $responseArray = json_decode($response,true); 
+            if ( null !== $responseArray && $responseArray['status'] === 'OK' ) {
+                // $registration->setConfirmed(true);
+                // $registration->setConfirmationDate(new \DateTime());
+                // $em->persist($registration);
+                // $em->flush();
+            } else {
+                $this->addFlash('error', 'messages.errorNotConfirmed');
+                return $this->renderConfirmation(true, $registration, $admin, $responseArray);
+            }
+        }
+        $this->sendConfirmationEmail($request->getLocale(), $registration, $responseArray);
+        $this->addFlash('success', 'messages.successfullyConfirmed');
+        return $this->renderConfirmation(false, $registration, $admin);
+    } 
+
+    private function renderConfirmation($error, $registration, $admin, $responseArray = []) {
+        return $this->render('register/confirmation.html.twig', [
+            'error' => true,
+            'registration' => $registration,
+            'admin' => $admin,
+            'receipt' => $responseArray,
+        ]);
+    }
+
+    /**
+     * Check if the confirmation request is Ok. Returns true when and error is detected.
+     * 
+     * @return bool
+     */
+    private function checkConfirmationRequest($token, Registration $registration) {
         if ($registration->getToken() !== $token) {
             $this->addFlash('error', 'error.invalidConfirmationToken');
-            return $this->render('register/confirmation.html.twig', [
-                'error' => true,
-                'admin' => $admin,
-                'registration' => $registration,
-            ]);
+            return true;
         }
         if ( $registration->getConfirmed() === false ) {
             $this->addFlash('error', 'error.alreadyRejected');
-            return $this->render('register/confirmation.html.twig', [
-                'error' => true,
-                'admin' => $admin,
-                'registration' => $registration,
-            ]);
+            return true;
         }
         if ($registration->getActivity()->isFull()) {
-            $this->addFlash('error', 'error.ActivityIsFull');
-            return $this->render('register/confirmation.html.twig', [
-                'error' => true,
-                'admin' => $admin,
-                'registration' => $registration,
-
-            ]);
+            $this->addFlash('error', 'error.activityIsFull');
+            return true;
         }
-        if ($registration->getConfirmed() ) {
-            $this->addFlash('success', 'messages.alreadyConfirmed');
-            return $this->render('register/confirmation.html.twig', [
-                'error' => false,
-                'registration' => $registration,
-                'admin' => $admin,
-            ]);
-        }
-        $registration->setConfirmed(true);
-        $registration->setConfirmationDate(new \DateTime());
-        $em->persist($registration);
-        $em->flush();
-        $this->sendConfirmationEmail($request->getLocale(), $registration);
-        $this->addFlash('success', 'messages.successfullyConfirmed');
-        return $this->render('register/confirmation.html.twig', [
-            'error' => false,
-            'registration' => $registration,
-            'admin' => $admin,
-        ]);
+        return false;
     }
 
     /**
@@ -256,31 +329,15 @@ class RegistrationController extends AbstractController
      */
     public function reject(Request $request, EntityManagerInterface $em, Registration $registration, RegistrationRepository $repo): Response
     {
-        $token = $request->get('token');
         $admin = $request->get('admin') !== null ? $request->get('admin') : false;
-        if ($registration->getToken() !== $token) {
-            $this->addFlash('error', 'error.invalidRejectToken');
-            return $this->render('register/confirmation.html.twig', [
-                'error' => true,
-                'admin' => $admin,
-                'registration' => $registration,
-            ]);
-        }
-        if ( $registration->getConfirmed() !== null && $registration->getConfirmed() === true ) {
-            $this->addFlash('error', 'error.alreadyConfirmed');
-            return $this->render('register/confirmation.html.twig', [
-                'error' => true,
-                'admin' => $admin,
-                'registration' => $registration,
-            ]);
+        $token = $request->get('token');
+        $error = $this->checkRejectionRequest($token, $registration);
+        if ( $error ) {
+            return $this->renderConfirmation(true, $registration, $admin);
         }
         if ( $registration->getConfirmed() !== null && !$registration->getConfirmed() ) {
             $this->addFlash('success', 'messages.alreadyRejected');
-            return $this->render('register/confirmation.html.twig', [
-                'error' => false,
-                'admin' => $admin,
-                'registration' => $registration,
-            ]);
+            return $this->renderConfirmation(false, $registration, $admin);
         }
         $registration->setConfirmed(false);
         $registration->setConfirmationDate(new \DateTime());
@@ -291,12 +348,26 @@ class RegistrationController extends AbstractController
             $this->sendFortunateEmail($request->getLocale(), $next);
         }
         $this->addFlash('success', 'messages.successfullyRejected');
-        return $this->render('register/confirmation.html.twig', [
-            'error' => false,
-            'registration' => $registration,
-            'admin' => $admin,
-        ]);
+        return $this->renderConfirmation(false, $registration, $admin);
     }
+
+    /**
+     * Check if the rejection request is Ok. Returns true when and error is detected.
+     * 
+     * @return bool
+     */
+    private function checkRejectionRequest($token, Registration $registration) {
+        if ($registration->getToken() !== $token) {
+            $this->addFlash('error', 'error.invalidRejectToken');
+            return true;
+        }
+        if ( $registration->getConfirmed() !== null && $registration->getConfirmed() === true ) {
+            $this->addFlash('error', 'error.alreadyConfirmed');
+            return true;
+        }
+        return false;
+    }
+
 /*
     /**
      * @Route("{_locale}/admin/registration/{id}/mailing", name="app_registration_send_confirm_message")
@@ -321,15 +392,17 @@ class RegistrationController extends AbstractController
     public function show(Request $request, Registration $registration): Response
     {
         $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        $new = false;
         $form = $this->createForm(RegistrationType::class, $registration, [
             'disabled' => true,
             'admin' => true,
+            'new' => $new,
         ]);
         $returnUrl = $this->getReturnURL($request);
 
         return $this->renderForm('register/edit.html.twig', [
             'form' => $form,
-            'new' => false,
+            'new' => $new,
             'readonly' => true,
             'disabled' => true,
             'registration' => $registration,
@@ -339,12 +412,14 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    private function sendConfirmationEmail ($locale, $registration) {
+    private function sendConfirmationEmail ($locale, $registration, $receipt = null) {
         $subject = $this->translator->trans('mail.confirmationEmail.subject', [], 'mail', $locale);
         $html = $this->renderView('mailing/confirmationEmail.html.twig', [
             'registration' => $registration,
             'cancelation' => false,
+            'receipt' => $receipt,
         ]);
+//        return $html;
         $this->sendEmail($registration->getEmail(), $subject, $html, false);
     }
 
@@ -438,5 +513,47 @@ class RegistrationController extends AbstractController
             $returnUrl = $session->get('returnUrl');
         }
         return $returnUrl;
+    }
+
+    private function createReceipt(Registration $registration) {
+        // MOCK Response
+        $response = '{ "status": "OK", "message": "Received", "data": { "recibo": { "numero_recibo": 1298377, "numero_referencia_externa": "froga1", "importe": 5.0, "importe_total": 5.0, "fecha_limite_pago_banco": "2022-06-14T00:00:00+02:00", "tipo_ingreso": { "codigo": "TEXAM", "descripcion": "Tasas de examen", "concepto_c60_au": "025", "concepto_c60": "025" } }, "paymentURL": "https://garapenak.amorebieta-etxano.eus/erreziboak/es/pay/1298377/45624643A" } }';
+        return $response;
+        // $json = $this->registrationToApiJsonFormat($registration);
+        // $base64UserPassword = base64_encode($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword'));
+        // $response = $this->client->request('POST',$this->getParameter('receiptApiUrl'),[
+        //     'headers' => [
+        //         'Content-Type' => 'application/json',
+        //         'Authorization' => sprintf('Basic %s', $base64UserPassword),
+        //     ],
+        //     'body' => $json
+        // ]);
+        // return $response->getContent();
+    }
+
+    private function registrationToApiJsonFormat(Registration $registration) {
+        if ( $registration->getSubscriber() && 
+            ( $registration->getActivity()->getCostForSubscribers() !== null 
+                || $registration->getActivity()->getCostForSubscribers() !== 0 ) ) {
+            $price = $registration->getActivity()->getCostForSubscribers();
+        } else {
+            $price = $registration->getActivity()->getCost();
+        }
+        
+        $inscription = [
+            'inscription' => [
+                'nombre' => $registration->getName(),
+                'apellido1' => $registration->getSurname1(),
+                'apellido2' => $registration->getSurname2(),
+                'dni' => $registration->getDni(),
+                'email' => $registration->getEmail(),
+                'telefono' => $registration->getTelephone1(),
+            ],
+            'concept' => $registration->getActivity()->getAccountingConcept(),
+            'price' => $price,
+            'externalReference' => $registration->getId(),
+        ];
+        $json = json_encode($inscription);
+        return $json;
     }
 }

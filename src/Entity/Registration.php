@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RegistrationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -126,10 +128,41 @@ class Registration
      */
     private $confirmationDate;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     */
+    private $user;
+
+    /**
+     * @ORM\OneToMany(targetEntity=RegistrationExtraField::class, mappedBy="registration", cascade={"persist"})
+     */
+    private $registrationExtraFields;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $paymentName;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $paymentSurname1;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $paymentSurname2;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $paymentWho;
+
     public function __construct()
     {
         $this->forMe = true;
         $this->subscriber = false;
+        $this->registrationExtraFields = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -372,6 +405,42 @@ class Registration
         return $this;
     }
 
+    public function getPaymentSurname1(): ?string
+    {
+        return $this->paymentSurname1;
+    }
+
+    public function setPaymentSurname1(?string $paymentSurname1): self
+    {
+        $this->paymentSurname1 = mb_strtoupper($paymentSurname1);
+
+        return $this;
+    }
+    
+    public function getPaymentSurname2(): ?string
+    {
+        return $this->paymentSurname2;
+    }
+
+    public function setPaymentSurname2(?string $paymentSurname2): self
+    {
+        $this->paymentSurname2 = mb_strtoupper($paymentSurname2);
+
+        return $this;
+    }
+
+    public function getPaymentWho(): ?int
+    {
+        return $this->paymentWho;
+    }
+
+    public function setPaymentWho(int $paymentWho): self
+    {
+        $this->paymentWho = $paymentWho;
+
+        return $this;
+    }
+
     public function getPaymentIBANAccountMasked(): ?string
     {
         return mb_strcut($this->paymentIBANAccount,0,4).'****************'.mb_strcut($this->paymentIBANAccount,-4);
@@ -431,5 +500,68 @@ class Registration
         $this->confirmationDate = $confirmationDate;
 
         return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RegistrationExtraField>
+     */
+    public function getRegistrationExtraFields(): Collection
+    {
+        return $this->registrationExtraFields;
+    }
+
+    public function addRegistrationExtraField(RegistrationExtraField $registrationExtraField): self
+    {
+        if (!$this->registrationExtraFields->contains($registrationExtraField)) {
+            $this->registrationExtraFields[] = $registrationExtraField;
+            $registrationExtraField->setRegistration($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegistrationExtraField(RegistrationExtraField $registrationExtraField): self
+    {
+        if ($this->registrationExtraFields->removeElement($registrationExtraField)) {
+            // set the owning side to null (unless already changed)
+            if ($registrationExtraField->getRegistration() === $this) {
+                $registrationExtraField->setRegistration(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPaymentName(): ?string
+    {
+        return $this->paymentName;
+    }
+
+    public function setPaymentName(?string $paymentName): self
+    {
+        $this->paymentName = mb_strtoupper($paymentName);
+
+        return $this;
+    }
+
+    public function getPayer()
+    {
+//        return $this->paymentName;
+    }
+
+    public function setPayer($payer) {
+//        dd($payer);
     }
 }

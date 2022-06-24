@@ -4,27 +4,27 @@
 		<meta charset="UTF-8">
       <link rel="shortcut icon" href="{{ asset('build/images/favicon.ico') }}">      
 		<title>
-			{% block title %}{{ 'title.appTitle' | trans }}{% endblock %}
+			{% block title %}{{ 'title.appTitle' | trans }}{% endblock title %}
 		</title>
 		{% block stylesheets %}
 			{{ encore_entry_link_tags('app') }}
-		{% endblock %}
+		{% endblock stylesheets %}
 
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}
-		{% endblock %}
+		{% endblock javascripts %}
 	</head>
-	<body data-turbo="true">
+	<body data-turbo="false">
 		{% block header %}
 			{{ include('common/_header.html.twig') }}
 		{% endblock header %}
 		{% block menu %}
 			{{ include('common/_menu.html.twig') }}
-		{% endblock %}
+		{% endblock menu %}
 		{% block message %}
 			{{ include('common/_messages.html.twig') }}
 		{% endblock message %}
 
-		{% block body %}{% endblock %}
+		{% block body %}{% endblock body %}
 	</body>
 </html>

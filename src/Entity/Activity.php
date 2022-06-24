@@ -98,6 +98,11 @@ class Activity
     /**
      * @ORM\Column(type="float", nullable=true)
      */
+    private $costForSubscribers;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
     private $deposit;
 
     /**
@@ -106,11 +111,22 @@ class Activity
      */
     private $clasification;
 
+    /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $accountingConcept;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=ExtraField::class, inversedBy="activities", cascade={"persist"})
+     */
+    private $extraFields;
+
     public function __construct()
     {
         $this->registrations = new ArrayCollection();
         $this->sessions = new ArrayCollection();
         $this->limitPlaces = false;
+        $this->extraFields = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,11 +139,6 @@ class Activity
         return $this->nameEs;
     }
 
-    /**
-     * Set the value of nameEs
-     *
-     * @return  self
-     */ 
     public function setNameEs($nameEs)
     {
         $this->nameEs = $nameEs;
@@ -140,11 +151,6 @@ class Activity
         return $this->nameEu;
     }
 
-    /**
-     * Set the value of nameEu
-     *
-     * @return  self
-     */ 
     public function setNameEu($nameEu)
     {
         $this->nameEu = $nameEu;
@@ -322,6 +328,18 @@ class Activity
         return $this;
     }
 
+    public function getCostForSubscribers(): ?float
+    {
+        return $this->costForSubscribers;
+    }
+
+    public function setCostForSubscribers(?float $costForSubscribers): self
+    {
+        $this->costForSubscribers = $costForSubscribers;
+
+        return $this;
+    }
+
     public function getDeposit(): ?float
     {
         return $this->deposit;
@@ -392,4 +410,50 @@ class Activity
         return $this->countConfirmed() >= $this->places ? true : false; 
     }
 
+    public function isFree() {
+        if ($this->cost === null && $this->costForSubscribers === null) {
+            return true;
+        }
+        if ($this->cost === 0 && $this->costForSubscribers === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getAccountingConcept(): ?string
+    {
+        return $this->accountingConcept;
+    }
+
+    public function setAccountingConcept(string $accountingConcept): self
+    {
+        $this->accountingConcept = $accountingConcept;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ExtraField>
+     */
+    public function getExtraFields(): Collection
+    {
+        return $this->extraFields;
+    }
+
+    public function addExtraField(ExtraField $extraField): self
+    {
+        if (!$this->extraFields->contains($extraField)) {
+            $this->extraFields[] = $extraField;
+        }
+
+        return $this;
+    }
+
+    public function removeExtraField(ExtraField $extraField): self
+    {
+        $this->extraFields->removeElement($extraField);
+
+        return $this;
+    }
 }

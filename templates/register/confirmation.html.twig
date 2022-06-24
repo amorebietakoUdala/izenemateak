@@ -2,11 +2,12 @@
 
 {% block title %}
    {{ 'title.registration.confirm' | trans | capitalize }}
-{% endblock %}
+{% endblock title %}
 
 {% block body %}
    {% if not error %}
       {{ include('register/_registrationDetails.html.twig') }}
+      <a class="btn btn-primary" href="{{ receipt.data.paymentURL }}">pay</a>
    {% endif %}
    {% if admin is defined and admin == true %}
       <a class="btn btn-secondary js-back" data-url="{{ path('app_activity_status_details', {'id': registration.activity.id }) }}">{{ 'btn.cancel' | trans }}</button>

@@ -9,7 +9,7 @@ use AMREU\UserBundle\Model\User as BaseUser;
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User extends BaseUser /* implements AMREUserInterface, PasswordAuthenticatedUserInterface */
+class User extends BaseUser
 {
     /**
      * @ORM\Id()

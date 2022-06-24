@@ -25,7 +25,7 @@
                   <th data-sortable="true">{{"activity.inscriptionPeriod" | trans }}</th>
                   <th data-sortable="true">{{"activity.places" | trans }}</th>
                   <th data-sortable="true">{{"activity.inscriptions" | trans }}</th>
-                  <th data-sortable="true">{{"activity.cost" | trans }}</th>
+                  <th data-sortable="true">{{"activity.cost" | trans }} / {{"activity.costForSubscribers" | trans }}</th>
                   {# <th data-sortable="true">{{"activity.deposit" | trans }}</th> #}
                   <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th>
                   <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
@@ -46,7 +46,14 @@
                         <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
                         <td>{{activity.places is not null ? activity.places: '' }}</td>
                         <td>{{activity.registrations | length }}</td>
-                        <td>{{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }} </td>
+                        <td>{{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }} 
+                           {% if activity.costForSubscribers != null %}
+                              / {{activity.costForSubscribers != null ? activity.costForSubscribers | number_format(2, ',', '.') ~' €' : '' }}
+                           {% else %}
+                              / {{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }}
+                           {% endif %}
+                        </td>
+
                         {# <td>{{activity.deposit != null ? activity.deposit | number_format(2, ',', '.')~' €': '' }} </td> #}
                         <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td>
                         <td>

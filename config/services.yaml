@@ -16,6 +16,10 @@ parameters:
     mailerBCC: "%env(MAILER_BCC)%"
     giltzaLogoutRedirectRoute: 'app_active_activitys'
     giltzaSuccessLoginRedirectRoute: 'app_register_new'
+    receiptApiUrl: '%env(RECEIPT_API_URL)%%env(RECEIPT_API_NEW_RECEIPT_URL)%'
+    receiptApiUser: '%env(RECEIPT_API_USER)%'
+    receiptApiPassword: '%env(RECEIPT_API_PASSWORD)%'
+    accountingConceptServiceUrl: '%env(RECEIPT_API_URL)%%env(RECEIPT_API_ACCOUNTING_CONCEPT_URL)%'
 
 services:
     # default configuration for services in *this* file
