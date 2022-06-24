@@ -69,7 +69,7 @@ class ExtraFieldRepository extends ServiceEntityRepository
     /**
     * @return QueryBuilder Returns an array of ExtraField objects
     */
-    public function findByActivityQB(Activity $activity) {
+    public function findByActivityQB(?Activity $activity) {
         $qb = $this->createQueryBuilder('ef')
             ->innerJoin('ef.activities', 'a');
         if ( null !== $activity) {

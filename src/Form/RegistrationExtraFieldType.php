@@ -31,6 +31,7 @@ class RegistrationExtraFieldType extends AbstractType
                 'query_builder' => function( ExtraFieldRepository $repo ) use ($activity) {
                     return $repo->findByActivityQB($activity);
                 },
+                'disabled' => true,
             ])
             ->add('value', null, [
                 'label' => 'registrationExtraField.value',

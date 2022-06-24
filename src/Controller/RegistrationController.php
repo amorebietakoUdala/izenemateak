@@ -22,11 +22,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Knp\Snappy\Pdf;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class RegistrationController extends AbstractController
 {
@@ -34,15 +30,13 @@ class RegistrationController extends AbstractController
     private TranslatorInterface $translator;
     private Security $security;
     private Pdf $pdf;
-    private HttpClientInterface $client;
 
-    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, Security $security, Pdf $pdf, HttpClientInterface $client)
+    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, Security $security, Pdf $pdf)
     {
         $this->mailer = $mailer;
         $this->translator = $translator;
         $this->security = $security;
         $this->pdf = $pdf;
-        $this->client = $client;
     }
 
     /**
@@ -89,16 +83,11 @@ class RegistrationController extends AbstractController
             $giltzaUser = $request->getSession()->get('giltzaUser');
             $registration->fillWithGiltzaUser($giltzaUser);
         }
+
         $activity = null;
-        $extraFields = null;
         if ( null !== $request->get('activity') ) {
             $activity = $activityRepo->find($request->get('activity'));
-            $extraFields = $activity->getExtraFields();
-            foreach ($extraFields as $extraField) {
-                $ref = new RegistrationExtraField();
-                $ref->setExtraField($extraField);
-                $registration->addRegistrationExtraField($ref);
-            }
+            $registration = $this->createExtraFields($registration, $activity);
         }
         $registration->setActivity($activity);
         $activeActivitys = $activityRepo->findByOpenAndActiveActivitys();
@@ -117,11 +106,6 @@ class RegistrationController extends AbstractController
             if (!$this->checkForErrors($data, $em)) {
                 $data->setUser($this->getUser());
                 $data = $form->getData();
-                $registrationExtraFields = $data->getRegistrationExtraFields();
-                /** @var RegistrationExtraField ref */
-                foreach ($registrationExtraFields as $ref) {
-                    $ref->setRegistration($data);
-                }
                 $em->persist($data);
                 $em->flush();
                 $html = $this->renderView('mailing/registrationEmail.html.twig', [
@@ -147,6 +131,16 @@ class RegistrationController extends AbstractController
             'admin' => false,
             'returnUrl' => $router->generate('app_active_activitys'),
         ]);
+    }
+
+    private function createExtraFields(Registration $registration, Activity $activity) {
+        $extraFields = $activity->getExtraFields();
+        foreach ($extraFields as $extraField) {
+            $ref = new RegistrationExtraField();
+            $ref->setExtraField($extraField);
+            $registration->addRegistrationExtraField($ref);
+        }
+        return $registration;
     }
 
     /**
