@@ -102,7 +102,9 @@ class ActivityController extends AbstractController
             ]);
             }
 
-        $activitys = $repo->findBy(['active' => true]);
+        $activitys = $repo->findActivitysBy([
+            'active' => true,
+        ]);
         return $this->renderForm("activity/$template", [
             'activitys' => $activitys,
             'form' => $form

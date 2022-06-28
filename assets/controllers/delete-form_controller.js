@@ -25,5 +25,5 @@ export default class extends Controller {
       }).then(function(result) {
         form.submit();
       });
-      }
+    }
 }

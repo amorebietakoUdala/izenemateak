@@ -24,7 +24,6 @@ export default class extends Controller {
     }
 
     keyPress(event) {
-        //console.log(event);
         if (event.keyCode === 13) {
             this.submitForm(event);
         }

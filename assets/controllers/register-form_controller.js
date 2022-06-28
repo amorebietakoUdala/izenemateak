@@ -2,8 +2,6 @@ import { Controller } from 'stimulus';
 
 import { useDispatch } from 'stimulus-use';
 
-//import $ from 'jquery';
-
 export default class extends Controller {
    static targets = [
       'form',

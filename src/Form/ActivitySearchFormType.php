@@ -61,6 +61,7 @@ class ActivitySearchFormType extends AbstractType
         ])
         ->add('status', ChoiceType::class,[
             'label' => 'activity.status',
+            'placeholder' => 'activity.status.open',
             'choices' => [
                 'activity.status.'.Activity::STATUS_PREINSCRIPTION => Activity::STATUS_PREINSCRIPTION,
                 'activity.status.'.Activity::STATUS_RAFFLED => Activity::STATUS_RAFFLED,
