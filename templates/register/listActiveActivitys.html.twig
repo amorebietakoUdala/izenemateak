@@ -46,11 +46,16 @@
                         <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
                         <td>{{activity.places is not null ? activity.places: '' }}</td>
                         <td>{{activity.registrations | length }}</td>
-                        <td>{{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }} 
-                           {% if activity.costForSubscribers != null %}
-                              / {{activity.costForSubscribers != null ? activity.costForSubscribers | number_format(2, ',', '.') ~' €' : '' }}
+                        <td>
+                           {% if not activity.isFree %}
+                              {{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }} 
+                              {% if activity.costForSubscribers != null %}
+                                 / {{activity.costForSubscribers != null ? activity.costForSubscribers | number_format(2, ',', '.') ~' €' : '' }}
+                              {% else %}
+                                 / {{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }}
+                              {% endif %}
                            {% else %}
-                              / {{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }}
+                              {{ 'activity.isFree' | trans }}
                            {% endif %}
                         </td>
 

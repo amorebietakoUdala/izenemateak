@@ -1,9 +1,12 @@
 import { Controller } from 'stimulus';
 
+import { useDispatch } from 'stimulus-use';
+
 //import $ from 'jquery';
 
 export default class extends Controller {
    static targets = [
+      'form',
       'studentName', 
       'representativeName', 
       'studentDni', 
@@ -27,6 +30,7 @@ export default class extends Controller {
    }
 
    connect() {
+      useDispatch(this);
       if (this.forMeTarget.checked) {
          this.hideRepresentativeRadio();
       } else {
@@ -44,7 +48,13 @@ export default class extends Controller {
       this.addAnotherExtraField();
    }
 
-   toggle(e) {
+   onSubmit(event) {
+      event.preventDefault();
+      this.formTarget.submit();
+      this.dispatch('submit');
+   }
+
+  toggle(e) {
       let toggler = this.forMeTarget;
       if  (!toggler.checked ) {
          this.showRepresentativeRadio();

@@ -48,22 +48,23 @@
     {{ formMacros.renderExtraField(count, extraField) }}
 {% endmacro %} #}
 
-{{ form_start(form) }}
-    <div class="container-fluid"
-            {{ stimulus_controller({
-                'toggle': {}, 
-                'register-form': {
-                    'forMeLabel': 'register.forMe' | trans,
-                    'notForMeLabel': 'register.notForMe' | trans,
-                    'user': app.user,
-                }, 
-                'datepicker': {
-                    'selector': '.js-datepicker',
-                    'startView': "decade",
-                },
-            }) 
-            }}
-    >
+<div class="container-fluid"
+        {{ stimulus_controller({
+            'toggle': {}, 
+            'register-form': {
+                'forMeLabel': 'register.forMe' | trans,
+                'notForMeLabel': 'register.notForMe' | trans,
+                'user': app.user,
+            }, 
+            'datepicker': {
+                'selector': '.js-datepicker',
+                'startView': "decade",
+            },
+        }) 
+        }}
+>
+
+{{ form_start(form, {'attr': {'data-register-form-target': 'form', 'data-action': 'submit->register-form#onSubmit' }}) }}
         <div class="row align-items-start">
             <div class="col-lg-3" data-register-form-target="forMeLabel">
                 {{ form_label(form.forMe) }}
@@ -158,44 +159,46 @@
                 </div>
             </div>
         </fieldset>
-        <fieldset id="paymentData" class="border border-secondary border-2 p-2 rounded mt-1">
-            <legend class="alert alert-info fs-5 lh-1">{{ 'label.paymentData' | trans }}</legend>
-            <div class="row">
-                <div class="col-lg-2">
-                    {{ form_label(form.paymentWho) }}
-                    {{ form_widget(form.paymentWho, {'attr': {'data-register-form-target': 'payerRadioButton', 'data-action': "click->register-form#onPayerRadioButtonChange" } }) }}
-                    {{ form_errors(form.paymentWho) }}
+        {% if not new or admin %}        
+            <fieldset id="paymentData" class="border border-secondary border-2 p-2 rounded mt-1">
+                <legend class="alert alert-info fs-5 lh-1">{{ 'label.paymentData' | trans }}</legend>
+                <div class="row">
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentWho) }}
+                        {{ form_widget(form.paymentWho, {'attr': {'data-register-form-target': 'payerRadioButton', 'data-action': "click->register-form#onPayerRadioButtonChange" } }) }}
+                        {{ form_errors(form.paymentWho) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentDni) }}
+                        {{ form_widget(form.paymentDni, {'attr': {'data-register-form-target': 'payerDni' } }) }}
+                        {{ form_errors(form.paymentDni) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentName) }}
+                        {{ form_widget(form.paymentName, {'attr': {'data-register-form-target': 'payerName' } }) }}
+                        {{ form_errors(form.paymentName) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentSurname1) }}
+                        {{ form_widget(form.paymentSurname1, {'attr': {'data-register-form-target': 'payerSurname1' } }) }}
+                        {{ form_errors(form.paymentSurname1) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentSurname2) }}
+                        {{ form_widget(form.paymentSurname2, {'attr': {'data-register-form-target': 'payerSurname2' } }) }}
+                        {{ form_errors(form.paymentSurname2) }}
+                    </div>
+                    {% if registration.activity is defined and registration.activity.domiciled %}
+                        <div class="col-lg-4">
+                            {{ form_label(form.paymentIBANAccount) }}
+                            {{ form_widget(form.paymentIBANAccount) }}
+                            {{ form_errors(form.paymentIBANAccount) }}
+                        <small>{{ form_help(form.paymentIBANAccount) }}</small>
+                        </div>
+                    {% endif %}
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-2">
-                    {{ form_label(form.paymentDni) }}
-                    {{ form_widget(form.paymentDni, {'attr': {'data-register-form-target': 'payerDni' } }) }}
-                    {{ form_errors(form.paymentDni) }}
-                </div>
-                <div class="col-lg-2">
-                    {{ form_label(form.paymentName) }}
-                    {{ form_widget(form.paymentName, {'attr': {'data-register-form-target': 'payerName' } }) }}
-                    {{ form_errors(form.paymentName) }}
-                </div>
-                <div class="col-lg-2">
-                    {{ form_label(form.paymentSurname1) }}
-                    {{ form_widget(form.paymentSurname1, {'attr': {'data-register-form-target': 'payerSurname1' } }) }}
-                    {{ form_errors(form.paymentSurname1) }}
-                </div>
-                <div class="col-lg-2">
-                    {{ form_label(form.paymentSurname2) }}
-                    {{ form_widget(form.paymentSurname2, {'attr': {'data-register-form-target': 'payerSurname2' } }) }}
-                    {{ form_errors(form.paymentSurname2) }}
-                </div>
-                <div class="col-lg-4">
-                    {{ form_label(form.paymentIBANAccount) }}
-                    {{ form_widget(form.paymentIBANAccount) }}
-                    {{ form_errors(form.paymentIBANAccount) }}
-                   <small>{{ form_help(form.paymentIBANAccount) }}</small>
-                </div>
-            </div>
-        </fieldset>
+            </fieldset>
+        {% endif %}
 
         <fieldset class="mt-2">
             <div class="row mb-2">
@@ -205,7 +208,7 @@
                 {# This button must appear only if registered user #}
                 {% if is_granted("ROLE_USER") %}                
                     <div class="col-lg-1">
-                        <button type="button"
+                        <button type="button" disabled=" {{ not readonly and not confirm ? false : true  }} )"
                             class="btn btn-info add-another-collection-widget"
                             data-list-selector="#extraFields-fields-list">{{ 'btn.add' | trans }}</button>            
                     </div>
@@ -237,11 +240,18 @@
         <div class="row align-items-start mt-2 mb-2">
             <div class="col-lg">
                 {% if not readonly %}
-                    <button class="btn btn-primary">{{ 'btn.save' | trans }}</button>
+                    <button class="btn btn-primary" type="submit">{{ 'btn.save' | trans }}</button>
+                    {# <button class="btn btn-primary" type="button" data-action="register-form#onSave">{{ 'btn.save' | trans }}</button> #}
+                {% endif %}
+                {% if registration.paymentURL is defined and not registration.paymentURL is empty %}
+                    {# {{ include('register/_registrationDetails.html.twig') }} #}
+                    <a class="btn btn-success" href="{{ registration.paymentURL }}">{{ 'btn.pay' | trans }}</a>
                 {% endif %}
                 {# <button class="btn btn-secondary js-back" data-url="{{ path('app_active_activitys') }}">{{ 'btn.cancel' | trans }}</button> #}
-                <button class="btn btn-secondary js-back" data-url="{{ returnUrl }}">{{ 'btn.cancel' | trans }}</button>
+                {% if ( confirm is defined and not confirm ) or admin %}
+                    <button class="btn btn-secondary js-back" data-url="{{ returnUrl }}">{{ 'btn.cancel' | trans }}</button>
+                {% endif %}
             </div>
         </div>
-    </div>
 {{ form_end(form) }}
+</div>

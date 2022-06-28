@@ -23,7 +23,7 @@ class Registration
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $email;
 
@@ -99,12 +99,12 @@ class Registration
     private $forMe;
 
     /**
-     * @ORM\Column(type="string", length=10, nullable=false)
+     * @ORM\Column(type="string", length=10, nullable=true)
      */
     private $paymentDni;
 
     /**
-     * @ORM\Column(type="string", length=29, nullable=false)
+     * @ORM\Column(type="string", length=29, nullable=true)
      */
     private $paymentIBANAccount;
 
@@ -139,12 +139,12 @@ class Registration
     private $registrationExtraFields;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $paymentName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $paymentSurname1;
 
@@ -154,9 +154,19 @@ class Registration
     private $paymentSurname2;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $paymentWho;
+
+    /**
+     * @ORM\Column(type="string", length=1024, nullable=true)
+     */
+    private $paymentURL;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $waitingListOrder;
 
     public function __construct()
     {
@@ -563,5 +573,29 @@ class Registration
 
     public function setPayer($payer) {
 //        dd($payer);
+    }
+
+    public function getPaymentURL(): ?string
+    {
+        return $this->paymentURL;
+    }
+
+    public function setPaymentURL(?string $paymentURL): self
+    {
+        $this->paymentURL = $paymentURL;
+
+        return $this;
+    }
+
+    public function getWaitingListOrder(): ?int
+    {
+        return $this->waitingListOrder;
+    }
+
+    public function setWaitingListOrder(?int $waitingListOrder): self
+    {
+        $this->waitingListOrder = $waitingListOrder;
+
+        return $this;
     }
 }

@@ -15,6 +15,7 @@
          <th data-sortable="true">{{ 'registration.fortunate' | trans }}</th>
          <th data-sortable="true">{{ 'registration.confirmed' | trans }}</th>
          <th data-sortable="true">{{ 'registration.confirmationDate' | trans }}</th>
+         <th data-sortable="true" title="{{ 'registration.waitingListOrder' | trans }}">{{ 'registration.waitingListOrderAbbr' | trans }}</th>
          <th data-sortable="true" data-field="options">{# {{ 'table.options' | trans }} #}</th>
       </tr>
    </thead>
@@ -30,16 +31,19 @@
          <td>{{ registration.fortunate is null ? 'label.unRaffled' | trans : (registration.fortunate ? 'messages.si' | trans : 'messages.no' | trans) }}</td>
          <td>{{ registration.confirmed is null ? 'label.unConfirmed' | trans : (registration.confirmed ? 'messages.si' | trans : 'messages.no' | trans) }}</td>
          <td>{{ registration.confirmationDate is null ? '' : registration.confirmationDate | date('Y-m-d h:i:s') }}</td>
+         <td>{{ registration.waitingListOrder is null ? '' : registration.waitingListOrder }}</td>
          <td>
-            {% if registration.confirmed is null and registration.activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_LIST') and not activity.isFull %}
-            <a href="{{ path ('app_registration_confirm',{'id': registration.id, 'token': registration.token, 'admin' : true })}}" title="{{ 'btn.confirm' | trans }}">
-               <i class="fa fa-check-double"></i>
-            </a>
-            {% endif %}
-            {% if registration.confirmed is null and registration.activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_LIST') and not activity.isFull %}
-            <a href="{{ path ('app_registration_reject',{'id': registration.id, 'token': registration.token, 'admin' : true })}}" title="{{ 'btn.reject' | trans }}">
-               <i class="fa fa-times"></i>
-            </a>
+            {% if registration.confirmed is null and not activity.isFull and (
+                     ( registration.activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_CONFIRMATIONS') and registration.fortunate ) 
+                     or registration.activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_LIST')
+                  ) 
+            %}
+               <a href="{{ path ('app_registration_confirm',{'id': registration.id, 'token': registration.token, 'admin' : true })}}" title="{{ 'btn.confirm' | trans }}">
+                  <i class="fa fa-check-double"></i>
+               </a>
+               <a href="{{ path ('app_registration_reject',{'id': registration.id, 'token': registration.token, 'admin' : true })}}" title="{{ 'btn.reject' | trans }}">
+                  <i class="fa fa-times"></i>
+               </a>
             {% endif %}
          </td>
       </tr>

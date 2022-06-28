@@ -13,7 +13,9 @@
 			<img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
 			<h1>{{ 'label.registrationDetails' | trans }}</h1>
 		</header>
-		{{ include('register/_registrationDetails.html.twig') }}
+		{{ include('register/_registrationDetails.html.twig',{
+			'paymentData': false,
+		}) }}
 	</body>
 </html>
 

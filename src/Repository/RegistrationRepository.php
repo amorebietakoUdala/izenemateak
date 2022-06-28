@@ -87,7 +87,7 @@ class RegistrationRepository extends ServiceEntityRepository
             ->andWhere('r.confirmed IS NULL')
             ->setParameter('activity', $activity)
             ->setParameter('fortunate', false)
-            ->orderBy('r.createdAt', 'ASC')
+            ->orderBy('r.waitingListOrder', 'ASC')
             ->getQuery()
             ->getResult()
         ;
@@ -103,7 +103,7 @@ class RegistrationRepository extends ServiceEntityRepository
             ->andWhere('r.confirmed IS NULL')
             ->setParameter('activity', $activity)
             ->setParameter('fortunate', false)
-            ->orderBy('r.createdAt', 'ASC')
+            ->orderBy('r.waitingListOrder', 'ASC')
             ->getQuery()
             ->setMaxResults(1)
             ->getResult();
@@ -171,16 +171,4 @@ class RegistrationRepository extends ServiceEntityRepository
         $qb->orderBy('r.id', 'ASC');
         return $qb->getQuery()->getResult();
     }
-
-    /*
-    public function findOneBySomeField($value): ?Person
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

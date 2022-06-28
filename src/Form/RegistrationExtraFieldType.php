@@ -21,11 +21,11 @@ class RegistrationExtraFieldType extends AbstractType
                 'class' => ExtraField::class,
                 'label' => 'registrationExtraField.extraField',
                 'placeholder' => 'placeholder.choose',
-                'choice_label' => function ($extraField) use ($locale) {
+                'choice_label' => function (ExtraField $extraField) use ($locale) {
                     if ('es' === $locale) {
                         return $extraField->getName();
                     } else {
-                        return $extraField->getName();
+                        return $extraField->getNameEu();
                     }
                 },
                 'query_builder' => function( ExtraFieldRepository $repo ) use ($activity) {

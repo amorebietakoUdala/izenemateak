@@ -28,13 +28,15 @@ class ActivityController extends AbstractController
     private $translator = null;
     private $client = null;
     private ExtraFieldRepository $extraFieldRepo;
+    private EntityManagerInterface $em;
 
-    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, HttpClientInterface $client, ExtraFieldRepository $extraFieldRepo)
+    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, HttpClientInterface $client, ExtraFieldRepository $extraFieldRepo, EntityManagerInterface $em)
     {
         $this->mailer = $mailer;
         $this->translator = $translator;
         $this->client = $client;
         $this->extraFieldRepo = $extraFieldRepo;
+        $this->em = $em;
     }
 
     /**
@@ -186,9 +188,7 @@ class ActivityController extends AbstractController
             'locale' => $request->getLocale(),
             'concepts' => $concepts['data'],
         ]);
-
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Activity $data */
             $data = $form->getData();
@@ -254,9 +254,11 @@ class ActivityController extends AbstractController
         }
         $registrations = $activity->getRegistrations();
         $places = $activity->getPlaces();
-        if (count($registrations) <= $places ) {
+        if ( count($registrations) <= $places ) {
             foreach ($registrations as $registration) {
                 $registration->setFortunate(true);
+                $token = $this->generateToken();
+                $registration->setToken($token);
                 $em->persist($registration);
             }
             $activity->setStatus(Activity::STATUS_RAFFLED);
@@ -285,10 +287,24 @@ class ActivityController extends AbstractController
             $this->addFlash('success', 'messages.lotterySuccessfull');
         }
         $em->flush();
-        
+        $this->randomizeWaitingList($unfortunates);    
         return $this->redirectToRoute('app_activity_status_details', [
             'id' => $activity->getId(),
         ]);
+    }
+
+    /**
+     * @param Registration[]
+     */
+    private function randomizeWaitingList(array $unfortunates) {
+        shuffle($unfortunates);
+        $i=1;
+        foreach ($unfortunates as $unfortunate) {
+            $unfortunate->setWaitingListOrder($i);
+            $i++;
+            $this->em->persist($unfortunate);
+        }
+        $this->em->flush();
     }
 
     /**
@@ -371,6 +387,9 @@ class ActivityController extends AbstractController
         return $this->redirectToRoute('app_activity_index');
     }
 
+    /**
+     * @return bool Returns true if an error is found
+     */
     private function checkErrors($form): bool {
         /** @var Activity $data */
         $data = $form->getData();
@@ -384,6 +403,10 @@ class ActivityController extends AbstractController
             return true;
         }
 
+        if ( $data->isDomiciled() && null === $data->getCost() ) {
+            $this->addFlash('error','error.costMandatoryIfDomiciled');
+            return true;
+        }
         return false;
     }
 
@@ -402,6 +425,9 @@ class ActivityController extends AbstractController
 
         /** @var Registration[] $fortunates */
         foreach ($unfortunates as $unfortunate) {
+            if ( null === $unfortunate->getEmail() ) {
+                break;
+            }
             $html = $this->renderView('mailing/unfortunateEmail.html.twig', [
                 'registration' => $unfortunate,
             ]);
@@ -414,6 +440,9 @@ class ActivityController extends AbstractController
 
         /** @var Registration[] $fortunates */
         foreach ($fortunates as $fortunate) {
+            if ( null === $fortunate->getEmail() ) {
+                break;
+            }
             $html = $this->renderView('mailing/fortunateEmail.html.twig', [
                 'registration' => $fortunate,
             ]);
@@ -422,6 +451,9 @@ class ActivityController extends AbstractController
     }
 
     private function sendFillGapsEmail(Registration $registration, $locale) {
+        if ( null === $registration->getEmail() ) {
+            return;
+        }
         $subject = $this->translator->trans('mail.fillGaps.subject', [], 'mail', $locale);
         $html = $this->renderView('mailing/fillGapsEmail.html.twig', [
             'registration' => $registration,

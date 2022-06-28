@@ -13,7 +13,6 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
  */
 class Activity
 {
-
     const STATUS_PREINSCRIPTION = 0;
     const STATUS_RAFFLED = 1;
     const STATUS_WAITING_CONFIRMATIONS = 2;
@@ -121,12 +120,18 @@ class Activity
      */
     private $extraFields;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $domiciled;
+
     public function __construct()
     {
         $this->registrations = new ArrayCollection();
         $this->sessions = new ArrayCollection();
-        $this->limitPlaces = false;
         $this->extraFields = new ArrayCollection();
+        $this->limitPlaces = false;
+        $this->domiciled = false;
     }
 
     public function getId(): ?int
@@ -277,11 +282,18 @@ class Activity
         $activity->setStartDate($this->startDate);
         $activity->setEndDate($this->endDate);
         $activity->setActive($this->active);
-        $activity->setRegistrations($this->registrations);
         $activity->setActivityType($this->activityType);
-        $activity->setDeposit($this->deposit);
+        $activity->setLimitPlaces($this->limitPlaces);
+//        $activity->setDeposit($this->deposit);
         $activity->setCost($this->cost);
+        $activity->setCostForSubscribers($this->costForSubscribers);
+        $activity->setAccountingConcept($this->accountingConcept);
+        $activity->setDomiciled($this->domiciled);
         $activity->setClasification($this->clasification);
+        foreach($this->extraFields as $extraField) {
+            $activity->addExtraField($extraField);
+        }
+        
         return $activity;
     }
 
@@ -453,6 +465,28 @@ class Activity
     public function removeExtraField(ExtraField $extraField): self
     {
         $this->extraFields->removeElement($extraField);
+
+        return $this;
+    }
+
+    public function canConfirm() {
+        if ($this->isFull()) {
+            return false;
+        }
+        if ($this->status === Activity::STATUS_WAITING_CONFIRMATIONS || $this->status === Activity::STATUS_WAITING_LIST) {
+            return true;
+        }
+        return false;
+    }
+
+    public function isDomiciled(): ?bool
+    {
+        return $this->domiciled;
+    }
+
+    public function setDomiciled(bool $domiciled): self
+    {
+        $this->domiciled = $domiciled;
 
         return $this;
     }

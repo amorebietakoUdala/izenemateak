@@ -77,19 +77,24 @@
                 {{ form_row(form.turnEu) }}
             </div>
             <div class="col-lg-1">
+                {{ form_row(form.places) }}
+            </div>
+            <div class="col-lg-2">
+                {{ form_row(form.limitPlaces) }}
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-lg-3">
+                {{ form_row(form.accountingConcept,{'attr': {'data-activity-form-target' : 'accountingConceptSelect'}}) }}
+            </div>
+            <div class="col-lg-1">
                 {{ form_row(form.cost) }}
             </div>
             <div class="col-lg-2">
                 {{ form_row(form.costForSubscribers) }}
             </div>
-            {# <div class="col-lg-1">
-                {{ form_row(form.deposit) }}
-            </div> #}
-            <div class="col-lg-1">
-                {{ form_row(form.places) }}
-            </div>
             <div class="col-lg-2">
-                {{ form_row(form.limitPlaces) }}
+                {{ form_row(form.domiciled) }}
             </div>
         </div>
         <div class="row" {{ stimulus_controller('datepicker', {
@@ -101,11 +106,8 @@
             <div class="col-lg-2">
                 {{ form_row(form.endDate,{'attr': {'data-activity-form-target' : 'endDate'}}) }}
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-auto">
                 {{ form_row(form.status) }}
-            </div>
-            <div class="col-lg-3">
-                {{ form_row(form.accountingConcept,{'attr': {'data-activity-form-target' : 'accountingConceptSelect'}}) }}
             </div>
             <div class="col-lg-1 d-flex form-check form-check-inline align-items-center">
                 {{ form_label(form.active) }}

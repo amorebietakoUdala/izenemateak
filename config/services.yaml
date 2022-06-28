@@ -20,6 +20,7 @@ parameters:
     receiptApiUser: '%env(RECEIPT_API_USER)%'
     receiptApiPassword: '%env(RECEIPT_API_PASSWORD)%'
     accountingConceptServiceUrl: '%env(RECEIPT_API_URL)%%env(RECEIPT_API_ACCOUNTING_CONCEPT_URL)%'
+    createReceiptsOnConfirmation: '%env(bool:CREATE_RECEIPT_ON_CONFIRMATION)%'
 
 services:
     # default configuration for services in *this* file
