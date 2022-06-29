@@ -19,6 +19,9 @@ export default class extends Controller {
                 fileName: this.exportNameValue,
                 ignoreColumn: ['options']
             },
+            icons: {
+                export: 'fa fa-download'
+            },
             showColumns: false,
             pagination: true,
             search: true,
