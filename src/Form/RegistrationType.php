@@ -75,8 +75,10 @@ class RegistrationType extends AbstractType
                 'disabled' => $disabled || $confirm,
                 'widget' => 'single_text',
                             'html5' => false,
-                            'attr' => ['class' => 'js-datepicker'],
-                            
+                            'attr' => [
+                                'class' => 'js-datepicker', 
+                                'placeholder' => 'register.dateOfBirth.placeHolder'
+                            ],
             ])
             ->add('telephone1', null,[
                 'label' => 'register.telephone1',

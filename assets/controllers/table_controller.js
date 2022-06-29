@@ -40,7 +40,7 @@ export default class extends Controller {
                 });
             });
         });
+        /* Changes default theme from bootstrap4 to bootstrap5 */
         let $div = $('div.bootstrap-table.bootstrap4').removeClass('bootstrap4').addClass('bootstrap5');
     }
-  
 }

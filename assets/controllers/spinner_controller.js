@@ -1,6 +1,4 @@
-import {
-   Controller
-} from 'stimulus';
+import { Controller } from 'stimulus';
 
 import { Modal } from 'bootstrap';
 
