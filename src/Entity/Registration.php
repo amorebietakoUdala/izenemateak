@@ -168,6 +168,11 @@ class Registration
      */
     private $waitingListOrder;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $calledOnWaitingList;
+
     public function __construct()
     {
         $this->forMe = true;
@@ -595,6 +600,18 @@ class Registration
     public function setWaitingListOrder(?int $waitingListOrder): self
     {
         $this->waitingListOrder = $waitingListOrder;
+
+        return $this;
+    }
+
+    public function isCalledOnWaitingList(): ?bool
+    {
+        return $this->calledOnWaitingList;
+    }
+
+    public function setCalledOnWaitingList(?bool $calledOnWaitingList): self
+    {
+        $this->calledOnWaitingList = $calledOnWaitingList;
 
         return $this;
     }

@@ -10,35 +10,41 @@
 		<li class="nav-item">
 		  <a class="nav-link {{ 
 			  app.request.attributes.get('_route') == 'app_register_new' 
-		  		or app.request.attributes.get('_route') == 'app_regiser_new'
 				or app.request.attributes.get('_route') == 'app_active_activitys'
 		  ? 'active' : '' }}" 
 		  	  href="{{ path('app_active_activitys') }}">{{ 'navitem.register' | trans | capitalize }}</a>
 		</li>
 		{% if is_granted('ROLE_ADMIN') %}
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle
-				{{ ( app.request.attributes.get('_route') == 'admin_user_list' 
-						or app.request.attributes.get('_route') == 'app_activity_index'
-						or app.request.attributes.get('_route') == 'app_activity_new'
-						or app.request.attributes.get('_route') == 'app_activity_edit'
-						or app.request.attributes.get('_route') == 'app_activity_index'
-						or app.request.attributes.get('_route') == 'app_registration_index'
-						or app.request.attributes.get('_route') == 'app_registration_edit'
-						or app.request.attributes.get('_route') == 'app_registration_show'
-						or app.request.attributes.get('_route') == 'app_clasification_index'
-						 )	
-					? ' active' : '' 
-				}}"
-				data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ 'navitem.administration' | trans | capitalize }}</a>
-			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="{{ path('admin_user_list') }}">{{"navitem.users" | trans | capitalize}}</a></li>
-				<li><a class="dropdown-item" href="{{ path('app_activity_index') }}">{{"navitem.activitys" | trans | capitalize}}</a></li>
-				<li><a class="dropdown-item" href="{{ path('app_activity_type_index') }}">{{"navitem.activityTypes" | trans | capitalize}}</a></li>
-				<li><a class="dropdown-item" href="{{ path('app_clasification_index') }}">{{"navitem.clasifications" | trans | capitalize}}</a></li>
-				<li><a class="dropdown-item" href="{{ path('app_registration_index') }}">{{"navitem.registrations" | trans | capitalize}}</a></li>
-			</ul>
-		</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle
+					{{ ( app.request.attributes.get('_route') == 'admin_user_list' 
+							or app.request.attributes.get('_route') == 'admin_user_show'
+							or app.request.attributes.get('_route') == 'admin_user_edit'
+							or app.request.attributes.get('_route') == 'app_activity_index'
+							or app.request.attributes.get('_route') == 'app_activity_new'
+							or app.request.attributes.get('_route') == 'app_activity_edit'
+							or app.request.attributes.get('_route') == 'app_activity_show'
+							or app.request.attributes.get('_route') == 'app_activity_index'
+							or app.request.attributes.get('_route') == 'app_activity_close'
+							or app.request.attributes.get('_route') == 'app_activity_clone'
+							or app.request.attributes.get('_route') == 'app_registration_index'
+							or app.request.attributes.get('_route') == 'app_registration_edit'
+							or app.request.attributes.get('_route') == 'app_registration_show'
+							or app.request.attributes.get('_route') == 'app_activity_status_details'
+							or app.request.attributes.get('_route') == 'app_activity_type_index'
+							or app.request.attributes.get('_route') == 'app_clasification_index'
+						)	
+						? ' active' : '' 
+					}}"
+					data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ 'navitem.administration' | trans | capitalize }}</a>
+				<ul class="dropdown-menu">
+					<li><a class="dropdown-item" href="{{ path('admin_user_list') }}">{{"navitem.users" | trans | capitalize}}</a></li>
+					<li><a class="dropdown-item" href="{{ path('app_activity_index') }}">{{"navitem.activitys" | trans | capitalize}}</a></li>
+					<li><a class="dropdown-item" href="{{ path('app_activity_type_index') }}">{{"navitem.activityTypes" | trans | capitalize}}</a></li>
+					<li><a class="dropdown-item" href="{{ path('app_clasification_index') }}">{{"navitem.clasifications" | trans | capitalize}}</a></li>
+					<li><a class="dropdown-item" href="{{ path('app_registration_index') }}">{{"navitem.registrations" | trans | capitalize}}</a></li>
+				</ul>
+			</li>
 		{% endif %}
     </ul>
   </div>

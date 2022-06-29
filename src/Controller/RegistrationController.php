@@ -339,7 +339,7 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("{_locale}/admin/registration/{id}/reject", name="app_registration_reject", methods={"GET"})
+     * @Route("{_locale}/registration/{id}/reject", name="app_registration_reject", methods={"GET"})
      */
     public function reject(Request $request, EntityManagerInterface $em, Registration $registration, RegistrationRepository $repo): Response
     {
@@ -360,6 +360,9 @@ class RegistrationController extends AbstractController
         if ($registration->getActivity()->getStatus() === Activity::STATUS_WAITING_CONFIRMATIONS) {
             $next = $repo->findNextOnWaitingListActivity($registration->getActivity());
             $this->sendFortunateEmail($next, $request->getLocale());
+            $next->setCalledOnWaitingList(true);
+            $em->persist($next);
+            $em->flush();
         }
         $this->addFlash('success', 'messages.successfullyRejected');
         return $this->renderConfirmation(false, $registration, $admin);

@@ -97,16 +97,18 @@ class RegistrationRepository extends ServiceEntityRepository
      * @return Registration|null Returns the next on WaitingList
      */
     public function findNextOnWaitingListActivity($activity) {
-        $result = $this->createQueryBuilder('r')
+
+        $qb = $this->createQueryBuilder('r')
             ->andWhere('r.activity = :activity')
             ->andWhere('r.fortunate = :fortunate')
             ->andWhere('r.confirmed IS NULL')
+            ->andWhere('r.calledOnWaitingList IS NULL')
             ->setParameter('activity', $activity)
             ->setParameter('fortunate', false)
             ->orderBy('r.waitingListOrder', 'ASC')
             ->getQuery()
-            ->setMaxResults(1)
-            ->getResult();
+            ->setMaxResults(1);
+        $result = $qb->getResult();
         if (count($result) === 0) {
             return null;
         }

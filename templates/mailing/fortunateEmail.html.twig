@@ -12,7 +12,7 @@
 		<body>
          <header>
             <img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
-            <h1>{{ 'title.appTitle' | trans({},'messages') }}</h1>
+            <h2>{{ 'title.appTitle' | trans({},'messages') }}</h2>
          </header>
 			{% if cancelation is defined and cancelation == true %}
 				<div class="alert alert-success">{{ 'mail.fortunateForCancelation' | trans }}</div>

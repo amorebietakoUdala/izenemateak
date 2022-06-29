@@ -3,7 +3,7 @@
 {% block title %}{{ 'title.activeActivitys' | trans }}{% endblock %}
 
 {% block body %}
-   <h1 class="h2">{{'title.activeActivitys' | trans }}</h1>
+   <h1 class="h2">{{'title.activeActivitys' | trans }}</h2>
    <div {{ stimulus_controller('active-activitys-filter') }}>
       {{ include('register/_activeActivitysSearchForm.html.twig') }}
    </div>
