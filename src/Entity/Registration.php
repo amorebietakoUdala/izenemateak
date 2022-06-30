@@ -23,14 +23,19 @@ class Registration
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $email;
+    private $forMe;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $dni;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -92,11 +97,6 @@ class Registration
      * @ORM\JoinColumn(nullable=false)
      */
     private $activity;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $forMe;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
