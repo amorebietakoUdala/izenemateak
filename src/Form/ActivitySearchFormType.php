@@ -15,7 +15,6 @@ class ActivitySearchFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $locale = $options['locale'];
         $builder
         ->add('active',ChoiceType::class,[
             'label' => 'searchForm.active',

@@ -1,8 +1,5 @@
 @import "~bootstrap";
 @import '@fortawesome/fontawesome-free';
-/*
-@import '~bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css';
-*/
 
 header {
     display: grid;

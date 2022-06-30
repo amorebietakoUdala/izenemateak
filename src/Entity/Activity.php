@@ -100,11 +100,6 @@ class Activity
     private $costForSubscribers;
 
     /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $deposit;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Clasification::class, inversedBy="activitys")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -284,7 +279,6 @@ class Activity
         $activity->setActive($this->active);
         $activity->setActivityType($this->activityType);
         $activity->setLimitPlaces($this->limitPlaces);
-//        $activity->setDeposit($this->deposit);
         $activity->setCost($this->cost);
         $activity->setCostForSubscribers($this->costForSubscribers);
         $activity->setAccountingConcept($this->accountingConcept);
@@ -348,18 +342,6 @@ class Activity
     public function setCostForSubscribers(?float $costForSubscribers): self
     {
         $this->costForSubscribers = $costForSubscribers;
-
-        return $this;
-    }
-
-    public function getDeposit(): ?float
-    {
-        return $this->deposit;
-    }
-
-    public function setDeposit(?float $deposit): self
-    {
-        $this->deposit = $deposit;
 
         return $this;
     }

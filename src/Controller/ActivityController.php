@@ -74,7 +74,6 @@ class ActivityController extends AbstractController
             'accountingConceptServiceUrl' => $this->getParameter('accountingConceptServiceUrl'),
             'username' => $this->getParameter('receiptApiUser'),
             'password' => $this->getParameter('receiptApiPassword'),
-            // 'concepts' => $concepts['data'],
         ]);
 
     }

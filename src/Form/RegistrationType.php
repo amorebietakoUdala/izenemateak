@@ -31,7 +31,6 @@ class RegistrationType extends AbstractType
         $new = $options['new'];
         $confirm = $options['confirm'];
         $roleUser = $options['roleUser'];
-        //dd($activity, $locale, $disabled, $registration, $forMe, $admin, $new, $roleUser);
         $builder
             ->add('forMe', CheckboxType::class,[
                 'label' => $forMe ? 'register.forMe' : 'register.notForMe',
@@ -163,7 +162,6 @@ class RegistrationType extends AbstractType
                     'disabled' => $disabled || $confirm,
                 ]);
                 $required = $confirm && !$activity->isFree();
-//                dd($required, $confirm, !$activity->isFree());
                 if ( $confirm || $admin ) {
                     $builder->add('paymentWho', ChoiceType::class,[
                         'label' => 'register.payer',
@@ -226,14 +224,6 @@ class RegistrationType extends AbstractType
                     ])
                 ;
             } 
-    }
-
-    private function activityQueryBuilderNew(ActivityRepository $repo) {
-        return $repo->findByOpenAndActiveActivitysQB();
-    }
-
-    private function activityQueryBuilderEdit(ActivityRepository $repo) {
-        return $repo->findByOpenAndActiveActivitysQB();
     }
 
     public function configureOptions(OptionsResolver $resolver): void

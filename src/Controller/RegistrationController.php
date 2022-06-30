@@ -385,23 +385,6 @@ class RegistrationController extends AbstractController
         return false;
     }
 
-/*
-    /**
-     * @Route("{_locale}/admin/registration/{id}/mailing", name="app_registration_send_confirm_message")
-     * @isGranted("ROLE_ADMIN")
-     */
-
-    // public function mailing (Request $request, Registration $registration, RegistrationRepository $repo): Response {
-    //     $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($registration->getActivity());
-        
-    //     foreach ( $orderedWaitingList as $registration) {
-    //         $this->send
-    //     }
-
-    //     $this->addFlash('success','messages.successfullyMailed');
-    //     return $this->redirectToRoute('app_activity_status_details');
-    // }
-
     /**
      * @Route("{_locale}/admin/registration/{id}", name="app_registration_show")
      * @isGranted("ROLE_ADMIN")
@@ -450,7 +433,6 @@ class RegistrationController extends AbstractController
             'registration' => $registration,
             'cancelation' => false,
         ]);
-//        return $html;
         $this->sendEmail($registration->getEmail(), $subject, $html, false);
     }
 
@@ -492,12 +474,10 @@ class RegistrationController extends AbstractController
         $dateOfBirth = $registration->getDateOfBirth();
         $now = new \DateTime();
         $today = new \DateTime($now->format('Y-m-d'));
-        
         if( !$activity->canRegister($today) ) {
             $this->addFlash('error', 'error.canNotRegisterToday');
             return true;
         }
-
         $registration = $repo->findOneByDniActivity($registration->getDni(),$activity);
         if ( null !== $registration ) {
             $this->addFlash('error', 'error.alreadyRegistered');
@@ -508,13 +488,11 @@ class RegistrationController extends AbstractController
             $this->addFlash('error', 'error.alreadyRegistered');
             return true;
         }
-
         $registration = $repo->findOneByNameSurname1DateOfBirthActivity($name,$surname1,$dateOfBirth,$activity);
         if ( null !== $registration ) {
             $this->addFlash('error', 'error.alreadyRegistered');
             return true;
         }
-
         if ( $activity->getLimitPlaces() && ( count($activity->getRegistrations()) >= $activity->getPlaces()) ) {
             $this->addFlash('error', 'error.maxRegistrationsReached');
             return true;

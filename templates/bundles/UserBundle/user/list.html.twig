@@ -9,11 +9,8 @@
 
 {% block user_content %}
 	<main class="container-fluid">
-
-		{# <div class="container-fluid"> #}
 			{% if users is defined and users|length > 0 %}
-
-				<table id="taula" {#class="table mt-3"#}>
+				<table id="taula">
 					<thead>
 						<tr>
 							<th data-sortable="true">{{"user.id" | trans | capitalize}}</th>
@@ -66,7 +63,6 @@
 					<i class="fa fa-plus" title='{{ "btn.user.new" | trans | capitalize }}'></i>
 				</a>
 			</span>
-		{# </div> #}
 	</main>
 {% endblock user_content %}
 

@@ -99,16 +99,6 @@ class Registration
     private $forMe;
 
     /**
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    private $paymentDni;
-
-    /**
-     * @ORM\Column(type="string", length=29, nullable=true)
-     */
-    private $paymentIBANAccount;
-
-    /**
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $fortunate;
@@ -139,6 +129,16 @@ class Registration
     private $registrationExtraFields;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $paymentWho;
+
+    /**
+     * @ORM\Column(type="string", length=10, nullable=true)
+     */
+    private $paymentDni;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $paymentName;
@@ -154,9 +154,9 @@ class Registration
     private $paymentSurname2;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", length=29, nullable=true)
      */
-    private $paymentWho;
+    private $paymentIBANAccount;
 
     /**
      * @ORM\Column(type="string", length=1024, nullable=true)
@@ -569,15 +569,6 @@ class Registration
         $this->paymentName = mb_strtoupper($paymentName);
 
         return $this;
-    }
-
-    public function getPayer()
-    {
-//        return $this->paymentName;
-    }
-
-    public function setPayer($payer) {
-//        dd($payer);
     }
 
     public function getPaymentURL(): ?string

@@ -23,18 +23,6 @@ class RestController extends AbstractController
     }
 
     /**
-     * @Route("/activity/{id}/sessions", name="api_activity_sessions", methods={"GET"}, options={"expose" = true})
-     */
-    public function getSessions(Request $request, Activity $activity, SerializerInterface $serializer): Response
-    {
-        $sessions = $serializer->serialize($activity->getSessions(), 'json' , [
-            'groups' => 'list_sessions',
-        ]);
-
-        return new JsonResponse($sessions,200,[],true);
-    }
-
-    /**
      * @Route("/extra-fields", name="api_extra_fields", methods={"GET"}, options={"expose" = true})
      */
     public function getExtraFields(Request $request, SerializerInterface $serializer) {

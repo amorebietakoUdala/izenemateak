@@ -110,15 +110,4 @@ class ActivityRepository extends ServiceEntityRepository
         $qb->orderBy('c.id', 'DESC');
         return $qb->getQuery()->getResult();
     }
-    /*
-    public function findOneBySomeField($value): ?Activity
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
