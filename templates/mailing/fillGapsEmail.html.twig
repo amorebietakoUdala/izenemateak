@@ -12,14 +12,16 @@
 		<body>
          <header>
             <img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
-            <h1>{{ 'title.appTitle' | trans({},'messages') }}</h1>
+            <h2>{{ 'title.appTitle' | trans({},'messages') }}</h2>
          </header>
 			<div class="alert alert-success">{{ 'mail.fillGapsText' | trans }}</div>
 			<div>{{ 'mail.fillGapsTextExplanation' | trans | raw }}</div>
 
 			<a class="btn btn-primary" href="{{ absolute_url(path('app_registration_confirm',{'id': registration.id, 'token': registration.token })) }}">{{ 'mail.accept' | trans }}</a>
 
-			{{ include('register/_registrationDetails.html.twig') }}
+			{{ include('register/_registrationDetails.html.twig',{
+				'paymentData': false,
+			}) }}
 		</body>
 	</html>
 {% endblock %}

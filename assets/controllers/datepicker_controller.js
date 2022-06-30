@@ -1,9 +1,7 @@
 import { Controller } from 'stimulus';
 
 import $ from 'jquery';
-import 'bootstrap-datepicker';
-import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.es.js';
-import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.eu.js';
+import '../js/common/datepicker';
 
 export default class extends Controller {
    static values = {

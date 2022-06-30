@@ -12,13 +12,15 @@
 		<body>
          <header>
             <img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
-            <h1>{{ 'title.appTitle' | trans({},'messages') }}</h1>
+            <h2>{{ 'title.appTitle' | trans({},'messages') }}</h2>
          </header>
 			<div class="alert alert-danger">{{ 'mail.unfortunate.title' | trans }}</div>
 			<div>{{ 'mail.unfortunateText' | trans }}</div>
 			<div>{{ 'mail.unfortunateTextExplanation' | trans }}</div>
 
-			{{ include('register/_registrationDetails.html.twig') }}
+			{{ include('register/_registrationDetails.html.twig',{
+				'paymentData': false,
+			}) }}
 		</body>
 	</html>
 {% endblock %}

@@ -23,39 +23,39 @@
          <tbody>
             {% for activity in activitys %}
                <tr>
-                     <td>{{activity.id}}</td>
-                     {% if app.request.locale == 'es' %}
-                        <td>{{activity.nameEs}}</td>
-                        <td>{{activity.turnEs}}</td>
-                     {% else %}
-                        <td>{{activity.nameEu}}</td>
-                        <td>{{activity.turnEu}}</td>
+                  <td>{{activity.id}}</td>
+                  {% if app.request.locale == 'es' %}
+                     <td>{{activity.nameEs}}</td>
+                     <td>{{activity.turnEs}}</td>
+                  {% else %}
+                     <td>{{activity.nameEu}}</td>
+                     <td>{{activity.turnEu}}</td>
+                  {% endif %}
+                  <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
+                  <td>{{activity.registrations | length}}</td>
+                  <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans}}</td>
+                  {% set statusLabel = 'activity.status.' ~ activity.status %}
+                  <td>{{ statusLabel | trans }}</td>
+                  <td>{{activity.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+                  <td>
+                     <a href="{{ path ("app_activity_show",{'id': activity.id })}}"  title="{{ 'btn.show' | trans }}">
+                        <i class="fa fa-eye"></i>
+                     </a>
+                     &nbsp;<a href="{{ path ("app_activity_edit",{'id': activity.id })}}" title="{{ 'btn.edit' | trans }}">
+                        <i class="fa fa-edit"></i>
+                     </a>
+                     &nbsp;<a href="{{ path ('app_activity_clone',{'id': activity.id })}}" title="{{ 'btn.copy' | trans }}">
+                        <i class="fa fa-clone"></i>
+                     </a>
+                     &nbsp;<a href="{{ path ('app_activity_status_details',{'id': activity.id })}}" title="{{ 'btn.details' | trans }}">
+                        <i class="fa fa-info"></i>
+                     </a>
+                     {% if ( activity.status != constant('App\\Entity\\activity::STATUS_CLOSED') ) %}
+                     &nbsp;<a href="{{ path ('app_activity_close',{'id': activity.id })}}" title="{{ 'btn.close' | trans }}">
+                        <i class="fa fa-times-circle"></i>
+                     </a>
                      {% endif %}
-                     <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
-                     <td>{{activity.registrations | length}}</td>
-                     <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans}}</td>
-                     {% set statusLabel = 'activity.status.' ~ activity.status %}
-                     <td>{{ statusLabel | trans }}</td>
-                     <td>{{activity.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
-                     <td>
-                        <a href="{{ path ("app_activity_show",{'id': activity.id })}}"  title="{{ 'btn.show' | trans }}">
-                           <i class="fa fa-eye"></i>
-                        </a>
-                        &nbsp;<a href="{{ path ("app_activity_edit",{'id': activity.id })}}" title="{{ 'btn.edit' | trans }}">
-                           <i class="fa fa-edit"></i>
-                        </a>
-                        &nbsp;<a href="{{ path ('app_activity_clone',{'id': activity.id })}}" title="{{ 'btn.copy' | trans }}">
-                           <i class="fa fa-clone"></i>
-                        </a>
-                        &nbsp;<a href="{{ path ('app_activity_status_details',{'id': activity.id })}}" title="{{ 'btn.details' | trans }}">
-                           <i class="fa fa-info"></i>
-                        </a>
-                        {% if ( activity.status != constant('App\\Entity\\activity::STATUS_CLOSED') ) %}
-                        &nbsp;<a href="{{ path ('app_activity_close',{'id': activity.id })}}" title="{{ 'btn.close' | trans }}">
-                           <i class="fa fa-times-circle"></i>
-                        </a>
-                        {% endif %}
-                     </td>
+                  </td>
                </tr>
             {% endfor %}
          </tbody>

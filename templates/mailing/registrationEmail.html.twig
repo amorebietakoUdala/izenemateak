@@ -1,3 +1,4 @@
+{% trans_default_domain 'mail' %}
 {% block body_html %}
 	<!DOCTYPE html>
 	<html lang="{{app.request.locale}}">
@@ -12,9 +13,11 @@
 		<body>
          <header>
             <img class="logo" alt="Udaletxearen logoa" src="{{ absolute_url(asset('build/images/logo.jpg')) }}">
-            <h1>{{ 'title.appTitle' | trans }}</h1>
+            <h2>{{ 'title.appTitle' | trans }}</h2>
          </header>
-			{{ include('register/_registrationDetails.html.twig') }}
+			{{ include('register/_registrationDetails.html.twig', {
+				'paymentData': false,
+			}) }}
 		</body>
 	</html>
 {% endblock %}

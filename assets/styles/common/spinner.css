@@ -1,0 +1,4 @@
+.fill {
+   max-width: -moz-available;
+   max-width: -webkit-fill-available;
+}

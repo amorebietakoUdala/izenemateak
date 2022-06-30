@@ -5,11 +5,13 @@ namespace App\Form;
 use App\Entity\ActivityType;
 use App\Entity\Clasification;
 use App\Entity\Activity;
+use App\Entity\ExtraField;
 use App\Repository\ClasificationRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -24,6 +26,7 @@ class ActivityFormType extends AbstractType
         $readonly = $options['readonly'];
         $locale = $options['locale'];
         $status = $options['data']->getStatus() !== null ? $options['data']->getStatus() : 0;
+        $concepts = $options['concepts'] !== null ? $options['concepts'] : [];
         $builder
             ->add('clasification',EntityType::class,[
                 'label' => 'activity.clasification',
@@ -127,16 +130,51 @@ class ActivityFormType extends AbstractType
                 'disabled' => $readonly,
                 'required' => false,
             ])
-            // ->add('deposit', NumberType::class, [
-            //     'label' => 'activity.deposit',
-            //     'disabled' => $readonly,
-            //     'required' => false,
-            // ])
+            ->add('costForSubscribers', NumberType::class, [
+                'label' => 'activity.costForSubscribers',
+                'disabled' => $readonly,
+                'required' => false,
+            ])
+            ->add('domiciled', CheckboxType::class, [
+                'label' => 'activity.domiciled',
+                'disabled' => $readonly,
+                'required' => false,
+            ])
+            ->add('accountingConcept', ChoiceType::class, [
+                'label' => 'activity.accountingConcept',
+                'disabled' => $readonly,
+                'choices' => $this->prepareChoices($concepts, $locale),
+                'required' => true,
+            ])
+
             ->add('active', null, [
                 'label' => 'activity.active',
                 'disabled' => $readonly,
             ])
+            ->add('extraFields', CollectionType::class, [
+                'label' => 'activity.extraFields',
+                'disabled' => $readonly,
+                'entry_type' => ExtraFieldType::class,
+                'entry_options' => [
+                    'attr' => ['class' => 'list-group-item'],
+                ],
+                'prototype' => true,
+                'allow_add' => true,
+                'allow_delete' => true,
+            ]);
         ;
+    }
+
+    private function prepareChoices($concepts, $locale) {
+        $choices = [];
+        foreach ($concepts as $concept) {
+            if ($locale === 'es' ) {
+                $choices[$concept['name']] = $concept['id'];
+            } else {
+                $choices[$concept['name_eu']] = $concept['id'];
+            }
+        }
+        return $choices;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -145,6 +183,7 @@ class ActivityFormType extends AbstractType
             'data_class' => Activity::class,
             'readonly'  => false,
             'locale'  => false,
+            'concepts' => [],
         ]);
     }
 }

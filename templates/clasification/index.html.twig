@@ -3,7 +3,7 @@
 {% block title %}{{ 'title.clasifications' | trans }}{% endblock %}
 
 {% block body %}
-    <h1>{{'title.clasifications' | trans }}</h1>
+    <h2>{{'title.clasifications' | trans }}</h2>
       <div {{ stimulus_controller('reload-content', 
                { 'url': path('app_clasification_index', { 'ajax' : 'true'}),
                   'locale': app.request.locale|split('_')[0] })}} data-action="entity:success->reload-content#refreshContent entity:init->reload-content#refreshContent">
@@ -13,7 +13,6 @@
                   'entitySaveUrl': path('app_clasification_save'),
                   })}} 
                class="container-fluid"
-               {# data-action="hidden.bs.modal->entity#modalHidden" #}
                data-action="keypress->entity#keyPress"
                >
                <div data-reload-content-target="content">

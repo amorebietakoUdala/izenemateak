@@ -20,7 +20,7 @@
         {% set title = 'title.registration.edit' | trans | capitalize %}
     {% endif %}
     <div class="d-flex align-items-center">
-        <h1>{{ title }}</h1>
+        <h2>{{ title }}</h2>
         {% if not new and not readonly %}
             &nbsp;<span>{{ include('register/_delete_form.html.twig') }}</span>
         {% endif %}

@@ -19,6 +19,9 @@ export default class extends Controller {
                 fileName: this.exportNameValue,
                 ignoreColumn: ['options']
             },
+            icons: {
+                export: 'fa fa-download'
+            },
             showColumns: false,
             pagination: true,
             search: true,
@@ -37,7 +40,7 @@ export default class extends Controller {
                 });
             });
         });
+        /* Changes default theme from bootstrap4 to bootstrap5 */
         let $div = $('div.bootstrap-table.bootstrap4').removeClass('bootstrap4').addClass('bootstrap5');
     }
-  
 }

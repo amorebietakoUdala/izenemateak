@@ -2,11 +2,37 @@
 
 {% block title %}
    {{ 'title.registration.confirm' | trans | capitalize }}
-{% endblock %}
+{% endblock title %}
 
 {% block body %}
-   {% if not error %}
-      {{ include('register/_registrationDetails.html.twig') }}
+
+   {% if form is defined and form is not null %}
+      <div  {{ stimulus_controller('spinner') }} data-action="register-form:submit->spinner#showSpinner">
+         <div
+            class="modal fade"
+            tabindex="-1"
+            aria-hidden="true"
+            data-bs-backdrop="static"
+            data-spinner-target="modal"
+         >
+            <div class="modal-dialog">
+               <div class="modal-content">
+                     <div class="modal-header">
+                        <h5 class="modal-title">{{ 'title.sending' | trans }}</h5>
+                     </div>
+                     <div class="modal-body">
+                        <img src="{{ asset('build/images/spinner.gif') }}" class="fill">                  
+                        <div class="text-center">{{ 'messages.thisCanTakeSomeTime' | trans }}</div>
+                     </div>
+               </div>
+            </div>
+         </div>   
+         {{ include('register/_form.html.twig', {
+            'readonly' : false,
+            'confirm': true,
+            'registration': registration,
+         }) }}
+      </div>
    {% endif %}
    {% if admin is defined and admin == true %}
       <a class="btn btn-secondary js-back" data-url="{{ path('app_activity_status_details', {'id': registration.activity.id }) }}">{{ 'btn.cancel' | trans }}</button>

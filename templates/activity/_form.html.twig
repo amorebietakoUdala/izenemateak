@@ -1,25 +1,58 @@
-{# {% import _self as formMacros %} #}
+{% import _self as formMacros %}
 
-{# {% macro printSessionRow (session) %}
-    <div class="row js-session-item">
-        <div class="col-lg-3">
-            {{ form_row(session.descriptionEs) }}
+{% macro renderExtraField (name = '__name__', extraField = null) %}
+    <li>
+        <div id="activity_form_extraFields_{{ name }}" class="list-group-item">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                    <label for="activity_form_extraFields_{{ name }}_name" class="form-label required">{{ 'extraField.name' | trans }}</label>
+                    <a class="ml-auto" data-action="activity-form#deleteExtraField"><i class="fa fa-times"></i></a>
+                </div>
+                <input 
+                    type="text" 
+                    id="activity_form_extraFields_{{ name }}_name" 
+                    name="activity_form[extraFields][{{ name }}][name]" 
+                    required="required" 
+                    maxlength="255" 
+                    class="form-control"
+                    {% if extraField %}
+                        value="{{ extraField.name }}" readonly="readonly"
+                    {% endif %}
+                />
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                    <label for="activity_form_extraFields_{{ name }}_nameEu" class="form-label required">{{ 'extraField.nameEu' | trans }}</label>
+                </div>
+                <input 
+                    type="text" 
+                    id="activity_form_extraFields_{{ name }}_nameEu" 
+                    name="activity_form[extraFields][{{ name }}][nameEu]" 
+                    required="required" 
+                    maxlength="255" 
+                    class="form-control"
+                    {% if extraField %}
+                        value="{{ extraField.nameEu }}" readonly="readonly"
+                    {% endif %}
+                />
+            </div>
         </div>
-        <div class="col-lg-3">
-            {{ form_row(session.descriptionEu) }}
-        </div>
-        <div class="col-lg-1 d-flex form-check form-check-inline align-items-center">
-            {{ form_label(session.active) }}
-            <span class="text-danger">{{ form_errors(session.active) }}</span>
-            {{ form_widget(session.active, {'attr': {'class': 'form-check-input'}}) }}
-        </div>
-        <div class="col-lg-1 d-flex form-check form-check-inline align-items-center">
-            <button class="btn btn-danger" data-action="activity-form#deleteSession">{{'btn.delete' | trans }}</button>
-        </div>
-    </div>
-{% endmacro %} #}
+    </li>
+{% endmacro %}
 
-<div {{ stimulus_controller('activity-form')}}>
+{% macro extraFieldPrototype () %}
+    {{ formMacros.renderExtraField() }}
+{% endmacro %}
+
+{% macro extraFieldRow (extraField, count) %}
+    {{ formMacros.renderExtraField(count, extraField) }}
+{% endmacro %}
+
+<div {{ stimulus_controller('activity-form',{
+    'locale' : app.request.locale|split('_')[0],
+    'autocompleteServiceUrl': absolute_url(path('api_extra_fields')),
+})}}>
+
 {{ form_start(form, {'attr': {'data-activity-form-target' : 'form', 'data-action' : 'submit->activity-form#onSubmit'}}) }}
     <div class="container-fluid" {{ stimulus_controller('toggle') }} >
         <div class="row">
@@ -44,16 +77,24 @@
                 {{ form_row(form.turnEu) }}
             </div>
             <div class="col-lg-1">
-                {{ form_row(form.cost) }}
-            </div>
-            {# <div class="col-lg-1">
-                {{ form_row(form.deposit) }}
-            </div> #}
-            <div class="col-lg-1">
                 {{ form_row(form.places) }}
             </div>
             <div class="col-lg-2">
                 {{ form_row(form.limitPlaces) }}
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-lg-3">
+                {{ form_row(form.accountingConcept,{'attr': {'data-activity-form-target' : 'accountingConceptSelect'}}) }}
+            </div>
+            <div class="col-lg-1">
+                {{ form_row(form.cost) }}
+            </div>
+            <div class="col-lg-2">
+                {{ form_row(form.costForSubscribers) }}
+            </div>
+            <div class="col-lg-2">
+                {{ form_row(form.domiciled) }}
             </div>
         </div>
         <div class="row" {{ stimulus_controller('datepicker', {
@@ -65,7 +106,7 @@
             <div class="col-lg-2">
                 {{ form_row(form.endDate,{'attr': {'data-activity-form-target' : 'endDate'}}) }}
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-auto">
                 {{ form_row(form.status) }}
             </div>
             <div class="col-lg-1 d-flex form-check form-check-inline align-items-center">
@@ -74,14 +115,43 @@
                 {{ form_widget(form.active, {'attr': {'class': 'form-check-input'}}) }}
             </div>                
         </div>
-        <div class="d-grid gap-2 d-md-block">
+        <div class="row mb-2">
+            <div class="col-lg-2">
+                {{ form_label(form.extraFields) }}
+            </div>
+            <div class="col-lg-1">
+                <button type="button"
+                    class="btn btn-info add-another-collection-widget"
+                    data-list-selector="#extraFields-fields-list">{{ 'btn.add' | trans }}</button>            
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-auto">
+                {{ form_errors(form.extraFields) }}
+                <ul id="extraFields-fields-list" class="list-group list-group-flush list-group-horizontal-lg list-unstyled"
+                    data-prototype="{{ formMacros.extraFieldPrototype() | e }}"
+                    data-widget-counter="{{ form.extraFields|length }}"
+                >
+                {% for extraField in form.extraFields %}
+                    {{ form_errors(extraField) }}
+                    {{ formMacros.extraFieldRow(extraField.vars.value, loop.index0) }}
+                {% endfor %}
+                </ul>
+            </div>
+            {# prevents weird label from showing up when no extraFields need to be rendered #}
+            {% if form.extraFields | length == 0 %}
+                {{ form_widget(form.extraFields) }}
+            {% endif %}
+        </div>
+        <div class="d-grid gap-2 d-md-block mb-2 mt-2">
             {% if not readonly %}
                 <button class="btn btn-primary">{{'btn.save' | trans }}</button>
             {% endif %}
             <button class="btn btn-secondary js-back" data-url="{{ path('app_activity_index')}}">{{'btn.cancel' | trans }}</button>
         </div>
     </div>
-{{ form_end(form) }}
+    {{ form_widget(form._token) }}
+{{ form_end(form, { render_rest: false }) }}
     <template id="dateError">
         <swal-title>
             {{ 'message.error' | trans({},'alerts') }}

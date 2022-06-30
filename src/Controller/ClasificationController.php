@@ -24,7 +24,6 @@ class ClasificationController extends AbstractController
     public function index(Request $request, ClasificationRepository $clasificationRepository): Response
     {
         $ajax = $request->get('ajax') !== null ? $request->get('ajax') : "false";
-        $clasifications = $clasificationRepository->findAll();
         $form = $this->createForm(ClasificationType::class);
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
         return $this->render("clasification/$template", [

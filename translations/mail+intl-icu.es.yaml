@@ -1,5 +1,6 @@
 # Mailing
-mail.subject: "Detalles de su inscripción en las actividadess municipales"
+title.appTitle: "Inscripciones"
+mail.subject: "Detalles de su inscripción en las actividades municipales"
 mail.message.title: "Detalles de su inscripción"
 mail.confirmationEmail.title: "Su inscripción ha sido confirmada"
 mail.confirmationEmail.subject: "Su inscripción ha sido confirmada"
@@ -20,3 +21,4 @@ mail.fillGapsText: "Finalizado el plazo de confirmación quedan plazas en esta a
 mail.fillGapsTextExplanation: "Si sigue interesado en asistir a la actividad debe confirmarla pulsando el botón \"Aceptar\" que aparece a continuación."
 mail.accept: "Aceptar"
 mail.reject: "Rechazar"
+btn.pay: "Pagar"

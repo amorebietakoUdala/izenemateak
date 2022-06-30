@@ -13,7 +13,6 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
  */
 class Activity
 {
-
     const STATUS_PREINSCRIPTION = 0;
     const STATUS_RAFFLED = 1;
     const STATUS_WAITING_CONFIRMATIONS = 2;
@@ -98,7 +97,7 @@ class Activity
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $deposit;
+    private $costForSubscribers;
 
     /**
      * @ORM\ManyToOne(targetEntity=Clasification::class, inversedBy="activitys")
@@ -106,11 +105,28 @@ class Activity
      */
     private $clasification;
 
+    /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $accountingConcept;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=ExtraField::class, inversedBy="activities", cascade={"persist"})
+     */
+    private $extraFields;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $domiciled;
+
     public function __construct()
     {
         $this->registrations = new ArrayCollection();
         $this->sessions = new ArrayCollection();
+        $this->extraFields = new ArrayCollection();
         $this->limitPlaces = false;
+        $this->domiciled = false;
     }
 
     public function getId(): ?int
@@ -123,11 +139,6 @@ class Activity
         return $this->nameEs;
     }
 
-    /**
-     * Set the value of nameEs
-     *
-     * @return  self
-     */ 
     public function setNameEs($nameEs)
     {
         $this->nameEs = $nameEs;
@@ -140,11 +151,6 @@ class Activity
         return $this->nameEu;
     }
 
-    /**
-     * Set the value of nameEu
-     *
-     * @return  self
-     */ 
     public function setNameEu($nameEu)
     {
         $this->nameEu = $nameEu;
@@ -271,11 +277,17 @@ class Activity
         $activity->setStartDate($this->startDate);
         $activity->setEndDate($this->endDate);
         $activity->setActive($this->active);
-        $activity->setRegistrations($this->registrations);
         $activity->setActivityType($this->activityType);
-        $activity->setDeposit($this->deposit);
+        $activity->setLimitPlaces($this->limitPlaces);
         $activity->setCost($this->cost);
+        $activity->setCostForSubscribers($this->costForSubscribers);
+        $activity->setAccountingConcept($this->accountingConcept);
+        $activity->setDomiciled($this->domiciled);
         $activity->setClasification($this->clasification);
+        foreach($this->extraFields as $extraField) {
+            $activity->addExtraField($extraField);
+        }
+        
         return $activity;
     }
 
@@ -322,14 +334,14 @@ class Activity
         return $this;
     }
 
-    public function getDeposit(): ?float
+    public function getCostForSubscribers(): ?float
     {
-        return $this->deposit;
+        return $this->costForSubscribers;
     }
 
-    public function setDeposit(?float $deposit): self
+    public function setCostForSubscribers(?float $costForSubscribers): self
     {
-        $this->deposit = $deposit;
+        $this->costForSubscribers = $costForSubscribers;
 
         return $this;
     }
@@ -392,4 +404,72 @@ class Activity
         return $this->countConfirmed() >= $this->places ? true : false; 
     }
 
+    public function isFree() {
+        if ($this->cost === null && $this->costForSubscribers === null) {
+            return true;
+        }
+        if ($this->cost === 0 && $this->costForSubscribers === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getAccountingConcept(): ?string
+    {
+        return $this->accountingConcept;
+    }
+
+    public function setAccountingConcept(string $accountingConcept): self
+    {
+        $this->accountingConcept = $accountingConcept;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ExtraField>
+     */
+    public function getExtraFields(): Collection
+    {
+        return $this->extraFields;
+    }
+
+    public function addExtraField(ExtraField $extraField): self
+    {
+        if (!$this->extraFields->contains($extraField)) {
+            $this->extraFields[] = $extraField;
+        }
+
+        return $this;
+    }
+
+    public function removeExtraField(ExtraField $extraField): self
+    {
+        $this->extraFields->removeElement($extraField);
+
+        return $this;
+    }
+
+    public function canConfirm() {
+        if ($this->isFull()) {
+            return false;
+        }
+        if ($this->status === Activity::STATUS_WAITING_CONFIRMATIONS || $this->status === Activity::STATUS_WAITING_LIST) {
+            return true;
+        }
+        return false;
+    }
+
+    public function isDomiciled(): ?bool
+    {
+        return $this->domiciled;
+    }
+
+    public function setDomiciled(bool $domiciled): self
+    {
+        $this->domiciled = $domiciled;
+
+        return $this;
+    }
 }

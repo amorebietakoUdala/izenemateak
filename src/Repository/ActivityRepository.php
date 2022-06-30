@@ -103,18 +103,11 @@ class ActivityRepository extends ServiceEntityRepository
                 $qb->andWhere("c.$key = :$key")
                 ->setParameter("$key", $value);
             }
+            if ( !array_key_exists('status', $criteria) ) {
+                $qb->andWhere("c.status != :status")
+                    ->setParameter('status', Activity::STATUS_CLOSED);
+            }
         $qb->orderBy('c.id', 'DESC');
         return $qb->getQuery()->getResult();
     }
-    /*
-    public function findOneBySomeField($value): ?Activity
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

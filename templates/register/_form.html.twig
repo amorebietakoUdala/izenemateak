@@ -1,22 +1,74 @@
-{{ form_start(form) }}
-    <div class="container-fluid" 
+{# {% import _self as formMacros %}
+
+{% macro renderExtraField (name = '__name__', extraField = null) %}
+    <li>
+        <div id="activity_form_extraFields_{{ name }}" class="list-group-item">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                    <label for="activity_form_extraFields_{{ name }}_name" class="form-label required">{{ 'extraField.name' | trans }}</label>
+                    <a class="ml-auto" data-action="activity-form#deleteExtraField"><i class="fa fa-times"></i></a>
+                </div>
+                <input 
+                    type="text" 
+                    id="activity_form_extraFields_{{ name }}_name" 
+                    name="activity_form[extraFields][{{ name }}][name]" 
+                    required="required" 
+                    maxlength="255" 
+                    class="form-control"
+                    {% if extraField %}
+                        value="{{ extraField.name }}" readonly="readonly"
+                    {% endif %}
+                />
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                    <label for="activity_form_extraFields_{{ name }}_nameEu" class="form-label required">{{ 'extraField.nameEu' | trans }}</label>
+                </div>
+                <input 
+                    type="text" 
+                    id="activity_form_extraFields_{{ name }}_nameEu" 
+                    name="activity_form[extraFields][{{ name }}][nameEu]" 
+                    required="required" 
+                    maxlength="255" 
+                    class="form-control"
+                    {% if extraField %}
+                        value="{{ extraField.nameEu }}" readonly="readonly"
+                    {% endif %}
+                />
+            </div>
+        </div>
+    </li>
+{% endmacro %}
+
+{% macro extraFieldPrototype () %}
+    {{ formMacros.renderExtraField() }}
+{% endmacro %}
+
+{% macro extraFieldRow (extraField, count) %}
+    {{ formMacros.renderExtraField(count, extraField) }}
+{% endmacro %} #}
+
+<div class="container-fluid"
         {{ stimulus_controller({
             'toggle': {}, 
             'register-form': {
                 'forMeLabel': 'register.forMe' | trans,
                 'notForMeLabel': 'register.notForMe' | trans,
+                'user': app.user,
             }, 
             'datepicker': {
-               'selector': '.js-datepicker',
-               'startView': "decade",
+                'selector': '.js-datepicker',
+                'startView': "decade",
             },
-         }) 
+        }) 
         }}
-    >
+>
+
+{{ form_start(form, {'attr': {'data-register-form-target': 'form', 'data-action': 'submit->register-form#onSubmit' }}) }}
         <div class="row align-items-start">
             <div class="col-lg-3" data-register-form-target="forMeLabel">
                 {{ form_label(form.forMe) }}
-                {{ form_widget(form.forMe, { 'attr': { 'data-action': "toggle#toggle register-form#changeStudentToRepresentative", "data-register-form-target": "forMe"} }) }}
+                {{ form_widget(form.forMe, { 'attr': { 'data-action': "toggle#toggle register-form#toggle", "data-register-form-target": "forMe"} }) }}
             </div>
         </div>
         <fieldset id="studentData" class="border border-secondary border-2 p-2 rounded">
@@ -107,30 +159,99 @@
                 </div>
             </div>
         </fieldset>
-        <fieldset id="paymentData" class="border border-secondary border-2 p-2 rounded mt-1">
-            <legend class="alert alert-info fs-5 lh-1">{{ 'label.paymentData' | trans }}</legend>
-            <div class="row">
+        {% if not new or admin %}        
+            <fieldset id="paymentData" class="border border-secondary border-2 p-2 rounded mt-1">
+                <legend class="alert alert-info fs-5 lh-1">{{ 'label.paymentData' | trans }}</legend>
+                <div class="row">
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentWho) }}
+                        {{ form_widget(form.paymentWho, {'attr': {'data-register-form-target': 'payerRadioButton', 'data-action': "click->register-form#onPayerRadioButtonChange" } }) }}
+                        {{ form_errors(form.paymentWho) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentDni) }}
+                        {{ form_widget(form.paymentDni, {'attr': {'data-register-form-target': 'payerDni' } }) }}
+                        {{ form_errors(form.paymentDni) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentName) }}
+                        {{ form_widget(form.paymentName, {'attr': {'data-register-form-target': 'payerName' } }) }}
+                        {{ form_errors(form.paymentName) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentSurname1) }}
+                        {{ form_widget(form.paymentSurname1, {'attr': {'data-register-form-target': 'payerSurname1' } }) }}
+                        {{ form_errors(form.paymentSurname1) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_label(form.paymentSurname2) }}
+                        {{ form_widget(form.paymentSurname2, {'attr': {'data-register-form-target': 'payerSurname2' } }) }}
+                        {{ form_errors(form.paymentSurname2) }}
+                    </div>
+                    {% if registration.activity is defined and registration.activity.domiciled %}
+                        <div class="col-lg-4">
+                            {{ form_label(form.paymentIBANAccount) }}
+                            {{ form_widget(form.paymentIBANAccount) }}
+                            {{ form_errors(form.paymentIBANAccount) }}
+                        <small>{{ form_help(form.paymentIBANAccount) }}</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </fieldset>
+        {% endif %}
+
+        <fieldset class="mt-2">
+            <div class="row mb-2">
                 <div class="col-lg-2">
-                    {{ form_label(form.paymentDni) }}
-                    {{ form_widget(form.paymentDni) }}
-                    {{ form_errors(form.paymentDni) }}
+                    {{ form_label(form.registrationExtraFields) }}
                 </div>
-                <div class="col-lg-4">
-                    {{ form_label(form.paymentIBANAccount) }}
-                    {{ form_widget(form.paymentIBANAccount) }}
-                    {{ form_errors(form.paymentIBANAccount) }}
-                   <small>{{ form_help(form.paymentIBANAccount) }}</small>
-                </div>
+                {# This button must appear only if registered user #}
+                {% if is_granted("ROLE_USER") %}                
+                    <div class="col-lg-1">
+                        <button type="button" disabled=" {{ not readonly and not confirm ? false : true  }} )"
+                            class="btn btn-info add-another-collection-widget"
+                            data-list-selector="#extraFields-fields-list">{{ 'btn.add' | trans }}</button>            
+                    </div>
+                {% endif %}
             </div>
-        </fieldset>
-        <div class="row align-items-start mt-2">
+            <div class="row">
+                <div class="col-lg-auto">
+                    {{ form_errors(form.registrationExtraFields) }}
+                    <ul id="extraFields-fields-list" class="list-group list-group-horizontal-lg list-unstyled"
+                        data-prototype="{{ form_widget(form.registrationExtraFields.vars.prototype)|e }}"
+                        {# data-widget-tags="{{ '<li></li>'|e }}" #}
+                        data-widget-counter="{{ form.registrationExtraFields|length }}"
+                    >
+                    {% for extraField in form.registrationExtraFields %}
+                        {# <li class="list-group-item"> #}
+                            {{ form_errors(extraField) }}
+                            {{ form_widget(extraField) }}
+                        {# <li> #}
+                        {# {{ formMacros.extraFieldRow(extraField.vars.value, loop.index0) }} #}
+                    {% endfor %}
+                    </ul>
+                </div>
+                {# prevents weird label from showing up when no extraFields need to be rendered #}
+                {% if form.registrationExtraFields | length == 0 %}
+                    {{ form_widget(form.registrationExtraFields) }}
+                {% endif %}
+            </div>
+        </fieldset>        
+        <div class="row align-items-start mt-2 mb-2">
             <div class="col-lg">
                 {% if not readonly %}
-                    <button class="btn btn-primary">{{ 'btn.save' | trans }}</button>
+                    <button class="btn btn-primary" type="submit">{{ 'btn.save' | trans }}</button>
+                    {# <button class="btn btn-primary" type="button" data-action="register-form#onSave">{{ 'btn.save' | trans }}</button> #}
+                {% endif %}
+                {% if registration.paymentURL is defined and not registration.paymentURL is empty %}
+                    {# {{ include('register/_registrationDetails.html.twig') }} #}
+                    <a class="btn btn-success" href="{{ registration.paymentURL }}">{{ 'btn.pay' | trans }}</a>
                 {% endif %}
                 {# <button class="btn btn-secondary js-back" data-url="{{ path('app_active_activitys') }}">{{ 'btn.cancel' | trans }}</button> #}
-                <button class="btn btn-secondary js-back" data-url="{{ returnUrl }}">{{ 'btn.cancel' | trans }}</button>
+                {% if ( confirm is defined and not confirm ) or admin %}
+                    <button class="btn btn-secondary js-back" data-url="{{ returnUrl }}">{{ 'btn.cancel' | trans }}</button>
+                {% endif %}
             </div>
         </div>
-    </div>
 {{ form_end(form) }}
+</div>

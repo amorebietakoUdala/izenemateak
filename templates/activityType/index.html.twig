@@ -3,7 +3,7 @@
 {% block title %}{{ 'title.activityTypes' | trans }}{% endblock %}
 
 {% block body %}
-    <h1>{{'title.activityTypes' | trans }}</h1>
+    <h2>{{'title.activityTypes' | trans }}</h2>
       <div {{ stimulus_controller('reload-content', 
                { 'url': path('app_activity_type_index', { 'ajax' : 'true'}),
                   'locale': app.request.locale|split('_')[0] })}} data-action="entity:success->reload-content#refreshContent entity:init->reload-content#refreshContent">
@@ -13,7 +13,6 @@
                   'entitySaveUrl': path('app_activity_type_save'),
                   })}} 
                class="container-fluid"
-               {# data-action="hidden.bs.modal->entity#modalHidden" #}
                data-action="keypress->entity#keyPress"
                >
                <div data-reload-content-target="content">

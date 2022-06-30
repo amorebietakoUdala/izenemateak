@@ -11,6 +11,9 @@ $(function() {
             fileName: "users",
             ignoreColumn: ['options']
         },
+        icons: {
+            export: 'fa fa-download'
+        },
         showColumns: false,
         pagination: true,
         search: true,

@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Activity;
 use App\Entity\Registration;
 use App\Form\ActivityFormType;
-use App\Form\ActivitySearhFormType;
+use App\Form\ActivitySearchFormType;
 use App\Repository\ActivityRepository;
+use App\Repository\ExtraFieldRepository;
 use App\Repository\RegistrationRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,17 +19,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ActivityController extends AbstractController
 {
 
     private $mailer = null;
     private $translator = null;
+    private $client = null;
+    private ExtraFieldRepository $extraFieldRepo;
+    private EntityManagerInterface $em;
 
-    public function __construct(MailerInterface $mailer, TranslatorInterface $translator)
+    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, HttpClientInterface $client, ExtraFieldRepository $extraFieldRepo, EntityManagerInterface $em)
     {
         $this->mailer = $mailer;
         $this->translator = $translator;
+        $this->client = $client;
+        $this->extraFieldRepo = $extraFieldRepo;
+        $this->em = $em;
     }
 
     /**
@@ -36,9 +45,11 @@ class ActivityController extends AbstractController
      */
     public function new(Request $request, EntityManagerInterface $em): Response
     {
+        $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, new Activity(), [
             'readonly' => false,
             'locale' => $request->getLocale(),
+            'concepts' => $concepts['data'],
         ]);
 
         $form->handleRequest($request);
@@ -47,6 +58,8 @@ class ActivityController extends AbstractController
             if (!$this->checkErrors($form)){
                 /** @var Activity $data */
                 $data = $form->getData();
+                /** If name is the same takes it from database instead of creating another one */
+                $this->checkExtraFields($data->getExtraFields());
                 $em->persist($data);
                 $em->flush();
                 $this->addFlash('success','activity.saved');
@@ -58,6 +71,9 @@ class ActivityController extends AbstractController
             'form' => $form,
             'new' => true,
             'readonly' => false,
+            'accountingConceptServiceUrl' => $this->getParameter('accountingConceptServiceUrl'),
+            'username' => $this->getParameter('receiptApiUser'),
+            'password' => $this->getParameter('receiptApiPassword'),
         ]);
 
     }
@@ -70,7 +86,7 @@ class ActivityController extends AbstractController
     {
         $ajax = $request->get('ajax') !== null ? $request->get('ajax') : "false";
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
-        $form = $this->createForm(ActivitySearhFormType::class, null, [
+        $form = $this->createForm(ActivitySearchFormType::class, null, [
             'locale' => $request->getLocale(),
         ]);
         $form->handleRequest($request);
@@ -85,7 +101,9 @@ class ActivityController extends AbstractController
             ]);
             }
 
-        $activitys = $repo->findBy(['active' => true]);
+        $activitys = $repo->findActivitysBy([
+            'active' => true,
+        ]);
         return $this->renderForm("activity/$template", [
             'activitys' => $activitys,
             'form' => $form
@@ -98,17 +116,19 @@ class ActivityController extends AbstractController
      */
     public function edit(Request $request, EntityManagerInterface $em, Activity $activity): Response
     {
+        $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $activity, [
             'readonly' => false,
             'locale' => $request->getLocale(),
+            'concepts' => $concepts['data'],
         ]);
-
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$this->checkErrors($form)){
                 /** @var Activity $data */
                 $data = $form->getData();
+                /** If name is the same takes it from database instead of creating another one */
+                $this->checkExtraFields($data->getExtraFields());
                 $em->persist($data);
                 $em->flush();
                 $this->addFlash('success','activity.saved');
@@ -121,6 +141,19 @@ class ActivityController extends AbstractController
             'readonly' => false,
             'activity' => $activity,
         ]);
+    }
+
+    private function checkExtraFields(Collection $extraFields) {
+        foreach($extraFields as $extraField) {
+            if ($extraField->getId() === null) {
+                $foundExtraField = $this->extraFieldRepo->findOneBy([ 'name' => $extraField->getName() ]);
+                if ($foundExtraField !== null) {
+                    $extraFields->removeElement($extraField);
+                    $extraFields->add($foundExtraField);
+                }
+            }
+        }
+        return $extraFields;
     }
 
     /**
@@ -150,12 +183,13 @@ class ActivityController extends AbstractController
     public function clone(Request $request, EntityManagerInterface $em, Activity $activity): Response
     {
         $newActivity = $activity->clone();
+        $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $newActivity, [
+            'readonly' => false,
             'locale' => $request->getLocale(),
+            'concepts' => $concepts['data'],
         ]);
-
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Activity $data */
             $data = $form->getData();
@@ -178,9 +212,11 @@ class ActivityController extends AbstractController
      */
     public function show(Request $request, Activity $activity): Response
     {
+        $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $activity, [
             'readonly' => true,
             'locale' => $request->getLocale(),
+            'concepts' => $concepts['data'],
         ]);
 
         return $this->renderForm('activity/edit.html.twig', [
@@ -219,9 +255,11 @@ class ActivityController extends AbstractController
         }
         $registrations = $activity->getRegistrations();
         $places = $activity->getPlaces();
-        if (count($registrations) <= $places ) {
+        if ( count($registrations) <= $places ) {
             foreach ($registrations as $registration) {
                 $registration->setFortunate(true);
+                $token = $this->generateToken();
+                $registration->setToken($token);
                 $em->persist($registration);
             }
             $activity->setStatus(Activity::STATUS_RAFFLED);
@@ -250,10 +288,24 @@ class ActivityController extends AbstractController
             $this->addFlash('success', 'messages.lotterySuccessfull');
         }
         $em->flush();
-        
+        $this->randomizeWaitingList($unfortunates);    
         return $this->redirectToRoute('app_activity_status_details', [
             'id' => $activity->getId(),
         ]);
+    }
+
+    /**
+     * @param Registration[]
+     */
+    private function randomizeWaitingList(array $unfortunates) {
+        shuffle($unfortunates);
+        $i=1;
+        foreach ($unfortunates as $unfortunate) {
+            $unfortunate->setWaitingListOrder($i);
+            $i++;
+            $this->em->persist($unfortunate);
+        }
+        $this->em->flush();
     }
 
     /**
@@ -336,6 +388,9 @@ class ActivityController extends AbstractController
         return $this->redirectToRoute('app_activity_index');
     }
 
+    /**
+     * @return bool Returns true if an error is found
+     */
     private function checkErrors($form): bool {
         /** @var Activity $data */
         $data = $form->getData();
@@ -349,6 +404,10 @@ class ActivityController extends AbstractController
             return true;
         }
 
+        if ( $data->isDomiciled() && null === $data->getCost() ) {
+            $this->addFlash('error','error.costMandatoryIfDomiciled');
+            return true;
+        }
         return false;
     }
 
@@ -367,6 +426,9 @@ class ActivityController extends AbstractController
 
         /** @var Registration[] $fortunates */
         foreach ($unfortunates as $unfortunate) {
+            if ( null === $unfortunate->getEmail() ) {
+                break;
+            }
             $html = $this->renderView('mailing/unfortunateEmail.html.twig', [
                 'registration' => $unfortunate,
             ]);
@@ -379,6 +441,9 @@ class ActivityController extends AbstractController
 
         /** @var Registration[] $fortunates */
         foreach ($fortunates as $fortunate) {
+            if ( null === $fortunate->getEmail() ) {
+                break;
+            }
             $html = $this->renderView('mailing/fortunateEmail.html.twig', [
                 'registration' => $fortunate,
             ]);
@@ -387,6 +452,9 @@ class ActivityController extends AbstractController
     }
 
     private function sendFillGapsEmail(Registration $registration, $locale) {
+        if ( null === $registration->getEmail() ) {
+            return;
+        }
         $subject = $this->translator->trans('mail.fillGaps.subject', [], 'mail', $locale);
         $html = $this->renderView('mailing/fillGapsEmail.html.twig', [
             'registration' => $registration,
@@ -427,5 +495,18 @@ class ActivityController extends AbstractController
     private function generateToken()
     {
         return rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
+    }
+
+    private function getConcepts() {
+        $base64 = base64_encode($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword'));
+        $response = $this->client->request('GET', $this->getParameter('accountingConceptServiceUrl'),[
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => sprintf('Basic %s', $base64),
+            ],
+        ]);
+        $json = $response->getContent();
+        $concepts = json_decode($json, true);
+        return $concepts;
     }
 }

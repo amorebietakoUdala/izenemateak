@@ -1,14 +1,8 @@
 import '../js/common/list.js';
 
 import $ from 'jquery';
-import {
-    Controller
-} from 'stimulus';
-
-import {
-    Modal
-} from 'bootstrap';
-
+import { Controller } from 'stimulus';
+import { Modal } from 'bootstrap';
 import { useDispatch } from 'stimulus-use';
 
 export default class extends Controller {
@@ -24,7 +18,6 @@ export default class extends Controller {
     }
 
     keyPress(event) {
-        //console.log(event);
         if (event.keyCode === 13) {
             this.submitForm(event);
         }
