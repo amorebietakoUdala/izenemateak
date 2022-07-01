@@ -1,0 +1,55 @@
+{% if activitys is defined and activitys|length > 0 %}
+   <table id="table" {{ stimulus_controller('table', {
+      'exportName': 'activitys',
+   }) }}>
+         <thead>
+            <tr>
+               <th data-sortable="true">{{"id" | trans }}</th>
+               {% if app.request.locale == 'es' %}
+                  <th data-sortable="true">{{"activity.nameEs" | trans }}</th>
+                  <th data-sortable="true">{{"activity.turnEs" | trans }}</th>
+               {% else %}
+                  <th data-sortable="true">{{"activity.nameEu" | trans }}</th>
+                  <th data-sortable="true">{{"activity.turnEu" | trans }}</th>
+               {% endif %}
+               <th data-sortable="true">{{"activity.inscriptionPeriod" | trans }}</th>
+               <th data-sortable="true">{{"activity.inscriptions" | trans }}</th>
+               <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th>
+               <th data-sortable="true">{{"activity.status" | trans }}</th>
+               <th data-sortable="true">{{"activity.active" | trans }}</th>
+               <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for activity in activitys %}
+               <tr>
+                  <td>{{activity.id}}</td>
+                  {% if app.request.locale == 'es' %}
+                     <td>{{activity.nameEs}}</td>
+                     <td>{{activity.turnEs}}</td>
+                  {% else %}
+                     <td>{{activity.nameEu}}</td>
+                     <td>{{activity.turnEu}}</td>
+                  {% endif %}
+                  <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
+                  <td>{{activity.registrations | length}}</td>
+                  <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans}}</td>
+                  {% set statusLabel = 'activity.status.' ~ activity.status %}
+                  <td>{{ statusLabel | trans }}</td>
+                  <td>{{activity.active ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+                  <td>
+                     <a href="{{ path ("app_billing_download",{'id': activity.id })}}"  title="{{ 'btn.download' | trans }}">
+                        <i class="fa fa-euro-sign"></i>
+                     </a>
+                  </td>
+               </tr>
+            {% endfor %}
+         </tbody>
+   </table>
+{% else %}
+   <div class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</div>
+{% endif %}
+
+{{ include('common/_alert.html.twig', {
+   'confirmationText' : 'messages.confirmationDetail' | trans 
+}) }}

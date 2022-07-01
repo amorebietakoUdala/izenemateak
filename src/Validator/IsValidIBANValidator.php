@@ -10,12 +10,10 @@ class IsValidIBANValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        /* @var $constraint \App\Validator\IBAN */
-
+        /** @var $constraint \App\Validator\IBAN */
         if (null === $value || '' === $value) {
             return;
         }
-
         if (!$this->validateIBAN($value)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{value}', $value)

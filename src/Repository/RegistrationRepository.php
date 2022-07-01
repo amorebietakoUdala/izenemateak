@@ -133,6 +133,9 @@ class RegistrationRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return Registration|null Returns an array of Registration objects
+     */
     public function findOneByNameSurname1DateOfBirthActivity($name,$surname1, $dateOfBirth, $activity) {
         return $this->createQueryBuilder('r')
             ->andWhere('r.name = :name')
@@ -148,6 +151,9 @@ class RegistrationRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return Registration[]|null Returns an array of Registration objects that matches criteria
+     */
     public function findRegistrationsBy(array $criteria) {
         $qb = $this->createQueryBuilder('r')
             ->innerJoin('r.activity', 'c');

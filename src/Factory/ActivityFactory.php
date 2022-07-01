@@ -8,22 +8,22 @@ use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 
 /**
- * @extends ModelFactory<User>
+ * @extends ModelFactory<Activity>
  *
- * @method static User|Proxy createOne(array $attributes = [])
- * @method static User[]|Proxy[] createMany(int $number, array|callable $attributes = [])
- * @method static User|Proxy find(object|array|mixed $criteria)
- * @method static User|Proxy findOrCreate(array $attributes)
- * @method static User|Proxy first(string $sortedField = 'id')
- * @method static User|Proxy last(string $sortedField = 'id')
- * @method static User|Proxy random(array $attributes = [])
- * @method static User|Proxy randomOrCreate(array $attributes = [])
- * @method static User[]|Proxy[] all()
- * @method static User[]|Proxy[] findBy(array $attributes)
- * @method static User[]|Proxy[] randomSet(int $number, array $attributes = [])
- * @method static User[]|Proxy[] randomRange(int $min, int $max, array $attributes = [])
- * @method static UserRepository|RepositoryProxy repository()
- * @method User|Proxy create(array|callable $attributes = [])
+ * @method static Activity|Proxy createOne(array $attributes = [])
+ * @method static Activity[]|Proxy[] createMany(int $number, array|callable $attributes = [])
+ * @method static Activity|Proxy find(object|array|mixed $criteria)
+ * @method static Activity|Proxy findOrCreate(array $attributes)
+ * @method static Activity|Proxy first(string $sortedField = 'id')
+ * @method static Activity|Proxy last(string $sortedField = 'id')
+ * @method static Activity|Proxy random(array $attributes = [])
+ * @method static Activity|Proxy randomOrCreate(array $attributes = [])
+ * @method static Activity[]|Proxy[] all()
+ * @method static Activity[]|Proxy[] findBy(array $attributes)
+ * @method static Activity[]|Proxy[] randomSet(int $number, array $attributes = [])
+ * @method static Activity[]|Proxy[] randomRange(int $min, int $max, array $attributes = [])
+ * @method static ActivityRepository|RepositoryProxy repository()
+ * @method Activity|Proxy create(array|callable $attributes = [])
  */
 final class ActivityFactory extends ModelFactory
 {

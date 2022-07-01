@@ -1,0 +1,22 @@
+{{ form_start(form, {'attr' : { 'data-billing-filter-target' : 'form' }}) }}
+   <div class="container-fluid">
+      <div class="row align-items-center">
+         <div class="col-lg-2">
+            {{ form_row(form.clasification) }}
+         </div>
+         <div class="col-lg-2">
+            {{ form_row(form.activityType) }}
+         </div>
+         <div class="col-lg-3">
+            {{ form_row(form.status) }}
+         </div>
+         <div class="col-lg-2">
+            {{ form_row(form.active) }}
+         </div>
+         <div class="col-lg-2">
+            <button class="btn btn-primary">{{ 'btn.search' | trans }}</button>
+            <button class="btn btn-secondary" type="button" onclick="this.form.reset();">{{ 'btn.clean' | trans }}</button>
+         </div>
+      </div>
+   </div>
+{{ form_end(form) }}
