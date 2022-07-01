@@ -46,6 +46,7 @@
 				</ul>
 			</li>
 		{% endif %}
+		{% if is_granted('ROLE_USER') %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" 
 					{{ ( app.request.attributes.get('_route') == 'app_billing_index' 
@@ -59,7 +60,8 @@
           <ul class="dropdown-menu" aria-labelledby="navbarBilling">
             <li><a class="dropdown-item" href="{{ path('app_billing_index') }}">{{"navitem.billing.index" | trans | capitalize}}</a></li>
           </ul>
-        </li>		
+        </li>
+		{% endif %}
     </ul>
   </div>
 </nav>
