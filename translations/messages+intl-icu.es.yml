@@ -65,6 +65,8 @@ navitem.activitys: "Actividades"
 navitem.activityTypes: "Tipos de actividades"
 navitem.registrations: "Inscripciones"
 navitem.clasifications: "Clasificaciones"
+navitem.billing: "Facturación"
+navitem.billing.index: "Listado"
 link.logout: "Salir"
 
 # Buttons
@@ -90,6 +92,7 @@ btn.reject: "Rechazar"
 btn.pdf: "PDF"
 btn.add: "Añadir"
 btn.pay: "Pagar"
+btn.download: "Descargar facturas"
 
 # Titles
 title.register: "Inscribirse"
@@ -112,6 +115,7 @@ title.registration.confirm: "Confirmar inscripción"
 title.activity.details: "Detalles de estado"
 title.clasifications: "Clasificación de actividades"
 title.clasification: "Nueva clasificación"
+title.billing: "Facturación"
 
 # Labels
 table.options: "Opciones"
@@ -259,3 +263,5 @@ error.activityIsFull: "La actividad no tiene plazas libres."
 error.incorrectStatus: "No se puede confirmar la inscripción, el plazo de confirmación ha pasado ya."
 error.paymentIBANAccountMandatory: "El número de cuenta IBAN es obligatorio."
 error.costMandatoryIfDomiciled: "Si la actividad es domiciliada debe rellenar el precio."
+error.noRegistrations: "No hay nadie apuntado"
+error.cantGetConcepts: "Se ha producido un error al obtener los conceptos"

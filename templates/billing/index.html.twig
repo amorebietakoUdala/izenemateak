@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{'title.billing' | trans | capitalize }}{% endblock %}
+
+{% block body %}
+   <div class="container-fluid">
+      {{ include('billing/_searchForm.html.twig') }}
+      <div data-reload-content-target="content">
+         {{ include('billing/_list.html.twig', { 'activitys': activitys }) }}
+      </div>
+      {{ include('common/_alert.html.twig', {
+         'confirmationText' : 'messages.confirmationDetail' | trans 
+      }) }}
+   </div>
+{% endblock %}

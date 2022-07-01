@@ -168,10 +168,11 @@ class ActivityFormType extends AbstractType
     private function prepareChoices($concepts, $locale) {
         $choices = [];
         foreach ($concepts as $concept) {
+            $conceptElem = $concept['concept']; 
             if ($locale === 'es' ) {
-                $choices[$concept['name']] = $concept['id'];
+                $choices[$conceptElem['name']] = $conceptElem['id'];
             } else {
-                $choices[$concept['name_eu']] = $concept['id'];
+                $choices[$conceptElem['name_eu']] = $conceptElem['id'];
             }
         }
         return $choices;

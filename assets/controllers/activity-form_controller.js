@@ -2,7 +2,7 @@ import { Controller } from 'stimulus';
 
 import $ from 'jquery';
 import '../js/common/select2';
-import '../js/common/autocomplete';
+import '../js/common/autocomplete.js';
 
 export default class extends Controller {
     static targets = ['form','startDate','endDate','accountingConceptSelect'];
@@ -65,7 +65,6 @@ export default class extends Controller {
         onSelect: function (suggestion) {
           console.log('Onselect');
           console.log(suggestion, locale);
-          // TODO fix this logic
           if (locale == 'es') {
             var input_idEu = $(this).attr('id').replace('name', 'nameEu');
             console.log(input_idEu);

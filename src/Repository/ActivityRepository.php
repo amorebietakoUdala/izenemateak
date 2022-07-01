@@ -110,4 +110,12 @@ class ActivityRepository extends ServiceEntityRepository
         $qb->orderBy('c.id', 'DESC');
         return $qb->getQuery()->getResult();
     }
+
+    public function findDomiciledActivitysBy(array $criteria) {
+        return $this->findActivitysBy(
+            array_merge($criteria, [
+                'domiciled' => true,
+            ]
+        ));
+    }
 }

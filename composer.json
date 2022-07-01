@@ -45,6 +45,7 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
         "globalcitizen/php-iban": "^4.1",
+        "league/csv": "^9.0",
         "symfony/debug-bundle": "5.4.*",
         "symfony/maker-bundle": "^1.15",
         "symfony/var-dumper": "5.4.*",
