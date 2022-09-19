@@ -279,7 +279,7 @@ class RegistrationController extends AbstractController
             }
             if ($this->getParameter('createReceiptsOnConfirmation') && !$registration->getActivity()->isFree() && !$registration->getActivity()->isDomiciled()) {
                 $response = $this->createReceipt($registration);
-                $responseArray = json_decode($response,true); 
+                $responseArray = json_decode($response,true);
                 if ( null !== $responseArray && $responseArray['status'] === 'NOK' ) {
                     $this->addFlash('error', 'messages.errorNotConfirmed');
                     return $this->renderConfirmation(true, $registration, $admin, $form);
@@ -552,19 +552,18 @@ class RegistrationController extends AbstractController
         } else {
             $price = $registration->getActivity()->getCost();
         }
-        
         $inscription = [
             'inscription' => [
-                'nombre' => $registration->getName(),
-                'apellido1' => $registration->getSurname1(),
-                'apellido2' => $registration->getSurname2(),
-                'dni' => $registration->getDni(),
+                'nombre' => $registration->getPaymentName(),
+                'apellido1' => $registration->getPaymentSurname1(),
+                'apellido2' => $registration->getPaymentSurname1(),
+                'dni' => $registration->getPaymentDni(),
                 'email' => $registration->getEmail(),
                 'telefono' => $registration->getTelephone1(),
             ],
             'concept' => $registration->getActivity()->getAccountingConcept(),
             'price' => $price,
-            'externalReference' => $registration->getId(),
+            'externalReference' => 'IZEN_'.$registration->getId(),
         ];
         $json = json_encode($inscription);
         return $json;
