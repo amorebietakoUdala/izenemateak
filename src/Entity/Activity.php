@@ -120,6 +120,11 @@ class Activity
      */
     private $domiciled;
 
+    /**
+     * @ORM\Column(type="string", length=1024, nullable=true)
+     */
+    private $url;
+
     public function __construct()
     {
         $this->registrations = new ArrayCollection();
@@ -469,6 +474,18 @@ class Activity
     public function setDomiciled(bool $domiciled): self
     {
         $this->domiciled = $domiciled;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): self
+    {
+        $this->url = $url;
 
         return $this;
     }

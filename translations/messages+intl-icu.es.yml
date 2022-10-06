@@ -127,6 +127,7 @@ label.unRaffled: "No sorteado"
 label.registrationDetails: "Detalles de su inscripción:"
 label.representativeDetails: "Datos del representante"
 label.unConfirmed: "Sin confirmar"
+label.newTab: "Se abrira en una nueva pestaña"
 
 # Placeholders
 placeholder.choose: "Elije una opción"
@@ -164,6 +165,8 @@ activity.accountingConcept: "Concepto Tributario"
 activity.extraFields: "Campos extra"
 activity.isFree: "Gratis"
 activity.domiciled: "Domiciliado"
+activity.url: "Dirección del formulario externo"
+activity.help.url: "Sólo se debe rellenar si se va a un formulario externo de Microsoft forms o Google Forms"
 
 activityType.name: "Nombre"
 

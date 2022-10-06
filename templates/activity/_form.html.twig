@@ -115,6 +115,11 @@
                 {{ form_widget(form.active, {'attr': {'class': 'form-check-input'}}) }}
             </div>                
         </div>
+        <div class="row">
+            <div class="col">
+                {{ form_row(form.url) }}
+            </div>
+        </div>
         <div class="row mb-2">
             <div class="col-lg-2">
                 {{ form_label(form.extraFields) }}

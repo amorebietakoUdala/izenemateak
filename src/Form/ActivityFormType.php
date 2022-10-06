@@ -151,6 +151,11 @@ class ActivityFormType extends AbstractType
                 'label' => 'activity.active',
                 'disabled' => $readonly,
             ])
+            ->add('url', null, [
+                'label' => 'activity.url',
+                'disabled' => $readonly,
+                'help' => 'activity.help.url',
+            ])
             ->add('extraFields', CollectionType::class, [
                 'label' => 'activity.extraFields',
                 'disabled' => $readonly,

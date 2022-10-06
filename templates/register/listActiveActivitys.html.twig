@@ -56,7 +56,12 @@
                         </td>
                         <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td>
                         <td>
-                           {% if not (activity.limitPlaces and activity.registrations | length >= activity.places) %}
+                           {% if activity.url != null %}
+                           <p>{{ 'label.newTab' | trans }}</p>
+                           <a href="{{ activity.url }}" title="{{ 'btn.register' | trans }}"
+                              class="btn btn-primary" target="_blank">{{ 'btn.register' | trans }}
+                           </a>
+                           {% elseif not (activity.limitPlaces and activity.registrations | length >= activity.places) %}
                            <a href="{{ path ("app_register_new", {'activity': activity.id })}}"  title="{{ 'btn.register' | trans }}"
                               class="btn btn-primary">{{ 'btn.register' | trans }}
                            </a>
