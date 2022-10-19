@@ -18,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Url;
 
 class ActivityFormType extends AbstractType
 {
@@ -25,6 +26,7 @@ class ActivityFormType extends AbstractType
     {
         $readonly = $options['readonly'];
         $locale = $options['locale'];
+        $copyRegistrations = $options['copyRegistrations'] ?? false;
         $status = $options['data']->getStatus() !== null ? $options['data']->getStatus() : 0;
         $concepts = $options['concepts'] !== null ? $options['concepts'] : [];
         $builder
@@ -70,16 +72,10 @@ class ActivityFormType extends AbstractType
             ])
             ->add('turnEs',null,[
                 'label' => 'activity.turnEs',
-                'constraints' => [
-                    new NotBlank(),
-                ],
                 'disabled' => $readonly,
             ])
             ->add('turnEu',null,[
                 'label' => 'activity.turnEu',
-                'constraints' => [
-                    new NotBlank(),
-                ],
                 'disabled' => $readonly,
             ])
             ->add('startDate', DateType::class, [
@@ -151,10 +147,25 @@ class ActivityFormType extends AbstractType
                 'label' => 'activity.active',
                 'disabled' => $readonly,
             ])
+            ->add('askSchool', null, [
+                'label' => 'activity.askSchool',
+                'disabled' => $readonly,
+            ])
+            ->add('askBirthDate', null, [
+                'label' => 'activity.askBirthDate',
+                'disabled' => $readonly,
+            ])
+            ->add('askSubscriber', null, [
+                'label' => 'activity.askSubscriber',
+                'disabled' => $readonly,
+            ])
             ->add('url', null, [
                 'label' => 'activity.url',
                 'disabled' => $readonly,
                 'help' => 'activity.help.url',
+                'constraints' => [
+                    new Url(),
+                ]
             ])
             ->add('extraFields', CollectionType::class, [
                 'label' => 'activity.extraFields',
@@ -167,6 +178,14 @@ class ActivityFormType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
             ]);
+            if ($copyRegistrations) {
+                $builder->add('copyRegistrations', CheckboxType::class, [
+                    'label' => 'activity.copyRegistrations',
+                    'disabled' => $readonly,
+                    'required' => false,
+                    'help' => 'activity.help.copyRegistrations'
+                ]);
+            }
         ;
     }
 
@@ -190,6 +209,7 @@ class ActivityFormType extends AbstractType
             'readonly'  => false,
             'locale'  => false,
             'concepts' => [],
+            'copyRegistrations' => false,
         ]);
     }
 }

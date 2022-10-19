@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 import { Controller } from 'stimulus';
 
 import { useDispatch } from 'stimulus-use';
@@ -20,11 +22,15 @@ export default class extends Controller {
       'payerName',
       'payerSurname1',
       'payerSurname2',
+      'school',
+      'dateOfBirth',
+      'subscriber',
    ];
    static values = {
       forMeLabel: String,
       notForMeLabel: String,
       user: Boolean,
+      activityApi: String,
    }
 
    connect() {
@@ -197,6 +203,42 @@ export default class extends Controller {
         // create a new list element and add it to the list
         $(newElem).appendTo(list);
       });
-    }
+   }
+
+   async onActivityChange(event) {
+      event.preventDefault();
+      const activity = event.target.value;
+      try {
+         await $.ajax({
+            url: this.activityApiValue,
+            data: {
+               'activity': activity
+           },           
+            method: 'GET',
+         }).then((response) => {
+            const showDateOfBirth = response.askBirthDate;
+            const showSchool = response.askSchool;
+            const showSubscriber = response.askSubscriber;
+            if ( showSchool ) {
+               $(this.dateSchoolTarget).removeClass('d-none');
+            } else {
+               $(this.dateSchoolTarget).addClass('d-none');
+            }
+            if ( showDateOfBirth ) {
+               $(this.dateOfBirthTarget).removeClass('d-none');
+            } else {
+               $(this.dateOfBirthTarget).addClass('d-none');
+            }
+            if ( showSubscriber ) {
+               $(this.subscriberTarget).removeClass('d-none');
+            } else {
+               $(this.subscriberTarget).addClass('d-none');
+            }
+         });
+      } catch (e) {
+         console.log(e);
+      }
+   }
+
 }
 

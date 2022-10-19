@@ -55,6 +55,11 @@
                         <i class="fa fa-times-circle"></i>
                      </a>
                      {% endif %}
+                     {% if is_granted('ROLE_ADMIN') %}
+                     &nbsp;<a href="{{ path ('app_register_new',{'activity': activity.id })}}" title="{{ 'btn.register' | trans }}">
+                        <i class="fa fa-user-plus"></i>
+                     </a>
+                     {% endif %}
                   </td>
                </tr>
             {% endfor %}

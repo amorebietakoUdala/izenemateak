@@ -97,7 +97,7 @@ class ActivityController extends AbstractController
             $activitys = $repo->findActivitysBy($criteria);
             return $this->renderForm("activity/$template", [
                 'activitys' => $activitys,
-                'form' => $form
+                'form' => $form,
             ]);
             }
 
@@ -106,7 +106,8 @@ class ActivityController extends AbstractController
         ]);
         return $this->renderForm("activity/$template", [
             'activitys' => $activitys,
-            'form' => $form
+            'form' => $form,
+            'copyRegistrations' => false,
         ]);
     }
 
@@ -140,6 +141,7 @@ class ActivityController extends AbstractController
             'new' => false,
             'readonly' => false,
             'activity' => $activity,
+            'copyRegistrations' => false,
         ]);
     }
 
@@ -188,11 +190,24 @@ class ActivityController extends AbstractController
             'readonly' => false,
             'locale' => $request->getLocale(),
             'concepts' => $concepts['data'],
+            'copyRegistrations' => true,
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Activity $data */
             $data = $form->getData();
+            if ( $data->getUrl() !== null && $data->getCopyRegistrations() ) {
+                $this->addFlash('error', 'error.cantCloneRegistrations');
+                return $this->renderForm('activity/clone.html.twig', [
+                    'form' => $form,
+                    'new' => true,
+                    'readonly' => false,
+                    'copyRegistrations' => true,
+                ]);
+            }
+            if ($data->getCopyRegistrations()) {
+                $this->copyRegistrations($data, $activity);
+            }
             $em->persist($data);
             $em->flush();
             $this->addFlash('success', 'activity.cloned');
@@ -203,6 +218,7 @@ class ActivityController extends AbstractController
             'form' => $form,
             'new' => true,
             'readonly' => false,
+            'copyRegistrations' => true,
         ]);
     }
 
@@ -224,6 +240,7 @@ class ActivityController extends AbstractController
             'new' => false,
             'readonly' => true,
             'activity' => $activity,
+            'copyRegistrations' => false,
         ]);
     }
 
@@ -246,7 +263,7 @@ class ActivityController extends AbstractController
      * @Route("{_locale}/admin/activity/{id}/raffle/lottery", name="app_activity_raffle_lottery", methods={"GET"})
      * @isGranted("ROLE_ADMIN")
      */
-    public function raffleRandomize(Request $request, Activity $activity, EntityManagerInterface $em) {
+    public function raffleRandomize(Request $request, Activity $activity) {
         if ($activity->getStatus() === Activity::STATUS_RAFFLED ) {
             $this->addFlash('error', 'messages.alreadyRaffled');
             return $this->redirectToRoute('app_activity_status_details', [
@@ -260,34 +277,26 @@ class ActivityController extends AbstractController
                 $registration->setFortunate(true);
                 $token = $this->generateToken();
                 $registration->setToken($token);
-                $em->persist($registration);
+                $this->em->persist($registration);
             }
             $activity->setStatus(Activity::STATUS_RAFFLED);
-            $em->persist($activity);
+            $this->em->persist($activity);
             $fortunates = $registrations;
             $unfortunates = [];
             $this->addFlash('success', 'messages.allAdmited');
         } else {
-            $fortunates = [];
-            $unfortunates = [];
-            $random_keys = $this->getRandomKeys($registrations, $places);
-            for ($i=0; $i < count($registrations); $i++ ) {
-                $token = $this->generateToken();
-                if ( in_array($i, $random_keys) ) {
-                    $fortunates[] = $registrations[$i];
-                    $registrations[$i]->setFortunate(true);
-                } else {
-                    $unfortunates[] = $registrations[$i];
-                    $registrations[$i]->setFortunate(false);
-                }
-                $registrations[$i]->setToken($token);
-                $em->persist($registrations[$i]);
-            }
+            $fortunates = $unfortunates = [];
+            $classifiedRegistrations = $this->getRaffleableAndUnRaffleable($registrations);
+            $unRaffleablePlaces = count($classifiedRegistrations['unRaffleable']);
+            $fortunates = $classifiedRegistrations['unRaffleable'];
+            $this->setUnRaffleableAsFortunate($classifiedRegistrations['unRaffleable']);
+            $remainingPlaces = $places - $unRaffleablePlaces;
+            $this->raffle($classifiedRegistrations['raffleable'], $remainingPlaces, $fortunates, $unfortunates);
             $activity->setStatus(Activity::STATUS_RAFFLED);
-            $em->persist($activity);
+            $this->em->persist($activity);
             $this->addFlash('success', 'messages.lotterySuccessfull');
         }
-        $em->flush();
+        $this->em->flush();
         $this->randomizeWaitingList($unfortunates);    
         return $this->redirectToRoute('app_activity_status_details', [
             'id' => $activity->getId(),
@@ -295,6 +304,8 @@ class ActivityController extends AbstractController
     }
 
     /**
+     * Sets random waiting list order for unfortunate registrations
+     * 
      * @param Registration[]
      */
     private function randomizeWaitingList(array $unfortunates) {
@@ -481,7 +492,7 @@ class ActivityController extends AbstractController
 
     private function getRandomKeys($registrations, $places) {
         $new_random_keys = [];
-        $random_keys = array_rand($registrations->toArray(),$places);
+        $random_keys = array_rand($registrations,$places);
         if (gettype($random_keys) === "integer" || gettype($random_keys) === "string") {
             $new_random_keys [] = $random_keys;
             $random_keys = $new_random_keys;
@@ -508,5 +519,85 @@ class ActivityController extends AbstractController
         $json = $response->getContent();
         $concepts = json_decode($json, true);
         return $concepts;
+    }
+
+    /**
+     * Copies the registrations from an activity to another activity.
+     * It's used to create an activity that is a continuation from another and the registrations
+     * need to be copied from one activity to another. Those registrations can NOT be raffled.
+     * 
+     * @param Activity $data - The new activity to be filled
+     * @param Activity $activity - The activity to take the registrations from
+     * @return Activity
+     */
+    private function copyRegistrations(Activity $data, Activity $activity): Activity {
+        $registrations = $activity->getRegistrations();
+        foreach ( $registrations as $registration) {
+            $newRegistration = new Registration();
+            $newRegistration->setUser($this->getUser());
+            $data->addRegistration($newRegistration->copyBaseData($registration));
+        }
+        return $data;
+    }
+
+    /**
+     * Takes a registrations collection and returns the raffleable and unraffleable registrations in an
+     * asociative array. The copied registrations are unraffleable.
+     * 
+     * @param Collection $registration - Registrations to be classified
+     * @return array
+     */
+    private function getRaffleableAndUnRaffleable (Collection $registrations): array {
+        $raffleable = [];
+        $unRaffleable = [];
+        foreach ($registrations as $registration)
+        if ( !$registration->isCopied() ) {
+            $raffleable[] = $registration;
+        } else {
+            $unRaffleable[] = $registration;
+        }
+        return [
+            'raffleable' => $raffleable, 
+            'unRaffleable' => $unRaffleable,
+        ];
+    }
+
+    /**
+     * Set unraffleable registrations as fortunate and generates it's tokens for confirmation
+     * 
+     * @param array $unRaffleableRegistrations - Unraffleable registrations array
+     * @return array
+     */
+    private function setUnRaffleableAsFortunate(array $unRaffleableRegistrations): array {
+        foreach ($unRaffleableRegistrations as $unRaffleableRegistration) {
+            $token = $this->generateToken();
+            $unRaffleableRegistration->setFortunate(true);
+            $unRaffleableRegistration->setToken($token);
+            $this->em->persist($unRaffleableRegistration);
+        }
+        return $unRaffleableRegistrations;
+    }
+
+    /**
+     * Raffles raffleable registrations to fill the remaining places. It takes by reference fortunate an unfortunate arrays to 
+     * finish filling them.
+     * 
+     * @param array $unRaffleableRegistrations - Unraffleable registrations array
+     * @return array
+     */
+    private function raffle($raffleableRegistrations, $remainingPlaces, &$fortunates, &$unfortunates) {
+        $random_keys = $this->getRandomKeys($raffleableRegistrations, $remainingPlaces);
+        for ($i=0; $i < count($raffleableRegistrations); $i++ ) {
+            $token = $this->generateToken();
+            if ( in_array($i, $random_keys) ) {
+                $fortunates[] = $raffleableRegistrations[$i];
+                $raffleableRegistrations[$i]->setFortunate(true);
+            } else {
+                $unfortunates[] = $raffleableRegistrations[$i];
+                $raffleableRegistrations[$i]->setFortunate(false);
+            }
+            $raffleableRegistrations[$i]->setToken($token);
+            $this->em->persist($raffleableRegistrations[$i]);
+        }
     }
 }

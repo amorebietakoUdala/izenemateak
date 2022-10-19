@@ -116,6 +116,24 @@ class RegistrationRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return int|null Return last number of the waitingList
+     */
+    public function getLastWaitingListOrderForActivity($activity) {
+
+        $qb = $this->createQueryBuilder('r')
+            ->select('r.waitingListOrder')
+            ->andWhere('r.waitingListOrder IS NOT NULL')
+            ->orderBy('r.waitingListOrder', 'DESC')
+            ->getQuery()
+            ->setMaxResults(1);
+        $result = $qb->getOneOrNullResult();
+        if ($result === null) {
+            return 0;
+        }
+        return $result['waitingListOrder'];
+    }
+
+    /**
      * @return Registration|null Returns an array of Registration objects
      */
     public function findOneByNameSurnamesActivity($name, $surname1, $surname2, $activity) {

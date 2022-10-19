@@ -4,6 +4,11 @@
 
 {% block body %}
    <div class="container-fluid">
+      <div class="row">
+         <div class="col">
+            <div class="alert alert-primary" role="alert">{{ 'label.alert.onlyForDomiciledActivitys' | trans }}</div>            
+         </div>
+      </div>
       {{ include('billing/_searchForm.html.twig') }}
       <div data-reload-content-target="content">
          {{ include('billing/_list.html.twig', { 'activitys': activitys }) }}

@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 /**
  * @ORM\Entity(repositoryClass=ActivityRepository::class)
@@ -25,46 +27,54 @@ class Activity
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"api"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"api"})
      */
     private $nameEs;
 
-        /**
+    /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"api"})
      */
     private $nameEu;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"api"})
      */
     private $turnEs;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"api"})
      */
     private $turnEu;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"api"})
      */
     private $startDate;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"api"})
      */
     private $endDate;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"api"})
      */
     private $active;
 
     /**
-     * @ORM\OneToMany(targetEntity=Registration::class, mappedBy="activity")
+     * @ORM\OneToMany(targetEntity=Registration::class, mappedBy="activity", cascade={"persist"})
      */
     private $registrations;
 
@@ -76,26 +86,31 @@ class Activity
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"api"})
      */
     private $places;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"api"})
      */
     private $limitPlaces;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"api"})
      */
     private $status;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"api"})
      */
     private $cost;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"api"})
      */
     private $costForSubscribers;
 
@@ -117,13 +132,35 @@ class Activity
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"api"})
      */
     private $domiciled;
 
     /**
      * @ORM\Column(type="string", length=1024, nullable=true)
+     * @Groups({"api"})
      */
     private $url;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"api"})
+     */
+    private $askSchool;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"api"})
+     */
+    private $askBirthDate;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"api"})
+     */
+    private $askSubscriber;
+
+    private bool $copyRegistrations;
 
     public function __construct()
     {
@@ -276,8 +313,12 @@ class Activity
         $activity = new Activity();
         $activity->setNameEs($this->nameEs.'_copia');
         $activity->setNameEu($this->nameEu.'_kopia');
-        $activity->setTurnEs($this->turnEs.'_copia');
-        $activity->setTurnEu($this->turnEu.'_kopia');
+        if ( !empty($this->turnEs)) {
+            $activity->setTurnEs($this->turnEs.'_copia');
+        }
+        if ( !empty($this->turnEu)) {
+            $activity->setTurnEu($this->turnEu.'_kopia');
+        }
         $activity->setPlaces($this->places);
         $activity->setStartDate($this->startDate);
         $activity->setEndDate($this->endDate);
@@ -486,6 +527,54 @@ class Activity
     public function setUrl(?string $url): self
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    public function isAskSchool(): ?bool
+    {
+        return $this->askSchool;
+    }
+
+    public function setAskSchool(?bool $askSchool): self
+    {
+        $this->askSchool = $askSchool;
+
+        return $this;
+    }
+
+    public function isAskBirthDate(): ?bool
+    {
+        return $this->askBirthDate;
+    }
+
+    public function setAskBirthDate(?bool $askBirthDate): self
+    {
+        $this->askBirthDate = $askBirthDate;
+
+        return $this;
+    }
+
+    public function isAskSubscriber(): ?bool
+    {
+        return $this->askSubscriber;
+    }
+
+    public function setAskSubscriber(?bool $askSubscriber): self
+    {
+        $this->askSubscriber = $askSubscriber;
+
+        return $this;
+    }
+
+    public function getCopyRegistrations(): ?bool
+    {
+        return $this->copyRegistrations;
+    }
+
+    public function setCopyRegistrations($copyRegistrations): self
+    {
+        $this->copyRegistrations = $copyRegistrations;
 
         return $this;
     }
