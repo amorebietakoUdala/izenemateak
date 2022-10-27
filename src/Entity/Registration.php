@@ -173,6 +173,16 @@ class Registration
      */
     private $calledOnWaitingList;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $school;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $copied;
+
     public function __construct()
     {
         $this->forMe = true;
@@ -603,6 +613,54 @@ class Registration
     public function setCalledOnWaitingList(?bool $calledOnWaitingList): self
     {
         $this->calledOnWaitingList = $calledOnWaitingList;
+
+        return $this;
+    }
+
+    public function getSchool(): ?string
+    {
+        return $this->school;
+    }
+
+    public function setSchool(?string $school): self
+    {
+        $this->school = $school;
+
+        return $this;
+    }
+
+    public function copyBaseData(Registration $registration): self {
+        $this->forMe = $registration->getForMe();
+        $this->dni = $registration->getDni();
+        $this->email = $registration->getEmail();
+        $this->name = $registration->getName();
+        $this->surname1 = $registration->getSurname1();
+        $this->surname2 = $registration->getSurname2();
+        $this->telephone1 = $registration->getTelephone1();
+        $this->telephone2 = $registration->getTelephone2();
+        $this->dateOfBirth = $registration->getDateOfBirth();
+        $this->subscriber = $registration->getSubscriber();
+        $this->representativeDni = $registration->getRepresentativeDni();
+        $this->representativeName = $registration->getRepresentativeName();
+        $this->representativeSurname1 = $registration->getRepresentativeSurname1();
+        $this->representativeSurname2 = $registration->getRepresentativeSurname2();
+        $this->paymentWho = $registration->getPaymentWho();
+        $this->paymentName = $registration->getPaymentName();
+        $this->paymentSurname1 = $registration->getPaymentSurname1();
+        $this->paymentSurname2 = $registration->getPaymentSurname2();
+        $this->paymentIBANAccount = $registration->getPaymentIBANAccount();
+        $this->copied = true;
+        return $this;
+    }
+
+    public function isCopied(): ?bool
+    {
+        return $this->copied;
+    }
+
+    public function setCopied(?bool $copied): self
+    {
+        $this->copied = $copied;
 
         return $this;
     }

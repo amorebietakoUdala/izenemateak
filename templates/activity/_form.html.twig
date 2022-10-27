@@ -79,8 +79,13 @@
             <div class="col-lg-1">
                 {{ form_row(form.places) }}
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-auto">
                 {{ form_row(form.limitPlaces) }}
+                {{ form_row(form.askSubscriber) }}
+            </div>
+            <div class="col-lg-auto">
+                {{ form_row(form.askSchool) }}
+                {{ form_row(form.askBirthDate) }}
             </div>
         </div>
         <div class="row align-items-center">
@@ -120,7 +125,14 @@
                 {{ form_row(form.url) }}
             </div>
         </div>
-        <div class="row mb-2">
+        {% if copyRegistrations %}
+            <div class="row">
+                <div class="col-lg-auto">
+                    {{ form_row(form.copyRegistrations) }}
+                </div>
+            </div>
+        {% endif %}
+        <div class="row mb-2 d-none">
             <div class="col-lg-2">
                 {{ form_label(form.extraFields) }}
             </div>
@@ -130,7 +142,7 @@
                     data-list-selector="#extraFields-fields-list">{{ 'btn.add' | trans }}</button>            
             </div>
         </div>
-        <div class="row">
+        <div class="row d-none">
             <div class="col-lg-auto">
                 {{ form_errors(form.extraFields) }}
                 <ul id="extraFields-fields-list" class="list-group list-group-flush list-group-horizontal-lg list-unstyled"

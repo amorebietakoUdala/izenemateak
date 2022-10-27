@@ -5,6 +5,7 @@
                 'forMeLabel': 'register.forMe' | trans,
                 'notForMeLabel': 'register.notForMe' | trans,
                 'user': app.user,
+                'activityApi': absolute_url ( path('api_get_activity') )
             }, 
             'datepicker': {
                 'selector': '.js-datepicker',
@@ -41,7 +42,7 @@
                     {{ form_label(form.surname2) }}
                     {{ form_widget(form.surname2, {'attr': {'data-register-form-target': 'studentSurname2' }}) }}
                 </div>
-                <div class="col-lg">
+                <div class="col-lg-auto" data-register-form-target="subscriber">
                     {{ form_label(form.subscriber) }}
                     {{ form_widget(form.subscriber) }}
                 </div>
@@ -60,11 +61,15 @@
                     {{ form_label(form.telephone2) }}
                     {{ form_widget(form.telephone2) }}
                 </div>
-                <div class="col-lg-2">
+                <div class="col-lg-2" data-register-form-target="dateOfBirth">
                     {{ form_label(form.dateOfBirth) }}
                     {{ form_widget(form.dateOfBirth) }}
                 </div>
-                {% if is_granted('ROLE_ADMIN') and admin %}
+                <div class="col-lg-2" data-register-form-target="school">
+                    {{ form_label(form.school) }}
+                    {{ form_widget(form.school) }}
+                </div>
+                {% if is_granted('ROLE_ADMIN') and admin and not new %}
                     <div class="col-lg">
                         {{ form_label(form.fortunate) }}
                         {{ form_widget(form.fortunate) }}
@@ -99,12 +104,12 @@
                 </div>
             </fieldset>
         </div>
-        <fieldset id="activityData" class="border border-secondary border-2 p-2 rounded mt-1">
+        <fieldset id="activityData" class="border border-secondary border-2 p-2 rounded mt-1" >
             <legend class="alert alert-info fs-5 lh-1">{{ 'label.activity' | trans }}</legend>
             <div class="row">
                 <div class="col-lg-auto">
                     {{ form_label(form.activity) }}
-                    {{ form_widget(form.activity) }}
+                    {{ form_widget(form.activity, {'attr': { 'data-action': "change->register-form#onActivityChange" } }) }}
                     {{ form_errors(form.activity) }}
                 </div>
             </div>

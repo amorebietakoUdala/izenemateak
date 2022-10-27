@@ -42,7 +42,6 @@ class RegistrationType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new Email(),
-                    new NotBlank(),
                 ],
                 'disabled' => $disabled || $confirm,
             ])
@@ -78,6 +77,10 @@ class RegistrationType extends AbstractType
                                 'class' => 'js-datepicker', 
                                 'placeholder' => 'register.dateOfBirth.placeHolder'
                             ],
+            ])
+            ->add('school', null,[
+                'label' => 'register.school',
+                'disabled' => $disabled || $confirm,
             ])
             ->add('telephone1', null,[
                 'label' => 'register.telephone1',
@@ -129,24 +132,35 @@ class RegistrationType extends AbstractType
             ])
             ;
             if ($new) {
-                $builder
-                    ->add('activity', EntityType::class, [
-                        'class' => Activity::class,
-                        'label' => 'register.activity',
-                        'placeholder' => 'placeholder.choose',
-                        'choice_label' => function ($type) use ($locale) {
-                            if ('es' === $locale) {
-                                return $type->getNameEs().' '.$type->getTurnEs();
-                            } else {
-                                return $type->getNameEu().' '.$type->getTurnEu();
-                            }
-                        },
+                $actityFieldOptions = [
+                    'class' => Activity::class,
+                    'label' => 'register.activity',
+                    'placeholder' => 'placeholder.choose',
+                    'choice_label' => function ($type) use ($locale) {
+                        if ('es' === $locale) {
+                            return $type->getNameEs().' '.$type->getTurnEs();
+                        } else {
+                            return $type->getNameEu().' '.$type->getTurnEu();
+                        }
+                    },
+                    'disabled' => $disabled || $confirm,
+                ];
+                if ($admin) {
+                    array_merge($actityFieldOptions,[
                         'query_builder' => function( ActivityRepository $repo ) {
-                            return $repo->findByOpenAndActiveActivitysQB();
-                        },
-                        'disabled' => $disabled || $confirm,
+                            return $repo->findAll();                            
+                        }
                     ]);
-            } else {
+                } else { 
+                    array_merge($actityFieldOptions,[
+                        'query_builder' => function( ActivityRepository $repo ) {
+                            return $repo->findByOpenAndActiveActivitysQB();                            
+                        }
+                    ]);
+                }
+                $builder
+                    ->add('activity', EntityType::class, $actityFieldOptions);
+        } else {
                 $builder
                 ->add('activity', EntityType::class, [
                     'class' => Activity::class,
@@ -162,7 +176,7 @@ class RegistrationType extends AbstractType
                     'disabled' => $disabled || $confirm,
                 ]);
                 $required = $confirm && !$activity->isFree();
-                if ( $confirm || $admin ) {
+                if ( !$new && ( $confirm || $admin ) ) {
                     $builder->add('paymentWho', ChoiceType::class,[
                         'label' => 'register.payer',
                         'required' => $required,
@@ -212,7 +226,7 @@ class RegistrationType extends AbstractType
                 }
                 
             }
-            if ( $admin ) {
+            if ( !$new && $admin ) {
                 $builder
                     ->add('fortunate', CheckboxType::class,[
                         'label' => 'registration.fortunate',

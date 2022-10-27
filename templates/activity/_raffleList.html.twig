@@ -16,6 +16,7 @@
          <th data-sortable="true">{{ 'registration.confirmed' | trans }}</th>
          <th data-sortable="true">{{ 'registration.confirmationDate' | trans }}</th>
          <th data-sortable="true" title="{{ 'registration.waitingListOrder' | trans }}">{{ 'registration.waitingListOrderAbbr' | trans }}</th>
+         <th data-sortable="true">{{ 'registration.copied' | trans }}</th>
          <th data-sortable="true" data-field="options">{# {{ 'table.options' | trans }} #}</th>
       </tr>
    </thead>
@@ -32,6 +33,7 @@
          <td>{{ registration.confirmed is null ? 'label.unConfirmed' | trans : (registration.confirmed ? 'messages.si' | trans : 'messages.no' | trans) }}</td>
          <td>{{ registration.confirmationDate is null ? '' : registration.confirmationDate | date('Y-m-d h:i:s') }}</td>
          <td>{{ registration.waitingListOrder is null ? '' : registration.waitingListOrder }}</td>
+         <td>{{ registration.copied ? 'messages.si' | trans }}</td>
          <td>
             {% if registration.confirmed is null and not activity.isFull and (
                      ( registration.activity.status == constant('App\\Entity\\Activity::STATUS_WAITING_CONFIRMATIONS') and registration.fortunate ) 

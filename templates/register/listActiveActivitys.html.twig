@@ -22,9 +22,9 @@
                      <th data-sortable="true">{{"activity.turnEu" | trans }}</th>
                   {% endif %}
                   <th data-sortable="true">{{"activity.inscriptionPeriod" | trans }}</th>
-                  <th data-sortable="true">{{"activity.places" | trans }}</th>
+                  {# <th data-sortable="true">{{"activity.places" | trans }}</th>
                   <th data-sortable="true">{{"activity.inscriptions" | trans }}</th>
-                  <th data-sortable="true">{{"activity.cost" | trans }} / {{"activity.costForSubscribers" | trans }}</th>
+                  <th data-sortable="true">{{"activity.cost" | trans }} / {{"activity.costForSubscribers" | trans }}</th> #}
                   <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th>
                   <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
                </tr>
@@ -40,7 +40,7 @@
                            <td>{{activity.turnEu}}</td>
                         {% endif %}
                         <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
-                        <td>{{activity.places is not null ? activity.places: '' }}</td>
+                        {# <td>{{activity.places is not null ? activity.places: '' }}</td>
                         <td>{{activity.registrations | length }}</td>
                         <td>
                            {% if not activity.isFree %}
@@ -53,7 +53,7 @@
                            {% else %}
                               {{ 'activity.isFree' | trans }}
                            {% endif %}
-                        </td>
+                        </td> #}
                         <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td>
                         <td>
                            {% if activity.url != null %}

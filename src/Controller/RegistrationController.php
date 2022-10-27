@@ -32,14 +32,18 @@ class RegistrationController extends AbstractController
     private Security $security;
     private Pdf $pdf;
     private HttpClientInterface $client;
+    private ActivityRepository $activityRepo;
+    private RegistrationRepository $registrationRepo;
 
-    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, Security $security, Pdf $pdf, HttpClientInterface $client)
+    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, Security $security, Pdf $pdf, HttpClientInterface $client, ActivityRepository $activityRepo, RegistrationRepository $registrationRepo)
     {
         $this->mailer = $mailer;
         $this->translator = $translator;
         $this->security = $security;
         $this->pdf = $pdf;
         $this->client = $client;
+        $this->activityRepo = $activityRepo;
+        $this->registrationRepo = $registrationRepo;
     }
 
     /**
@@ -74,7 +78,7 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/{_locale}/register", name="app_register_new")
      */
-    public function new(Request $request, EntityManagerInterface $em, ActivityRepository $activityRepo, RouterInterface $router): Response
+    public function new(Request $request, EntityManagerInterface $em, RouterInterface $router): Response
     {
         $registration = new Registration();
         if ( $request->getSession()->get('giltzaUser') === null && !$this->security->isGranted('ROLE_USER', $this->getUser()) ) {
@@ -88,16 +92,20 @@ class RegistrationController extends AbstractController
 
         $activity = null;
         if ( null !== $request->get('activity') ) {
-            $activity = $activityRepo->find($request->get('activity'));
+            $activity = $this->activityRepo->find($request->get('activity'));
             $registration = $this->createExtraFields($registration, $activity);
         }
         $registration->setActivity($activity);
-        $activeActivitys = $activityRepo->findByOpenAndActiveActivitys();
-
+        if ( $this->security->isGranted('ROLE_ADMIN') ) {
+            $activeActivitys = $this->activityRepo->findAll();
+        } else {
+            $activeActivitys = $this->activityRepo->findByOpenAndActiveActivitys();
+        }
+        $admin = $this->security->isGranted('ROLE_ADMIN') && $this->checkIfComesFromAdminPage($request) ? true : false;
         $form = $this->createForm(RegistrationType::class, $registration,[
             'locale' => $request->getLocale(),
             'disabled' => false,
-            'admin' => false,
+            'admin' => $admin,
             'roleUser' => $this->security->isGranted('ROLE_USER', $this->getUser()),
             'new' => true,
             'confirm' => false,
@@ -109,6 +117,10 @@ class RegistrationController extends AbstractController
             if (!$this->checkForErrors($data, $em)) {
                 $data->setUser($this->getUser());
                 $data = $form->getData();
+                if ( $data->getActivity()->getStatus() > Activity::STATUS_RAFFLED ) {
+                    $lastOnWaitingList = $this->registrationRepo->getLastWaitingListOrderForActivity($data->getActivity());
+                    $data->setWaitingListOrder($lastOnWaitingList + 1);
+                }
                 $em->persist($data);
                 $em->flush();
                 $this->sendRegistrationEmail($data, $request->getLocale());
@@ -474,7 +486,7 @@ class RegistrationController extends AbstractController
         $dateOfBirth = $registration->getDateOfBirth();
         $now = new \DateTime();
         $today = new \DateTime($now->format('Y-m-d'));
-        if( !$activity->canRegister($today) ) {
+        if( !$activity->canRegister($today) && !$this->security->isGranted('ROLE_ADMIN')) {
             $this->addFlash('error', 'error.canNotRegisterToday');
             return true;
         }
@@ -567,5 +579,16 @@ class RegistrationController extends AbstractController
         ];
         $json = json_encode($inscription);
         return $json;
+    }
+
+    private function checkIfComesFromAdminPage($request): bool {
+        $headers = $request->headers->all();
+        if (array_key_exists('referer', $headers)) {
+            $referer = $headers['referer'];
+            if (strpos($referer[0],'/admin/')) {
+                return true;
+            }
+        }
+        return false;
     }
 }
