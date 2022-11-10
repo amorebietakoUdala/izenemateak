@@ -51,9 +51,7 @@ class ActivityController extends AbstractController
             'locale' => $request->getLocale(),
             'concepts' => $concepts['data'],
         ]);
-
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$this->checkErrors($form)){
                 /** @var Activity $data */
@@ -74,8 +72,8 @@ class ActivityController extends AbstractController
             'accountingConceptServiceUrl' => $this->getParameter('accountingConceptServiceUrl'),
             'username' => $this->getParameter('receiptApiUser'),
             'password' => $this->getParameter('receiptApiPassword'),
+            'copyRegistrations' => false,
         ]);
-
     }
 
     /**

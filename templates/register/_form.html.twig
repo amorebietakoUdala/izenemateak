@@ -42,7 +42,7 @@
                     {{ form_label(form.surname2) }}
                     {{ form_widget(form.surname2, {'attr': {'data-register-form-target': 'studentSurname2' }}) }}
                 </div>
-                <div class="col-lg-auto" data-register-form-target="subscriber">
+                <div class="col-lg-auto d-none" data-register-form-target="subscriber">
                     {{ form_label(form.subscriber) }}
                     {{ form_widget(form.subscriber) }}
                 </div>
@@ -61,11 +61,11 @@
                     {{ form_label(form.telephone2) }}
                     {{ form_widget(form.telephone2) }}
                 </div>
-                <div class="col-lg-2" data-register-form-target="dateOfBirth">
+                <div class="col-lg-2 d-none" data-register-form-target="dateOfBirth">
                     {{ form_label(form.dateOfBirth) }}
                     {{ form_widget(form.dateOfBirth) }}
                 </div>
-                <div class="col-lg-2" data-register-form-target="school">
+                <div class="col-lg-2 d-none" data-register-form-target="school">
                     {{ form_label(form.school) }}
                     {{ form_widget(form.school) }}
                 </div>
@@ -191,7 +191,7 @@
         <div class="row align-items-start mt-2 mb-2">
             <div class="col-lg">
                 {% if not readonly %}
-                    <button class="btn btn-primary" type="submit">{{ 'btn.save' | trans }}</button>
+                    <button class="btn btn-primary" type="submit" data-action="click->register-form#onSubmit">{{ 'btn.save' | trans }}</button>
                     {# <button class="btn btn-primary" type="button" data-action="register-form#onSave">{{ 'btn.save' | trans }}</button> #}
                 {% endif %}
                 {% if registration.paymentURL is defined and not registration.paymentURL is empty %}
