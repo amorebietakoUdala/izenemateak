@@ -50,6 +50,7 @@ export default class extends Controller {
          }
       }
       this.addAnotherExtraField();
+      this.onActivityChange(null);
    }
 
    onSubmit(event) {
@@ -206,8 +207,8 @@ export default class extends Controller {
    }
 
    async onActivityChange(event) {
-      event.preventDefault();
-      const activity = event.target.value;
+      const urlParams = new URLSearchParams(location.search);
+      let activity = (null === event) ? urlParams.get('activity') : event.target.value;
       try {
          await $.ajax({
             url: this.activityApiValue,
