@@ -1,6 +1,6 @@
-import { Controller } from 'stimulus';
+import { Controller } from '@hotwired/stimulus';
 
-import $ from 'jquery';
+//import $ from 'jquery';
 import '../js/common/select2';
 import '../js/common/autocomplete.js';
 

@@ -1,6 +1,4 @@
-import $ from 'jquery';
+import '../../styles/common/datepicker.css';
 
-import 'bootstrap-datepicker';
-import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css';
-import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.es.js';
-import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.eu.js';
+import { TempusDominus, extend } from '@eonasdan/tempus-dominus';
+import customDateFormat from '@eonasdan/tempus-dominus/dist/plugins/customDateFormat';
