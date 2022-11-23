@@ -1,7 +1,7 @@
 import '../js/common/list.js';
 
-import { Controller } from 'stimulus';
-import $ from 'jquery';
+import { Controller } from '@hotwired/stimulus';
+//import $ from 'jquery';
 
 export default class extends Controller {
     static targets = ['content'];

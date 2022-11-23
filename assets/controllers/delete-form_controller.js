@@ -1,6 +1,6 @@
-import { Controller } from 'stimulus';
+import { Controller } from '@hotwired/stimulus';
 
-import $ from 'jquery';
+//import $ from 'jquery';
 import Translator from 'bazinga-translator';
 const translations = require('../../public/translations/' + Translator.locale + '.json');
 
