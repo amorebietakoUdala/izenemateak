@@ -16,7 +16,6 @@
         "file-loader": "^6.2.0",
         "intl-messageformat": "^9.11.4",
         "jquery": "^3.6.1",
-        "loader-utils": "^3.2.1",
         "select2": "^4.1.0-rc.0",
         "stimulus-use": "^0.51.1",
         "sweetalert2": "^11.4.4",
