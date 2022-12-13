@@ -7,7 +7,7 @@
    <div {{ stimulus_controller('active-activitys-filter') }}>
       {{ include('register/_activeActivitysSearchForm.html.twig') }}
    </div>
-   <div class="container-fluid">
+   <div class="container-fluid table-responsive">
    {% if activeActivitys is defined and activeActivitys|length > 0 %}
       <table id="table" {{ stimulus_controller('table', {
          'exportName': 'activitys',

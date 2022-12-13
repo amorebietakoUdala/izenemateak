@@ -119,4 +119,15 @@ tbody a {
     h1 {
         font-size: 1.5rem;
     }
+
+    tbody, thead {
+        line-height: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    tbody a {
+        text-decoration: none;
+        font-size: 1.5rem;
+    }
+    
 }
