@@ -16,16 +16,16 @@
                <tr>
                   {% if app.request.locale == 'es' %}
                      <th data-sortable="true">{{"activity.nameEs" | trans }}</th>
-                     <th data-sortable="true">{{"activity.turnEs" | trans }}</th>
+                     {# <th data-sortable="true">{{"activity.turnEs" | trans }}</th> #}
                   {% else %}
                      <th data-sortable="true">{{"activity.nameEu" | trans }}</th>
-                     <th data-sortable="true">{{"activity.turnEu" | trans }}</th>
+                     {# <th data-sortable="true">{{"activity.turnEu" | trans }}</th> #}
                   {% endif %}
                   <th data-sortable="true">{{"activity.inscriptionPeriod" | trans }}</th>
                   {# <th data-sortable="true">{{"activity.places" | trans }}</th>
                   <th data-sortable="true">{{"activity.inscriptions" | trans }}</th>
                   <th data-sortable="true">{{"activity.cost" | trans }} / {{"activity.costForSubscribers" | trans }}</th> #}
-                  <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th>
+                  {# <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th> #}
                   <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
                </tr>
             </thead>
@@ -34,10 +34,10 @@
                   <tr>
                         {% if app.request.locale == 'es' %}
                            <td>{{activity.nameEs}}</td>
-                           <td>{{activity.turnEs}}</td>
+                           {# <td>{{activity.turnEs}}</td> #}
                         {% else %}
                            <td>{{activity.nameEu}}</td>
-                           <td>{{activity.turnEu}}</td>
+                           {# <td>{{activity.turnEu}}</td> #}
                         {% endif %}
                         <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
                         {# <td>{{activity.places is not null ? activity.places: '' }}</td>
@@ -54,7 +54,7 @@
                               {{ 'activity.isFree' | trans }}
                            {% endif %}
                         </td> #}
-                        <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td>
+                        {# <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td> #}
                         <td>
                            {% if activity.url != null %}
                            <p>{{ 'label.newTab' | trans }}</p>
