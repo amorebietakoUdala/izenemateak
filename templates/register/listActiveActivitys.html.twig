@@ -2,6 +2,34 @@
 
 {% block title %}{{ 'title.activeActivitys' | trans }}{% endblock %}
 
+{% macro printActivityCard(activity) %}
+<div class="col-sm-12 col-md-6 col-lg-3">
+   <div class="card text-center">
+      <div class="card-body">
+         <h5 class="card-title">
+            {% if app.request.locale == 'es' %}
+               {{ activity.nameEs }}
+            {% else %}
+               {{ activity.nameEu }}
+            {% endif %}
+         </h5>
+         <p class="card-text">{{"activity.inscriptionPeriod" | trans }}<br/>
+         <p>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</p>
+         {% if activity.url != null %}
+            <p>{{ 'label.newTab' | trans }}</p>
+            <a href="{{ activity.url }}" title="{{ 'btn.register' | trans }}"
+               class="btn btn-primary" target="_blank">{{ 'btn.register' | trans }}
+            </a>
+         {% elseif not (activity.limitPlaces and activity.registrations | length >= activity.places) %}
+            <a href="{{ path ("app_register_new", {'activity': activity.id })}}"  title="{{ 'btn.register' | trans }}"
+               class="btn btn-primary">{{ 'btn.register' | trans }}
+            </a>
+         {% endif %}
+      </div>
+   </div>
+</div>
+{% endmacro %}
+
 {% block body %}
    <h1 class="h2">{{'title.activeActivitys' | trans }}</h2>
    <div {{ stimulus_controller('active-activitys-filter') }}>
@@ -9,68 +37,11 @@
    </div>
    <div class="container-fluid table-responsive">
    {% if activeActivitys is defined and activeActivitys|length > 0 %}
-      <table id="table" {{ stimulus_controller('table', {
-         'exportName': 'activitys',
-      }) }}>
-            <thead>
-               <tr>
-                  {% if app.request.locale == 'es' %}
-                     <th data-sortable="true">{{"activity.nameEs" | trans }}</th>
-                     {# <th data-sortable="true">{{"activity.turnEs" | trans }}</th> #}
-                  {% else %}
-                     <th data-sortable="true">{{"activity.nameEu" | trans }}</th>
-                     {# <th data-sortable="true">{{"activity.turnEu" | trans }}</th> #}
-                  {% endif %}
-                  <th data-sortable="true">{{"activity.inscriptionPeriod" | trans }}</th>
-                  {# <th data-sortable="true">{{"activity.places" | trans }}</th>
-                  <th data-sortable="true">{{"activity.inscriptions" | trans }}</th>
-                  <th data-sortable="true">{{"activity.cost" | trans }} / {{"activity.costForSubscribers" | trans }}</th> #}
-                  {# <th data-sortable="true">{{"activity.limitedPlaces" | trans }}</th> #}
-                  <th data-sortable="true" data-field="options">{{"table.options" | trans }}</th>
-               </tr>
-            </thead>
-            <tbody>
-               {% for activity in activeActivitys %}
-                  <tr>
-                        {% if app.request.locale == 'es' %}
-                           <td>{{activity.nameEs}}</td>
-                           {# <td>{{activity.turnEs}}</td> #}
-                        {% else %}
-                           <td>{{activity.nameEu}}</td>
-                           {# <td>{{activity.turnEu}}</td> #}
-                        {% endif %}
-                        <td>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</td>
-                        {# <td>{{activity.places is not null ? activity.places: '' }}</td>
-                        <td>{{activity.registrations | length }}</td>
-                        <td>
-                           {% if not activity.isFree %}
-                              {{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }} 
-                              {% if activity.costForSubscribers != null %}
-                                 / {{activity.costForSubscribers != null ? activity.costForSubscribers | number_format(2, ',', '.') ~' €' : '' }}
-                              {% else %}
-                                 / {{activity.cost != null ? activity.cost | number_format(2, ',', '.')~' €' : '' }}
-                              {% endif %}
-                           {% else %}
-                              {{ 'activity.isFree' | trans }}
-                           {% endif %}
-                        </td> #}
-                        {# <td>{{activity.limitPlaces ? 'messages.si' | trans : 'messages.no' | trans }}</td> #}
-                        <td>
-                           {% if activity.url != null %}
-                           <p>{{ 'label.newTab' | trans }}</p>
-                           <a href="{{ activity.url }}" title="{{ 'btn.register' | trans }}"
-                              class="btn btn-primary" target="_blank">{{ 'btn.register' | trans }}
-                           </a>
-                           {% elseif not (activity.limitPlaces and activity.registrations | length >= activity.places) %}
-                           <a href="{{ path ("app_register_new", {'activity': activity.id })}}"  title="{{ 'btn.register' | trans }}"
-                              class="btn btn-primary">{{ 'btn.register' | trans }}
-                           </a>
-                           {% endif %}
-                        </td>
-                  </tr>
-               {% endfor %}
-            </tbody>
-      </table>
+      <div class="row">
+         {% for activity in activeActivitys %}
+            {{ _self.printActivityCard(activity) }}         
+         {% endfor %}
+      </div>
    {% else %}
       <div class="mt-2 p-2 border border-black text-center bg-light">{{"messages.results0" | trans }}</div>
    {% endif %}
