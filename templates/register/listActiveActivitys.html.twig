@@ -3,31 +3,32 @@
 {% block title %}{{ 'title.activeActivitys' | trans }}{% endblock %}
 
 {% macro printActivityCard(activity) %}
-<div class="col-sm-12 col-md-6 col-lg-3">
-   <div class="card text-center">
-      <div class="card-body">
-         <h5 class="card-title">
-            {% if app.request.locale == 'es' %}
-               {{ activity.nameEs }}
-            {% else %}
-               {{ activity.nameEu }}
-            {% endif %}
-         </h5>
-         <p class="card-text">{{"activity.inscriptionPeriod" | trans }}<br/>
-         <p>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</p>
-         {% if activity.url != null %}
-            <p>{{ 'label.newTab' | trans }}</p>
-            <a href="{{ activity.url }}" title="{{ 'btn.register' | trans }}"
-               class="btn btn-primary" target="_blank">{{ 'btn.register' | trans }}
-            </a>
-         {% elseif not (activity.limitPlaces and activity.registrations | length >= activity.places) %}
-            <a href="{{ path ("app_register_new", {'activity': activity.id })}}"  title="{{ 'btn.register' | trans }}"
-               class="btn btn-primary">{{ 'btn.register' | trans }}
-            </a>
-         {% endif %}
+   {% set today = "now" | date('Y/m/d') %}
+   {% if ( activity.endDate | date('Y/m/d') >= today ) %}
+      <div class="col-sm-12 col-md-6 col-lg-3">
+         <div class="card text-center">
+            <div class="card-body">
+               <h5 class="card-title">
+                  {{ app.request.locale == 'es' ? activity.nameEs : activity.nameEu }}
+               </h5>
+               <p class="card-text">{{"activity.inscriptionPeriod" | trans }}<br/>
+               <p>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</p>
+               {% if ( ( activity.startDate | date('Y/m/d') <= today ) and ( activity.endDate | date('Y/m/d') >= today ) ) %}
+                  {% if activity.url != null %}
+                     <p>{{ 'label.newTab' | trans }}</p>
+                     <a href="{{ activity.url }}" title="{{ 'btn.register' | trans }}"
+                        class="btn btn-primary" target="_blank">{{ 'btn.register' | trans }}
+                     </a>
+                  {% elseif not (activity.limitPlaces and activity.registrations | length >= activity.places) %}
+                     <a href="{{ path ("app_register_new", {'activity': activity.id })}}"  title="{{ 'btn.register' | trans }}"
+                        class="btn btn-primary">{{ 'btn.register' | trans }}
+                     </a>
+                  {% endif %}
+               {% endif %}
+            </div>
+         </div>
       </div>
-   </div>
-</div>
+   {% endif %}
 {% endmacro %}
 
 {% block body %}

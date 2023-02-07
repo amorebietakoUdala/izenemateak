@@ -42,8 +42,46 @@ class ActivityRepository extends ServiceEntityRepository
     /**
     * @return Registration[] Returns an array of Registration objects
     */
+    public function findByActiveActivitys() {
+        return $this->findByActiveActivitysQB()->getQuery()->getResult();
+    }
+
+    /**
+     * @return QueryBuilder Returns an array of Registration objects
+    */
+    public function findByActiveActivitysQB() {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.active = :active')
+            ->andWhere('c.status != '.Activity::STATUS_CLOSED)
+            ->setParameter('active', true)
+            ->orderBy('c.id', 'ASC');
+    }
+
+    /**
+    * @return Registration[] Returns an array of Registration objects
+    */
     public function findByOpenAndActiveActivitys() {
         return $this->findByOpenAndActiveActivitysQB()->getQuery()->getResult();
+    }
+
+    /**
+    * @return Registration[] Returns an array of Registration objects
+    */
+    public function findByActiveActivitysClasification($clasification = null) {
+        return $this->findByActiveActivitysClasificationQB($clasification)->getQuery()->getResult();
+    }
+
+    /**
+     * @return QueryBuilder Returns an array of Registration objects
+    */
+    public function findByActiveActivitysClasificationQB($clasification = null) {
+        $qb = $this->findByActiveActivitysQB();
+        if ( $clasification !== null ) {
+            $qb->andWhere('c.clasification = :clasification')
+            ->setParameter('clasification', $clasification);
+
+        }
+        return $qb;
     }
 
     /**

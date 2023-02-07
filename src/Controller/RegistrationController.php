@@ -64,9 +64,9 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array $data */
             $data = $form->getData();
-            $activeActivitys = $repo->findByOpenAndActiveActivitysClasification($data['clasification']);
+            $activeActivitys = $repo->findByActiveActivitysClasification($data['clasification']);
         } else {
-            $activeActivitys = $repo->findByOpenAndActiveActivitys();
+            $activeActivitys = $repo->findByActiveActivitys();
         }
 
         return $this->renderForm('register/listActiveActivitys.html.twig', [
