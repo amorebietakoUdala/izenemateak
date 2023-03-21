@@ -1,2 +1,4 @@
 security.login.remember_me: "Oroi nazazu"
 user.idNumber: "NAN"
+
+ROLE_IZENEMATEAK: "Erabiltzailea"

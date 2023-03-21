@@ -161,7 +161,7 @@
                     {{ form_label(form.registrationExtraFields) }}
                 </div>
                 {# This button must appear only if registered user #}
-                {% if is_granted("ROLE_USER") %}                
+                {% if is_granted("ROLE_IZENEMATEAK") %}                
                     <div class="col-lg-1">
                         <button type="button" disabled=" {{ not readonly and not confirm ? false : true  }} )"
                             class="btn btn-info add-another-collection-widget"

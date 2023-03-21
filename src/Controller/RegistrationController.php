@@ -81,7 +81,7 @@ class RegistrationController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em, RouterInterface $router): Response
     {
         $registration = new Registration();
-        if ( $request->getSession()->get('giltzaUser') === null && !$this->security->isGranted('ROLE_USER', $this->getUser()) ) {
+        if ( $request->getSession()->get('giltzaUser') === null && !$this->security->isGranted('ROLE_IZENEMATEAK', $this->getUser()) ) {
             $request->getSession()->set('returnUrl',$this->getActualUrl($request)); 
             return $this->redirectToRoute('app_giltza');
         }
@@ -106,7 +106,7 @@ class RegistrationController extends AbstractController
             'locale' => $request->getLocale(),
             'disabled' => false,
             'admin' => $admin,
-            'roleUser' => $this->security->isGranted('ROLE_USER', $this->getUser()),
+            'roleUser' => $this->security->isGranted('ROLE_IZENEMATEAK', $this->getUser()),
             'new' => true,
             'confirm' => false,
         ]);
@@ -270,7 +270,7 @@ class RegistrationController extends AbstractController
             'locale' => $request->getLocale(),
             'disabled' => false,
             'admin' => false,
-            'roleUser' => $this->security->isGranted('ROLE_USER', $this->getUser()),
+            'roleUser' => $this->security->isGranted('ROLE_IZENEMATEAK', $this->getUser()),
             'new' => false,
             'confirm' => true,
         ]);

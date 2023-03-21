@@ -1,2 +1,4 @@
 security.login.remember_me: "Recordarme"
 user.idNumber: "DNI"
+
+ROLE_IZENEMATEAK: "Usuario"

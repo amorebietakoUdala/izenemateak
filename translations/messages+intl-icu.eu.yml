@@ -54,7 +54,7 @@ messages.confirmEmailWaitingList: "Ziur zaude itxaron-zerrendakoei mail bat bida
 messages.activityIsFull: "Jarduera beteta dago"
 messages.thisCanTakeSomeTime: "Denbora behar du, itxaron mesedez..."
 
-ROLE_USER: "Erabiltzailea"
+ROLE_IZENEMATEAK: "Erabiltzailea"
 ROLE_ADMIN: "Administratzailea"
 
 # Menu Menua

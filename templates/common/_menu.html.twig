@@ -46,7 +46,7 @@
 				</ul>
 			</li>
 		{% endif %}
-		{% if is_granted('ROLE_USER') %}
+		{% if is_granted('ROLE_IZENEMATEAK') %}
       	<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle	{{ ( app.request.attributes.get('_route') == 'app_billing_index' )
 							? ' active' : '' 

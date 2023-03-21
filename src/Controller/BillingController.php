@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @Route("{_locale}/billing")
- * @isGranted("ROLE_USER")
+ * @isGranted("ROLE_IZENEMATEAK")
  */
 class BillingController extends AbstractController
 {

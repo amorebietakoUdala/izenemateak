@@ -54,7 +54,7 @@ messages.confirmEmailWaitingList: "¿Está seguro de que quiere enviar un mail a
 messages.activityIsFull: "La actividad está llena"
 messages.thisCanTakeSomeTime: "Esto puede llevar unos segundos, espere por favor..."
 
-ROLE_USER: "Usuario"
+ROLE_IZENEMATEAK: "Usuario"
 ROLE_ADMIN: "Administrador"
 
 # Menu
