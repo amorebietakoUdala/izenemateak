@@ -15,7 +15,6 @@
                <p>{{activity.startDate | date('Y/m/d')}} - {{activity.endDate | date('Y/m/d')}}</p>
                {% if ( ( activity.startDate | date('Y/m/d') <= today ) and ( activity.endDate | date('Y/m/d') >= today ) ) %}
                   {% if activity.url != null %}
-                     <p>{{ 'label.newTab' | trans }}</p>
                      <a href="{{ activity.url }}" title="{{ 'btn.register' | trans }}"
                         class="btn btn-primary" target="_blank">{{ 'btn.register' | trans }}
                      </a>
