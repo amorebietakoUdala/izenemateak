@@ -17,7 +17,7 @@ class GiltzaController extends AbstractController
 
     private ?array $options = null;
     private bool|string|int|float|\UnitEnum|array|null $giltzaLogoutRedirectRoute = null;
-    private GiltzaProvider $provider = null;
+    private ?GiltzaProvider $provider = null;
 
     public function __construct(UrlGeneratorInterface $urlGenerator, ParameterBagInterface $paramBag, private readonly HttpClientInterface $client)
     {
