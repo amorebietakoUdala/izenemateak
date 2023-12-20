@@ -10,14 +10,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 class GiltzaController extends AbstractController
 {
 
-    private $options;
-    private $giltzaLogoutRedirectRoute;
+    private ?array $options = null;
+    private bool|string|int|float|\UnitEnum|array|null $giltzaLogoutRedirectRoute = null;
+    private GiltzaProvider $provider = null;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, ParameterBagInterface $paramBag, HttpClientInterface $client)
+    public function __construct(UrlGeneratorInterface $urlGenerator, ParameterBagInterface $paramBag, private readonly HttpClientInterface $client)
     {
         $this->client = $client;
         $this->giltzaLogoutRedirectRoute = $paramBag->get('giltzaLogoutRedirectRoute');
@@ -31,17 +33,16 @@ class GiltzaController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/giltza/{_locale}", name="app_giltza", requirements={"_locale"="es|eu|en"})
-     */
-    public function giltza(string $_locale = 'es', Request $request): Response
+    #[Route(path: '/giltza/{_locale}', name: 'app_giltza', requirements: ['_locale' => 'es|eu|en'])]
+    public function giltza(Request $request): Response
     {
+        dd($request->getLocale());
         // If we don't have an authorization code then get one
         if (!isset($_GET['code'])) {
             $this->options = [
                 'response_type' => 'code',
                 'scope' => 'urn:izenpe:identity:global',
-                'ui_locales' =>  $_locale,
+                'ui_locales' =>  $request->getLocale(),
                 'prompt' => 'login'
     //            'acr_values' => 'urn:safelayer:tws:policies:authentication:flow:bakq',
             ];
@@ -77,15 +78,13 @@ class GiltzaController extends AbstractController
                 } else {
                     return $this->redirectToRoute('app_giltza');
                 }
-            } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+            } catch (IdentityProviderException $e) {
                 exit($e->getMessage());
             }
         }
     }
 
-    /**
-     * @Route("/logout", name="app_logout")
-     */
+    #[Route(path: '/logout', name: 'app_logout')]
     public function logout(Request $request): Response
     {
         $request->getSession()->invalidate();

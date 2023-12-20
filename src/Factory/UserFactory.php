@@ -30,12 +30,9 @@ use Zenstruck\Foundry\Proxy;
  */
 final class UserFactory extends ModelFactory
 {
-    private UserPasswordHasherInterface $passwordHasher;
-
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct();
-        $this->passwordHasher =$passwordHasher;
     }
 
     protected function getDefaults(): array

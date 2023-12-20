@@ -23,18 +23,14 @@ class AppFixtures extends Fixture
             'descriptionEs' => 'Larrea',
             'descriptionEu' => 'Larrea',
         ]);
-        ActivityFactory::createMany(10, function () {
-            return [
-                'activityType' => ActivityTypeFactory::random(),
-                'clasification' => ClasificationFactory::random(),
-            ];
-        });
+        ActivityFactory::createMany(10, fn() => [
+            'activityType' => ActivityTypeFactory::random(),
+            'clasification' => ClasificationFactory::random(),
+        ]);
 
-        RegistrationFactory::createMany(50, function () {
-            return [
-                'activity' => ActivityFactory::random(),
-            ];
-        });
+        RegistrationFactory::createMany(50, fn() => [
+            'activity' => ActivityFactory::random(),
+        ]);
         UserFactory::createOne([
             'username' => 'ibilbao',
             'email' => 'ibilbao@amorebieta.eus',

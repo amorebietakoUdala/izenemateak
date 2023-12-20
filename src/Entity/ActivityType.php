@@ -7,27 +7,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=ActivityTypeRepository::class)
- */
-class ActivityType
+#[ORM\Entity(repositoryClass: ActivityTypeRepository::class)]
+class ActivityType implements \Stringable
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Activity::class, mappedBy="activityType")
-     */
-    private $activitys;
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'activityType')]
+    private Collection|array $activitys;
 
     public function __construct()
     {
@@ -93,9 +85,9 @@ class ActivityType
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     public function fill(ActivityType $data): self

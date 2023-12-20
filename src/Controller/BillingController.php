@@ -9,32 +9,25 @@ use App\Service\CsvGeneratorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * @Route("{_locale}/billing")
- * @isGranted("ROLE_IZENEMATEAK")
- */
+#[Route(path: '{_locale}/billing')]
+#[IsGranted('ROLE_IZENEMATEAK')]
 class BillingController extends AbstractController
 {
-    private $activityRepo;
-    private HttpClientInterface $client;
-
-    public function __construct(ActivityRepository $activityRepo, HttpClientInterface $client)
+    public function __construct(
+        private readonly ActivityRepository $activityRepo, 
+        private readonly HttpClientInterface $client)
     {
-        $this->activityRepo = $activityRepo;
-        $this->client = $client;
     }
 
-    /**
-     * @Route("/", name="app_billing_index", methods={"GET", "POST"})
-     */
+    #[Route(path: '/', name: 'app_billing_index', methods: ['GET', 'POST'])]
     public function index(Request $request): Response
     {
-        $ajax = $request->get('ajax') !== null ? $request->get('ajax') : "false";
+        $ajax = $request->get('ajax') ?? "false";
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
         $form = $this->createForm(BillingSearchFormType::class, null, [
             'locale' => $request->getLocale(),
@@ -44,7 +37,7 @@ class BillingController extends AbstractController
             $data = $form->getData();
             $criteria = $this->removeBlankFilters($data);
             $activitys = $this->activityRepo->findDomiciledActivitysBy($criteria);
-            return $this->renderForm("billing/$template", [
+            return $this->render("billing/$template", [
                 'activitys' => $activitys,
                 'form' => $form
             ]);
@@ -52,16 +45,14 @@ class BillingController extends AbstractController
         $activitys = $this->activityRepo->findDomiciledActivitysBy([
              'active' => true,
         ]);
-        return $this->renderForm("billing/$template", [
+        return $this->render("billing/$template", [
             'activitys' => $activitys,
             'form' => $form
         ]);
     }
 
-    /**
-     * @Route("/{id}/download", name="app_billing_download", methods={"GET"})
-     */
-    public function download(Request $request, Activity $activity, CsvGeneratorService $cgs) {
+    #[Route(path: '/{id}/download', name: 'app_billing_download', methods: ['GET'])]
+    public function download(Activity $activity, CsvGeneratorService $cgs) {
         $registrations = $activity->getRegistrations();
 
         if (count($registrations) === 0) {
@@ -113,7 +104,7 @@ class BillingController extends AbstractController
     }
 
     private function getConcepts() {
-        $base64 = base64_encode($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword'));
+        $base64 = base64_encode((string) ($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword')));
         $response = $this->client->request('GET', $this->getParameter('accountingConceptServiceUrl'),[
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -121,7 +112,7 @@ class BillingController extends AbstractController
             ],
         ]);
         $json = $response->getContent();
-        $concepts = json_decode($json, true);
+        $concepts = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         return $concepts;
     }    
 }

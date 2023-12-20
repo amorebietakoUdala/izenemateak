@@ -275,3 +275,5 @@ error.costMandatoryIfDomiciled: "Jarduera helbideratzeko, prezioa jarri behar da
 error.noRegistrations: "Ez du inork izenik eman"
 error.cantGetConcepts: "Kontzeptuak lortzerakoan akats bat egon da"
 error.cantCloneRegistrations: "Kanpoko formularioetako izen-emateak ezin dira kopiatu"
+error.clasificationHasActivities: "Ezin da klasifikazioa ezabatu jarduerak dituelako"
+error.activityTypeHasActivities: "Ezin da jarduera mota ezabatu jarduerak dituelako"

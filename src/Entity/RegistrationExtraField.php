@@ -6,32 +6,22 @@ use App\Repository\RegistrationExtraFieldRepository;
 use App\Entity\ExtraField;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=RegistrationExtraFieldRepository::class)
- */
+#[ORM\Entity(repositoryClass: RegistrationExtraFieldRepository::class)]
 class RegistrationExtraField
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Registration::class, inversedBy="registrationExtraFields")
-     */
-    private $registration;
+    #[ORM\ManyToOne(targetEntity: Registration::class, inversedBy: 'registrationExtraFields')]
+    private ?Registration $registration = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=ExtraField::class, inversedBy="registrationExtraFields")
-     */
-    private $extraField;
+    #[ORM\ManyToOne(targetEntity: ExtraField::class, inversedBy: 'registrationExtraFields')]
+    private ?ExtraField $extraField = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $value;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $value = null;
 
     public function getId(): ?int
     {

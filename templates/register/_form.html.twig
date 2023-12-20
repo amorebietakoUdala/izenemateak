@@ -1,21 +1,19 @@
 <div class="container-fluid"
-        {{ stimulus_controller({
-            'toggle': {}, 
-            'register-form': {
+        {{ stimulus_controller('toggle')|
+           stimulus_controller('register-form', {
                 'forMeLabel': 'register.forMe' | trans,
                 'notForMeLabel': 'register.notForMe' | trans,
                 'user': app.user,
                 'activityApi': absolute_url ( path('api_get_activity') )
-            }, 
-            'datepicker': {
+            })|
+            stimulus_controller('datepicker', {
                 'selector': '.js-datepicker',
                 'startView': "decade",
-            },
-        }) 
+            })
         }}
 >
 
-{{ form_start(form, {'attr': {'data-register-form-target': 'form', 'data-action': 'submit->register-form#onSubmit' }}) }}
+    {{ form_start(form, {'attr': {'data-register-form-target': 'form', 'data-action': 'submit->register-form#onSubmit' }}) }}
         <div class="row align-items-start">
             <div class="col-lg-3" data-register-form-target="forMeLabel">
                 {{ form_label(form.forMe) }}
@@ -204,5 +202,5 @@
                 {% endif %}
             </div>
         </div>
-{{ form_end(form) }}
+    {{ form_end(form) }}
 </div>

@@ -1,3 +1,4 @@
+import './bootstrap.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -18,7 +19,6 @@ import 'bootstrap';
 
 import '@fortawesome/fontawesome-free/js/all.js';
 
-global.app_base = '';
 global.locale = $('html').attr("lang");
 
 $(function() {

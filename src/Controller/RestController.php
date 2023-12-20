@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Activity;
 use App\Repository\ActivityRepository;
 use App\Repository\ExtraFieldRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,40 +9,33 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @Route("/api")
- */
+#[Route(path: '/api')]
 class RestController extends AbstractController
 {
-    private ExtraFieldRepository $extraFieldRepo;
-    private ActivityRepository $activityRepo;
-
-    public function __construct(ExtraFieldRepository $extraFieldRepo, ActivityRepository $activityRepo) {
-        $this->extraFieldRepo = $extraFieldRepo;
-        $this->activityRepo = $activityRepo;
+    public function __construct(
+        private readonly ExtraFieldRepository $extraFieldRepo, 
+        private readonly ActivityRepository $activityRepo)
+    {
     }
 
-    /**
-     * @Route("/extra-fields", name="api_extra_fields", methods={"GET"}, options={"expose" = true})
-     */
+    #[Route(path: '/extra-fields', name: 'api_extra_fields', methods: ['GET'], options: ['expose' => true])]
     public function getExtraFields(Request $request, SerializerInterface $serializer) {
         $locale = $request->get('locale');
         $extraFields = $this->extraFieldRepo->findByNameLike($request->get('name'), $locale);
         return new JsonResponse($serializer->serialize($extraFields,'json',[
             'groups' => 'api'
-        ]),200,[],true);
+        ]),Response::HTTP_OK,[],true);
     }
 
-    /**
-     * @Route("/activity", name="api_get_activity", methods={"GET"}, options={"expose" = true})
-     */
+    #[Route(path: '/activity', name: 'api_get_activity', methods: ['GET'], options: ['expose' => true])]
     public function getActivity(Request $request, SerializerInterface $serializer) {
         $id = $request->get('activity');
         $activity = $this->activityRepo->find($id);
         return new JsonResponse($serializer->serialize($activity,'json',[
             'groups' => 'api'
-        ]),200,[],true);
+        ]),Response::HTTP_OK,[],true);
     }
 
 

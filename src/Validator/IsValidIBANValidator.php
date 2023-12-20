@@ -8,7 +8,7 @@ use PHP_IBAN\IBAN;
 
 class IsValidIBANValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         /** @var $constraint \App\Validator\IBAN */
         if (null === $value || '' === $value) {
@@ -21,7 +21,7 @@ class IsValidIBANValidator extends ConstraintValidator
         }
     }
 
-    public function validateIBAN(string $ibanNumber)
+    public function validateIBAN(string $ibanNumber): bool
     {
         $iban = new IBAN($ibanNumber);
         $valid = $iban->Verify();

@@ -39,7 +39,7 @@ final class ActivityTypeFactory extends ModelFactory
     {
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
-            'name' => self::faker()->word(4),
+            'name' => self::faker()->word(),
         ];
     }
 

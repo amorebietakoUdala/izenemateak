@@ -27,8 +27,8 @@ class ActivityFormType extends AbstractType
         $readonly = $options['readonly'];
         $locale = $options['locale'];
         $copyRegistrations = $options['copyRegistrations'] ?? false;
-        $status = $options['data']->getStatus() !== null ? $options['data']->getStatus() : 0;
-        $concepts = $options['concepts'] !== null ? $options['concepts'] : [];
+        $status = $options['data']->getStatus() ?? 0;
+        $concepts = $options['concepts'] ?? [];
         $builder
             ->add('clasification',EntityType::class,[
                 'label' => 'activity.clasification',
@@ -43,9 +43,7 @@ class ActivityFormType extends AbstractType
                         return $type->getDescriptionEu();
                     }
                 },
-                'query_builder' => function( ClasificationRepository $repo ) {
-                    return $repo->findAllQB();
-                },
+                'query_builder' => fn(ClasificationRepository $repo) => $repo->findAllQB(),
                 'disabled' => $readonly,
             ])
             ->add('activityType',EntityType::class,[

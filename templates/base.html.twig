@@ -8,6 +8,7 @@
 			{% block title %}{{ 'title.appTitle' | trans }}{% endblock title %}
 		</title>
 		{% block stylesheets %}
+            {{ ux_controller_link_tags() }}
 			{{ encore_entry_link_tags('app') }}
 		{% endblock stylesheets %}
 
@@ -15,7 +16,7 @@
 			{{ encore_entry_script_tags('app') }}
 		{% endblock javascripts %}
 	</head>
-	<body data-turbo="false">
+	<body>
 		{% block header %}
 			{{ include('common/_header.html.twig') }}
 		{% endblock header %}

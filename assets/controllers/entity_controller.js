@@ -88,7 +88,10 @@ export default class extends Controller {
                     }).then((response) => {
                         this.dispatch('success');
                     }).catch((err) => {
-                        Swal.default.fire('There was an error!!!');
+                        Swal.default.fire({
+                            template: '#error',
+                            html: err.responseText,
+                        });
                     });
                 }
             });

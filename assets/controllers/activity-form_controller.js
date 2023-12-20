@@ -1,7 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 
 //import $ from 'jquery';
-import '../js/common/select2';
 import '../js/common/autocomplete.js';
 
 export default class extends Controller {
@@ -12,12 +11,6 @@ export default class extends Controller {
     }
 
     connect() {
-      if ( this.accountingConceptSelectTarget ) {
-        const options = {
-          language: this.localeValue,
-        };
-        $(this.accountingConceptSelectTarget).select2(options);
-      }
       this.addAnotherCollectionListener();
     }
 

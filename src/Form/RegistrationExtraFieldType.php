@@ -28,9 +28,7 @@ class RegistrationExtraFieldType extends AbstractType
                         return $extraField->getNameEu();
                     }
                 },
-                'query_builder' => function( ExtraFieldRepository $repo ) use ($activity) {
-                    return $repo->findByActivityQB($activity);
-                },
+                'query_builder' => fn(ExtraFieldRepository $repo) => $repo->findByActivityQB($activity),
                 'disabled' => true,
             ])
             ->add('value', null, [

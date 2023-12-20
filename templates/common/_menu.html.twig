@@ -17,7 +17,7 @@
 		{% if is_granted('ROLE_ADMIN') %}
 			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle
-					{{ ( app.request.attributes.get('_route') == 'admin_user_list' 
+					{{ ( app.request.attributes.get('_route') == 'admin_user_index' 
 							or app.request.attributes.get('_route') == 'admin_user_show'
 							or app.request.attributes.get('_route') == 'admin_user_edit'
 							or app.request.attributes.get('_route') == 'app_activity_index'
@@ -38,7 +38,7 @@
 					}}"
 					data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ 'navitem.administration' | trans | capitalize }}</a>
 				<ul class="dropdown-menu">
-					<li><a class="dropdown-item" href="{{ path('admin_user_list') }}">{{"navitem.users" | trans | capitalize}}</a></li>
+					<li><a class="dropdown-item" href="{{ path('admin_user_index') }}">{{"navitem.users" | trans | capitalize}}</a></li>
 					<li><a class="dropdown-item" href="{{ path('app_activity_index') }}">{{"navitem.activitys" | trans | capitalize}}</a></li>
 					<li><a class="dropdown-item" href="{{ path('app_activity_type_index') }}">{{"navitem.activityTypes" | trans | capitalize}}</a></li>
 					<li><a class="dropdown-item" href="{{ path('app_clasification_index') }}">{{"navitem.clasifications" | trans | capitalize}}</a></li>

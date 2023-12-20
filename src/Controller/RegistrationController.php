@@ -15,11 +15,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Knp\Snappy\Pdf;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -27,35 +26,22 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class RegistrationController extends AbstractController
 {
-    private MailerInterface $mailer;
-    private TranslatorInterface $translator;
-    private Security $security;
-    private Pdf $pdf;
-    private HttpClientInterface $client;
-    private ActivityRepository $activityRepo;
-    private RegistrationRepository $registrationRepo;
-
-    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, Security $security, Pdf $pdf, HttpClientInterface $client, ActivityRepository $activityRepo, RegistrationRepository $registrationRepo)
+    public function __construct(
+        private readonly MailerInterface $mailer, 
+        private readonly TranslatorInterface $translator, 
+        private readonly Pdf $pdf, 
+        private readonly HttpClientInterface $client, 
+        private readonly ActivityRepository $activityRepo, 
+        private readonly RegistrationRepository $registrationRepo)
     {
-        $this->mailer = $mailer;
-        $this->translator = $translator;
-        $this->security = $security;
-        $this->pdf = $pdf;
-        $this->client = $client;
-        $this->activityRepo = $activityRepo;
-        $this->registrationRepo = $registrationRepo;
     }
 
-    /**
-     * @Route("/", name="app_home")
-     */
+    #[Route(path: '/', name: 'app_home')]
     public function home() {
         return $this->redirectToRoute('app_active_activitys');
     }
 
-    /**
-     * @Route("/{_locale}/active/activitys", name="app_active_activitys")
-     */ 
+    #[Route(path: '/{_locale}/active/activitys', name: 'app_active_activitys')]
     public function listActiveActivitys(Request $request, ActivityRepository $repo) {
         $form = $this->createForm(ActiveActivitysSearchFormType::class, null,[
             'locale' => $request->getLocale(),
@@ -69,19 +55,17 @@ class RegistrationController extends AbstractController
             $activeActivitys = $repo->findByActiveActivitys();
         }
 
-        return $this->renderForm('register/listActiveActivitys.html.twig', [
+        return $this->render('register/listActiveActivitys.html.twig', [
             'activeActivitys' => $activeActivitys,
             'form' => $form,
         ]);
     }
 
-    /**
-     * @Route("/{_locale}/register", name="app_register_new")
-     */
+    #[Route(path: '/{_locale}/register', name: 'app_register_new')]
     public function new(Request $request, EntityManagerInterface $em, RouterInterface $router): Response
     {
         $registration = new Registration();
-        if ( $request->getSession()->get('giltzaUser') === null && !$this->security->isGranted('ROLE_IZENEMATEAK', $this->getUser()) ) {
+        if ( $request->getSession()->get('giltzaUser') === null && !$this->isGranted('ROLE_IZENEMATEAK', $this->getUser()) ) {
             $request->getSession()->set('returnUrl',$this->getActualUrl($request)); 
             return $this->redirectToRoute('app_giltza');
         }
@@ -96,17 +80,17 @@ class RegistrationController extends AbstractController
             $registration = $this->createExtraFields($registration, $activity);
         }
         $registration->setActivity($activity);
-        if ( $this->security->isGranted('ROLE_ADMIN') ) {
+        if ( $this->isGranted('ROLE_ADMIN') ) {
             $activeActivitys = $this->activityRepo->findAll();
         } else {
             $activeActivitys = $this->activityRepo->findByOpenAndActiveActivitys();
         }
-        $admin = $this->security->isGranted('ROLE_ADMIN') && $this->checkIfComesFromAdminPage($request) ? true : false;
+        $admin = $this->isGranted('ROLE_ADMIN') && $this->checkIfComesFromAdminPage($request) ? true : false;
         $form = $this->createForm(RegistrationType::class, $registration,[
             'locale' => $request->getLocale(),
             'disabled' => false,
             'admin' => $admin,
-            'roleUser' => $this->security->isGranted('ROLE_IZENEMATEAK', $this->getUser()),
+            'roleUser' => $this->isGranted('ROLE_IZENEMATEAK', $this->getUser()),
             'new' => true,
             'confirm' => false,
         ]);
@@ -135,7 +119,7 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('register/new.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'activeActivitys' => $activeActivitys,
             'readonly' => false,
             'admin' => false,
@@ -155,10 +139,8 @@ class RegistrationController extends AbstractController
         return $registration;
     }
 
-    /**
-     * @Route("{_locale}/admin/registration", name="app_registration_index")
-     * @IsGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/registration', name: 'app_registration_index')]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request, RegistrationRepository $repo): Response
     {
         $form = $this->createForm(RegistrationSearchFormType::class, null, [
@@ -174,18 +156,16 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('register/index.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'registrations' => $registrations,
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/registration/{id}/edit", name="app_registration_edit")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/registration/{id}/edit', name: 'app_registration_edit')]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Registration $registration, Request $request, EntityManagerInterface $em): Response
     {
-        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        $admin = $request->get('admin') ?? false;
         $new = false;
         $form = $this->createForm(RegistrationType::class, $registration, [
             'disabled' => false,
@@ -210,7 +190,7 @@ class RegistrationController extends AbstractController
             ]);
         }
 
-        return $this->renderForm('register/edit.html.twig', [
+        return $this->render('register/edit.html.twig', [
             'form' => $form,
             'new' => $new,
             'readonly' => false,
@@ -221,10 +201,8 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/registration/{id}/delete", name="app_registration_delete", methods={"POST"})
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/registration/{id}/delete', name: 'app_registration_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, EntityManagerInterface $em, Registration $registration): Response
     {
         if ($this->isCsrfTokenValid('delete'.$registration->getId(), $request->get('_token'))) {
@@ -240,11 +218,9 @@ class RegistrationController extends AbstractController
         }            
     }
 
-    /**
-     * @Route("{_locale}/admin/registration/{id}/pdf", name="app_registration_pdf", methods={"GET", "POST"})
-     * @isGranted("ROLE_ADMIN")
-     */
-    public function pdf(Request $request, Registration $registration): Response
+    #[Route(path: '{_locale}/admin/registration/{id}/pdf', name: 'app_registration_pdf', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function pdf(Registration $registration): Response
     {
         
         $html =  $this->renderView('register/registration-pdf.html.twig',[
@@ -261,20 +237,18 @@ class RegistrationController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("{_locale}/registration/{id}/confirm", name="app_registration_confirm", methods={"GET", "POST"})
-     */
+    #[Route(path: '{_locale}/registration/{id}/confirm', name: 'app_registration_confirm', methods: ['GET', 'POST'])]
     public function confirm(Request $request, EntityManagerInterface $em, Registration $registration): Response
     {
         $form = $this->createForm(RegistrationType::class, $registration,[
             'locale' => $request->getLocale(),
             'disabled' => false,
             'admin' => false,
-            'roleUser' => $this->security->isGranted('ROLE_IZENEMATEAK', $this->getUser()),
+            'roleUser' => $this->isGranted('ROLE_IZENEMATEAK', $this->getUser()),
             'new' => false,
             'confirm' => true,
         ]);
-        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        $admin = $request->get('admin') ?? false;
         $token = $request->get('token');
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -291,7 +265,7 @@ class RegistrationController extends AbstractController
             }
             if ($this->getParameter('createReceiptsOnConfirmation') && !$registration->getActivity()->isFree() && !$registration->getActivity()->isDomiciled()) {
                 $response = $this->createReceipt($registration);
-                $responseArray = json_decode($response,true);
+                $responseArray = json_decode((string) $response,true, 512, JSON_THROW_ON_ERROR);
                 if ( null !== $responseArray && $responseArray['status'] === 'NOK' ) {
                     $this->addFlash('error', 'messages.errorNotConfirmed');
                     return $this->renderConfirmation(true, $registration, $admin, $form);
@@ -310,12 +284,12 @@ class RegistrationController extends AbstractController
     } 
 
     private function renderConfirmation($error, $registration, $admin, $form = null) {
-        return $this->renderForm('register/confirmation.html.twig', [
+        return $this->render('register/confirmation.html.twig', [
             'error' => $error,
             'registration' => $registration,
             'admin' => $admin,
             'new' => false,
-            'form' => $form !== null ? $form : null,
+            'form' => $form ?? null,
         ]);
     }
 
@@ -350,12 +324,10 @@ class RegistrationController extends AbstractController
         return false;
     }
 
-    /**
-     * @Route("{_locale}/registration/{id}/reject", name="app_registration_reject", methods={"GET"})
-     */
+    #[Route(path: '{_locale}/registration/{id}/reject', name: 'app_registration_reject', methods: ['GET'])]
     public function reject(Request $request, EntityManagerInterface $em, Registration $registration, RegistrationRepository $repo): Response
     {
-        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        $admin = $request->get('admin') ?? false;
         $token = $request->get('token');
         $error = $this->checkRejectionRequest($token, $registration);
         if ( $error ) {
@@ -397,13 +369,11 @@ class RegistrationController extends AbstractController
         return false;
     }
 
-    /**
-     * @Route("{_locale}/admin/registration/{id}", name="app_registration_show")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/registration/{id}', name: 'app_registration_show')]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(Request $request, Registration $registration): Response
     {
-        $admin = $request->get('admin') !== null ? $request->get('admin') : false;
+        $admin = $request->get('admin') ?? false;
         $new = false;
         $form = $this->createForm(RegistrationType::class, $registration, [
             'disabled' => true,
@@ -413,7 +383,7 @@ class RegistrationController extends AbstractController
         ]);
         $returnUrl = $this->getReturnURL($request);
 
-        return $this->renderForm('register/edit.html.twig', [
+        return $this->render('register/edit.html.twig', [
             'form' => $form,
             'new' => $new,
             'readonly' => true,
@@ -486,7 +456,7 @@ class RegistrationController extends AbstractController
         $dateOfBirth = $registration->getDateOfBirth();
         $now = new \DateTime();
         $today = new \DateTime($now->format('Y-m-d'));
-        if( !$activity->canRegister($today) && !$this->security->isGranted('ROLE_ADMIN')) {
+        if( !$activity->canRegister($today) && !$this->isGranted('ROLE_ADMIN')) {
             $this->addFlash('error', 'error.canNotRegisterToday');
             return true;
         }
@@ -545,7 +515,7 @@ class RegistrationController extends AbstractController
         // $response = '{ "status": "OK", "message": "Received", "data": { "recibo": { "numero_recibo": 1298377, "numero_referencia_externa": "froga1", "importe": 5.0, "importe_total": 5.0, "fecha_limite_pago_banco": "2022-06-14T00:00:00+02:00", "tipo_ingreso": { "codigo": "TEXAM", "descripcion": "Tasas de examen", "concepto_c60_au": "025", "concepto_c60": "025" } }, "paymentURL": "https://garapenak.amorebieta-etxano.eus/erreziboak/es/pay/1298377/45624643A" } }';
         // return $response;
         $json = $this->registrationToApiJsonFormat($registration);
-        $base64UserPassword = base64_encode($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword'));
+        $base64UserPassword = base64_encode((string) ($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword')));
         $response = $this->client->request('POST',$this->getParameter('receiptApiUrl'),[
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -577,7 +547,7 @@ class RegistrationController extends AbstractController
             'price' => $price,
             'externalReference' => 'IZEN_'.$registration->getId(),
         ];
-        $json = json_encode($inscription);
+        $json = json_encode($inscription, JSON_THROW_ON_ERROR);
         return $json;
     }
 
@@ -585,7 +555,7 @@ class RegistrationController extends AbstractController
         $headers = $request->headers->all();
         if (array_key_exists('referer', $headers)) {
             $referer = $headers['referer'];
-            if (strpos($referer[0],'/admin/')) {
+            if (strpos((string) $referer[0],'/admin/')) {
                 return true;
             }
         }

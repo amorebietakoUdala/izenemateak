@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -24,25 +24,17 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ActivityController extends AbstractController
 {
 
-    private $mailer = null;
-    private $translator = null;
-    private $client = null;
-    private ExtraFieldRepository $extraFieldRepo;
-    private EntityManagerInterface $em;
-
-    public function __construct(MailerInterface $mailer, TranslatorInterface $translator, HttpClientInterface $client, ExtraFieldRepository $extraFieldRepo, EntityManagerInterface $em)
+    public function __construct(
+        private readonly MailerInterface $mailer, 
+        private readonly TranslatorInterface $translator, 
+        private readonly HttpClientInterface $client, 
+        private readonly ExtraFieldRepository $extraFieldRepo, 
+        private readonly EntityManagerInterface $em)
     {
-        $this->mailer = $mailer;
-        $this->translator = $translator;
-        $this->client = $client;
-        $this->extraFieldRepo = $extraFieldRepo;
-        $this->em = $em;
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/new", name="app_activity_new")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/new', name: 'app_activity_new')]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $concepts = $this->getConcepts();
@@ -65,7 +57,7 @@ class ActivityController extends AbstractController
             } 
         }
 
-        return $this->renderForm('activity/edit.html.twig', [
+        return $this->render('activity/edit.html.twig', [
             'form' => $form,
             'new' => true,
             'readonly' => false,
@@ -76,13 +68,11 @@ class ActivityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity", name="app_activity_index")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity', name: 'app_activity_index')]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request, ActivityRepository $repo): Response
     {
-        $ajax = $request->get('ajax') !== null ? $request->get('ajax') : "false";
+        $ajax = $request->get('ajax') ?? "false";
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
         $form = $this->createForm(ActivitySearchFormType::class, null, [
             'locale' => $request->getLocale(),
@@ -93,7 +83,7 @@ class ActivityController extends AbstractController
             $data = $form->getData();
             $criteria = $this->removeBlankFilters($data);
             $activitys = $repo->findActivitysBy($criteria);
-            return $this->renderForm("activity/$template", [
+            return $this->render("activity/$template", [
                 'activitys' => $activitys,
                 'form' => $form,
             ]);
@@ -102,17 +92,15 @@ class ActivityController extends AbstractController
         $activitys = $repo->findActivitysBy([
             'active' => true,
         ]);
-        return $this->renderForm("activity/$template", [
+        return $this->render("activity/$template", [
             'activitys' => $activitys,
             'form' => $form,
             'copyRegistrations' => false,
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/edit", name="app_activity_edit")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}/edit', name: 'app_activity_edit')]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, EntityManagerInterface $em, Activity $activity): Response
     {
         $concepts = $this->getConcepts();
@@ -134,7 +122,7 @@ class ActivityController extends AbstractController
             } 
         }
 
-        return $this->renderForm('activity/edit.html.twig', [
+        return $this->render('activity/edit.html.twig', [
             'form' => $form,
             'new' => false,
             'readonly' => false,
@@ -156,10 +144,8 @@ class ActivityController extends AbstractController
         return $extraFields;
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/delete", name="app_activity_delete", methods={"POST"})
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}/delete', name: 'app_activity_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, EntityManagerInterface $em, Activity $activity): Response
     {
         if ( count($activity->getRegistrations()) > 0 ) {
@@ -172,14 +158,12 @@ class ActivityController extends AbstractController
             $this->addFlash('success','activity_deleted');
             return $this->redirectToRoute('app_activity_index');
         } else {
-            return new Response('messages.invalidCsrfToken', 422);
+            return new Response('messages.invalidCsrfToken', Response::HTTP_UNPROCESSABLE_ENTITY);
         }            
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/clone", name="app_activity_clone")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}/clone', name: 'app_activity_clone')]
+    #[IsGranted('ROLE_ADMIN')]
     public function clone(Request $request, EntityManagerInterface $em, Activity $activity): Response
     {
         $newActivity = $activity->clone();
@@ -196,7 +180,7 @@ class ActivityController extends AbstractController
             $data = $form->getData();
             if ( $data->getUrl() !== null && $data->getCopyRegistrations() ) {
                 $this->addFlash('error', 'error.cantCloneRegistrations');
-                return $this->renderForm('activity/clone.html.twig', [
+                return $this->render('activity/clone.html.twig', [
                     'form' => $form,
                     'new' => true,
                     'readonly' => false,
@@ -212,7 +196,7 @@ class ActivityController extends AbstractController
             return $this->redirectToRoute('app_activity_index');
         }
 
-        return $this->renderForm('activity/clone.html.twig', [
+        return $this->render('activity/clone.html.twig', [
             'form' => $form,
             'new' => true,
             'readonly' => false,
@@ -220,10 +204,8 @@ class ActivityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}", name="app_activity_show")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}', name: 'app_activity_show')]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(Request $request, Activity $activity): Response
     {
         $concepts = $this->getConcepts();
@@ -233,7 +215,7 @@ class ActivityController extends AbstractController
             'concepts' => $concepts['data'],
         ]);
 
-        return $this->renderForm('activity/edit.html.twig', [
+        return $this->render('activity/edit.html.twig', [
             'form' => $form,
             'new' => false,
             'readonly' => true,
@@ -242,14 +224,12 @@ class ActivityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/details", name="app_activity_status_details")
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}/details', name: 'app_activity_status_details')]
+    #[IsGranted('ROLE_ADMIN')]
     public function raffleDetails(Activity $activity) {
         $confirmedRegistrations = $activity->countConfirmed();
         $rejectedRegistrations = $activity->countRejected();
-        return $this->renderForm('activity/statusDetails.html.twig', [
+        return $this->render('activity/statusDetails.html.twig', [
             'activity' => $activity,
             'confirmedRegistrations' => $confirmedRegistrations,
             'rejectedRegistrations' => $rejectedRegistrations,
@@ -257,11 +237,9 @@ class ActivityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/raffle/lottery", name="app_activity_raffle_lottery", methods={"GET"})
-     * @isGranted("ROLE_ADMIN")
-     */
-    public function raffleRandomize(Request $request, Activity $activity) {
+    #[Route(path: '{_locale}/admin/activity/{id}/raffle/lottery', name: 'app_activity_raffle_lottery', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function raffleRandomize(Activity $activity) {
         if ($activity->getStatus() === Activity::STATUS_RAFFLED ) {
             $this->addFlash('error', 'messages.alreadyRaffled');
             return $this->redirectToRoute('app_activity_status_details', [
@@ -317,10 +295,8 @@ class ActivityController extends AbstractController
         $this->em->flush();
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/mailing", name="app_activity_raffle_mailing", methods={"GET"})
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}/mailing', name: 'app_activity_raffle_mailing', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function sendResultsByEmail(Request $request, Activity $activity, RegistrationRepository $repo, EntityManagerInterface $em) {
         $fortunates = $repo->findBy([
             'activity' => $activity,
@@ -348,10 +324,8 @@ class ActivityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/change-status-waiting-list", name="app_activity_change_to_waiting-list", methods={"GET"})
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}/change-status-waiting-list', name: 'app_activity_change_to_waiting-list', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function changeStatusWaitingList(Activity $activity, EntityManagerInterface $em) {
         $activity->setStatus(Activity::STATUS_WAITING_LIST);
         $em->persist($activity);
@@ -362,10 +336,8 @@ class ActivityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/process-waiting-list", name="app_activity_email_waiting_list", methods={"GET"})
-     * @isGranted("ROLE_ADMIN")
-     */
+    #[Route(path: '{_locale}/admin/activity/{id}/process-waiting-list', name: 'app_activity_email_waiting_list', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function emailWaitingList(Request $request, Activity $activity, RegistrationRepository $repo, EntityManagerInterface $em) {
         $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($activity);
         $places = $activity->getPlaces();
@@ -380,11 +352,9 @@ class ActivityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{_locale}/admin/activity/{id}/close", name="app_activity_close", methods={"GET"})
-     * @isGranted("ROLE_ADMIN")
-     */
-    public function close(Request $request, Activity $activity, EntityManagerInterface $em) {
+    #[Route(path: '{_locale}/admin/activity/{id}/close', name: 'app_activity_close', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function close(Activity $activity, EntityManagerInterface $em) {
         if ($activity->getStatus() === Activity::STATUS_CLOSED ) {
             $this->addFlash('error', 'messages.alreadyClosed');
             return $this->redirectToRoute('app_activity_index');
@@ -507,7 +477,7 @@ class ActivityController extends AbstractController
     }
 
     private function getConcepts() {
-        $base64 = base64_encode($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword'));
+        $base64 = base64_encode((string) ($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword')));
         $response = $this->client->request('GET', $this->getParameter('accountingConceptServiceUrl'),[
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -515,7 +485,7 @@ class ActivityController extends AbstractController
             ],
         ]);
         $json = $response->getContent();
-        $concepts = json_decode($json, true);
+        $concepts = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         return $concepts;
     }
 
