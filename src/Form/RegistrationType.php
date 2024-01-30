@@ -147,15 +147,11 @@ class RegistrationType extends AbstractType
                 ];
                 if ($admin) {
                     array_merge($actityFieldOptions,[
-                        'query_builder' => function( ActivityRepository $repo ) {
-                            return $repo->findAll();                            
-                        }
+                        'query_builder' => fn(ActivityRepository $repo) => $repo->findAll()
                     ]);
                 } else { 
                     array_merge($actityFieldOptions,[
-                        'query_builder' => function( ActivityRepository $repo ) {
-                            return $repo->findByOpenAndActiveActivitysQB();                            
-                        }
+                        'query_builder' => fn(ActivityRepository $repo) => $repo->findByOpenAndActiveActivitysQB()
                     ]);
                 }
                 $builder

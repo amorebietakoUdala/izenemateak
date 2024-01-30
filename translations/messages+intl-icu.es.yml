@@ -277,3 +277,5 @@ error.costMandatoryIfDomiciled: "Si la actividad es domiciliada debe rellenar el
 error.noRegistrations: "No hay nadie apuntado"
 error.cantGetConcepts: "Se ha producido un error al obtener los conceptos"
 error.cantCloneRegistrations: "No se pueden copiar inscripciones de formularios externos"
+error.clasificationHasActivities: "No se pueden borrar la clasificación porque tiene actividades asociadas"
+error.activityTypeHasActivities: "No se pueden borrar el tipo de actividad porque tiene actividades asociadas"

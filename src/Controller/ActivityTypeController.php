@@ -10,34 +10,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("{_locale}/activity-type")
- * @isGranted("ROLE_ADMIN")
- */
+#[Route(path: '{_locale}/activity-type')]
+#[IsGranted('ROLE_ADMIN')]
 class ActivityTypeController extends AbstractController
 {
-    /**
-     * @Route("/", name="app_activity_type_index", methods={"GET"})
-     */
+    public function __construct(private readonly TranslatorInterface $translator)
+    {       
+    }
+
+    #[Route(path: '/', name: 'app_activity_type_index', methods: ['GET'])]
     public function index(Request $request, ActivityTypeRepository $activityTypeRepository): Response
     {
-        $ajax = $request->get('ajax') !== null ? $request->get('ajax') : "false";
+        $ajax = $request->get('ajax') ?? "false";
         $activityTypes = $activityTypeRepository->findAll();
         $form = $this->createForm(ActivityTypeFormType::class);
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
         return $this->render("activityType/$template", [
             'activityTypes' => $activityTypes,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
     /**
      * Creates or updates a Activity
-     * 
-     * @Route("/new", name="app_activity_type_save", methods={"GET","POST"})
      */
+    #[Route(path: '/new', name: 'app_activity_type_save', methods: ['GET', 'POST'])]
     public function createOrSave(Request $request, ActivityTypeRepository $repo, EntityManagerInterface $em): Response
     {
         $activityType = new ActivityType();
@@ -55,7 +55,7 @@ class ActivityTypeController extends AbstractController
             $em->flush();
 
             if ($request->isXmlHttpRequest()) {
-                return new Response(null, 204);
+                return new Response(null, Response::HTTP_NO_CONTENT);
             }
             return $this->redirectToRoute('app_activity_type_index');
         }
@@ -63,13 +63,11 @@ class ActivityTypeController extends AbstractController
         $template = $request->isXmlHttpRequest() ? '_form.html.twig' : 'new.html.twig';
         return $this->render('activityType/' . $template, [
             'holiday' => $activityType,
-            'form' => $form->createView(),
+            'form' => $form,
         ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200,));
     }
 
-    /**
-     * @Route("/{id}", name="app_activity_type_show", methods={"GET"})
-     */
+    #[Route(path: '/{id}', name: 'app_activity_type_show', methods: ['GET'])]
     public function show(Request $request, ActivityType $activityType, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ActivityTypeFormType::class, $activityType, [
@@ -86,14 +84,12 @@ class ActivityTypeController extends AbstractController
         $template = $request->isXmlHttpRequest() ? '_form.html.twig' : 'edit.html.twig';
         return $this->render('activityType/' . $template, [
             'activityType' => $activityType,
-            'form' => $form->createView(),
+            'form' => $form,
             'readonly' => true,
         ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200,));
     }
 
-    /**
-     * @Route("/{id}/edit", name="app_activity_type_edit", methods={"GET", "POST"})
-     */
+    #[Route(path: '/{id}/edit', name: 'app_activity_type_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ActivityType $id, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ActivityTypeFormType::class, $id, [
@@ -110,16 +106,17 @@ class ActivityTypeController extends AbstractController
         $template = $request->isXmlHttpRequest() ? '_form.html.twig' : 'edit.html.twig';
         return $this->render('activityType/' . $template, [
             'activity' => $id,
-            'form' => $form->createView(),
+            'form' => $form,
             'readonly' => false
-        ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200,));
+        ], new Response(null, $form->isSubmitted() && !$form->isValid() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK,));
     }
 
-    /**
-     * @Route("/{id}", name="app_activity_type_delete", methods={"POST","DELETE"})
-     */
+    #[Route(path: '/{id}', name: 'app_activity_type_delete', methods: ['POST', 'DELETE'])]
     public function delete(Request $request, ActivityType $id, EntityManagerInterface $entityManager): Response
     {
+        if ( !$this->canBeDeleted($id) ) {
+            return new Response($this->translator->trans('error.activityTypeHasActivities'),Response::HTTP_NOT_ACCEPTABLE);
+        }
         if ($this->isCsrfTokenValid('delete'.$id->getId(), $request->get('_token'))) {
             $entityManager->remove($id);
             $entityManager->flush();
@@ -129,7 +126,15 @@ class ActivityTypeController extends AbstractController
                 return new Response(null, Response::HTTP_NO_CONTENT);
             }
         } else {
-            return new Response('messages.invalidCsrfToken', 422);
+            return new Response('messages.invalidCsrfToken', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    private function canBeDeleted(ActivityType $activityType): bool {
+        $activities = $activityType->getActivitys();
+        if (count($activities) > 0) {
+            return false;
+        }
+        return true;
     }
 }

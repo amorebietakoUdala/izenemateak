@@ -10,165 +10,114 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 
-/**
- * @ORM\Entity(repositoryClass=ActivityRepository::class)
- */
+#[ORM\Entity(repositoryClass: ActivityRepository::class)]
 class Activity
 {
-    const STATUS_PREINSCRIPTION = 0;
-    const STATUS_RAFFLED = 1;
-    const STATUS_WAITING_CONFIRMATIONS = 2;
-    const STATUS_WAITING_LIST = 3;
-    const STATUS_CLOSED = 4;
+    final public const STATUS_PREINSCRIPTION = 0;
+    final public const STATUS_RAFFLED = 1;
+    final public const STATUS_WAITING_CONFIRMATIONS = 2;
+    final public const STATUS_WAITING_LIST = 3;
+    final public const STATUS_CLOSED = 4;
 
     use TimestampableEntity;
 
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     * @Groups({"api"})
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['api'])]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"api"})
-     */
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['api'])]
     private $nameEs;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"api"})
-     */
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['api'])]
     private $nameEu;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"api"})
-     */
-    private $turnEs;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['api'])]
+    private ?string $turnEs = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"api"})
-     */
-    private $turnEu;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['api'])]
+    private ?string $turnEu = null;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"api"})
-     */
-    private $startDate;
+    #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['api'])]
+    private ?\DateTimeInterface $startDate = null;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"api"})
-     */
-    private $endDate;
+    #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['api'])]
+    private ?\DateTimeInterface $endDate = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"api"})
-     */
-    private $active;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['api'])]
+    private ?bool $active = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Registration::class, mappedBy="activity", cascade={"persist"})
-     */
-    private $registrations;
+    #[ORM\OneToMany(targetEntity: Registration::class, mappedBy: 'activity', cascade: ['persist'])]
+    private Collection|array $registrations;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=ActivityType::class, inversedBy="activitys")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $activityType;
+    #[ORM\ManyToOne(targetEntity: ActivityType::class, inversedBy: 'activitys')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ActivityType $activityType = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"api"})
-     */
-    private $places;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(['api'])]
+    private ?int $places = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"api"})
-     */
-    private $limitPlaces;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['api'])]
+    private ?bool $limitPlaces = false;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"api"})
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(['api'])]
     private $status;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"api"})
-     */
-    private $cost;
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['api'])]
+    private ?float $cost = null;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"api"})
-     */
-    private $costForSubscribers;
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['api'])]
+    private ?float $costForSubscribers = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Clasification::class, inversedBy="activitys")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $clasification;
+    #[ORM\ManyToOne(targetEntity: Clasification::class, inversedBy: 'activitys')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Clasification $clasification = null;
 
-    /**
-     * @ORM\Column(type="string", length=10)
-     */
-    private $accountingConcept;
+    #[ORM\Column(type: 'string', length: 10)]
+    private ?string $accountingConcept = null;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=ExtraField::class, inversedBy="activities", cascade={"persist"})
-     */
-    private $extraFields;
+    #[ORM\ManyToMany(targetEntity: ExtraField::class, inversedBy: 'activities', cascade: ['persist'])]
+    private Collection|array $extraFields;
 
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups({"api"})
-     */
-    private $domiciled;
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['api'])]
+    private bool $domiciled = false;
 
-    /**
-     * @ORM\Column(type="string", length=1024, nullable=true)
-     * @Groups({"api"})
-     */
-    private $url;
+    #[ORM\Column(type: 'string', length: 1024, nullable: true)]
+    #[Groups(['api'])]
+    private ?string $url = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"api"})
-     */
-    private $askSchool;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['api'])]
+    private ?bool $askSchool = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"api"})
-     */
-    private $askBirthDate;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['api'])]
+    private ?bool $askBirthDate = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"api"})
-     */
-    private $askSubscriber;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['api'])]
+    private ?bool $askSubscriber = null;
 
     private bool $copyRegistrations;
 
     public function __construct()
     {
         $this->registrations = new ArrayCollection();
-        $this->sessions = new ArrayCollection();
         $this->extraFields = new ArrayCollection();
-        $this->limitPlaces = false;
-        $this->domiciled = false;
     }
 
     public function getId(): ?int

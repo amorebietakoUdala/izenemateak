@@ -9,39 +9,10 @@ use Symfony\Component\Config\FileLocator;
 
 class CsvGeneratorService {
 
-   const INSTITUTION='AMOREBIE';
-//    const VALID_HEADERS = [
-//       'Nombre',
-//       'Apellido1',
-//       'Apellido2',
-//       'Dni',
-//       'Importe',
-//       'Cuenta_Corriente',
-//       'Nombre_Titular',
-//       'Apellido1_Titular',
-//       'Apellido2_Titular',
-//       'Dni_Titular',
-//       'Referencia_Externa',
-//       'Presupuesto',
-//       'Institucion',
-//       'Tipo_Ingreso',
-//       'Tributo',
-//       'Fecha_Inicio_Pago',
-//       'Fecha_Limite_Pago',
-//       'Referencia_C19',
-//       'Cuerpo1',
-//       'Cuerpo2',
-//       'Cuerpo3',
-//       'Cuerpo4',
-//       'Cuerpo5',
-//       'Cuerpo6',
-//       'Cuerpo7',
-//   ];   
+   final public const INSTITUTION='AMOREBIE';
 
-   private $projectDir = null;
-
-   public function __construct(string $projectDir){
-      $this->projectDir = $projectDir;
+   public function __construct(private readonly string $projectDir)
+   {
    }
 
    public function createRow(Registration $registration, $concepts) {

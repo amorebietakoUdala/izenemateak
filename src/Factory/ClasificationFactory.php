@@ -37,7 +37,7 @@ final class ClasificationFactory extends ModelFactory
 
     protected function getDefaults(): array
     {
-        $word = self::faker()->word(2);
+        $word = self::faker()->word();
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
             'descriptionEs' => $word,

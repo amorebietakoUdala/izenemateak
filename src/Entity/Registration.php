@@ -8,185 +8,115 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-/**
- * @ORM\Entity(repositoryClass=RegistrationRepository::class)
- */
+#[ORM\Entity(repositoryClass: RegistrationRepository::class)]
 class Registration
 {
     use TimestampableEntity;
 
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $forMe;
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $forMe = true;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $dni;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $dni = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $email;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $email = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=30)
-     */
-    private $surname1;
+    #[ORM\Column(type: 'string', length: 30)]
+    private ?string $surname1 = null;
 
-    /**
-     * @ORM\Column(type="string", length=30, nullable=true)
-     */
-    private $surname2;
+    #[ORM\Column(type: 'string', length: 30, nullable: true)]
+    private ?string $surname2 = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $telephone1;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $telephone1 = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $telephone2;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $telephone2 = null;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $dateOfBirth;
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $dateOfBirth = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $subscriber;
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $subscriber = false;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $representativeDni;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $representativeDni = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $representativeName;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $representativeName = null;
 
-    /**
-     * @ORM\Column(type="string", length=30, nullable=true)
-     */
-    private $representativeSurname1;
+    #[ORM\Column(type: 'string', length: 30, nullable: true)]
+    private ?string $representativeSurname1 = null;
 
-    /**
-     * @ORM\Column(type="string", length=30, nullable=true)
-     */
-    private $representativeSurname2;
+    #[ORM\Column(type: 'string', length: 30, nullable: true)]
+    private ?string $representativeSurname2 = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Activity::class, inversedBy="registrations")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $activity;
+    #[ORM\ManyToOne(targetEntity: Activity::class, inversedBy: 'registrations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Activity $activity = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $fortunate;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $fortunate = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $confirmed;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $confirmed = null;
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $token;
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $token = null;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $confirmationDate;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $confirmationDate = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class)
-     */
-    private $user;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private ?User $user = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=RegistrationExtraField::class, mappedBy="registration", cascade={"persist"})
-     */
-    private $registrationExtraFields;
+    #[ORM\OneToMany(targetEntity: RegistrationExtraField::class, mappedBy: 'registration', cascade: ['persist'])]
+    private Collection|array $registrationExtraFields;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $paymentWho;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $paymentWho = null;
 
-    /**
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    private $paymentDni;
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
+    private ?string $paymentDni = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $paymentName;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $paymentName = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $paymentSurname1;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $paymentSurname1 = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $paymentSurname2;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $paymentSurname2 = null;
 
-    /**
-     * @ORM\Column(type="string", length=29, nullable=true)
-     */
-    private $paymentIBANAccount;
+    #[ORM\Column(type: 'string', length: 29, nullable: true)]
+    private ?string $paymentIBANAccount = null;
 
-    /**
-     * @ORM\Column(type="string", length=1024, nullable=true)
-     */
-    private $paymentURL;
+    #[ORM\Column(type: 'string', length: 1024, nullable: true)]
+    private ?string $paymentURL = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $waitingListOrder;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $waitingListOrder = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $calledOnWaitingList;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $calledOnWaitingList = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $school;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $school = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $copied;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $copied = null;
 
     public function __construct()
     {
-        $this->forMe = true;
-        $this->subscriber = false;
         $this->registrationExtraFields = new ArrayCollection();
     }
 
@@ -396,10 +326,10 @@ class Registration
     }
 
     public function fillWithGiltzaUser(array $giltzaUser): self {
-        $this->dni = mb_strtoupper($giltzaUser['dni']);
-        $this->name = mb_strtoupper($giltzaUser['given_name']);
-        $this->surname1 = mb_strtoupper($giltzaUser['surname1']);
-        $this->surname2 = mb_strtoupper($giltzaUser['surname2']);
+        $this->dni = mb_strtoupper((string) $giltzaUser['dni']);
+        $this->name = mb_strtoupper((string) $giltzaUser['given_name']);
+        $this->surname1 = mb_strtoupper((string) $giltzaUser['surname1']);
+        $this->surname2 = mb_strtoupper((string) $giltzaUser['surname2']);
 
         return $this;
     }
@@ -468,7 +398,7 @@ class Registration
 
     public function getPaymentIBANAccountMasked(): ?string
     {
-        return mb_strcut($this->paymentIBANAccount,0,4).'****************'.mb_strcut($this->paymentIBANAccount,-4);
+        return mb_strcut((string) $this->paymentIBANAccount,0,4).'****************'.mb_strcut((string) $this->paymentIBANAccount,-4);
     }
 
     public function getFullName(): string {

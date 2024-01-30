@@ -8,40 +8,28 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-/**
- * @ORM\Entity(repositoryClass=ExtraFieldRepository::class)
- */
+#[ORM\Entity(repositoryClass: ExtraFieldRepository::class)]
 class ExtraField
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     * @Groups({"api"})
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['api'])]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"api"})
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['api'])]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"api"})
-     */
-    private $nameEu;
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['api'])]
+    private ?string $nameEu = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=RegistrationExtraField::class, mappedBy="extraField")
-     */
-    private $registrationExtraFields;
+    #[ORM\OneToMany(targetEntity: RegistrationExtraField::class, mappedBy: 'extraField')]
+    private Collection|array $registrationExtraFields;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Activity::class, mappedBy="extraFields")
-     */
-    private $activities;
+    #[ORM\ManyToMany(targetEntity: Activity::class, mappedBy: 'extraFields')]
+    private Collection|array $activities;
 
     public function __construct()
     {

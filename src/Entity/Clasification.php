@@ -7,32 +7,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=ClasificationRepository::class)
- */
+#[ORM\Entity(repositoryClass: ClasificationRepository::class)]
 class Clasification
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $descriptionEs;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $descriptionEs = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $descriptionEu;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $descriptionEu = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Activity::class, mappedBy="clasification")
-     */
-    private $activitys;
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'clasification')]
+    private readonly Collection $activitys;
 
     public function __construct()
     {
