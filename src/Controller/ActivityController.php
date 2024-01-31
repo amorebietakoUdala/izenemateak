@@ -476,7 +476,7 @@ class ActivityController extends AbstractController
         return rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
     }
 
-    private function getConcepts() {
+    private function getConcepts(): array {
         $base64 = base64_encode((string) ($this->getParameter('receiptApiUser').':'.$this->getParameter('receiptApiPassword')));
         $response = $this->client->request('GET', $this->getParameter('accountingConceptServiceUrl'),[
             'headers' => [
@@ -484,8 +484,13 @@ class ActivityController extends AbstractController
                 'Authorization' => sprintf('Basic %s', $base64),
             ],
         ]);
-        $json = $response->getContent();
-        $concepts = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        $json = $response->getContent(true);
+        if ( "" !== $json ) {
+            $concepts = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } else {
+            $concepts = ['data' => []];
+        }
         return $concepts;
     }
 
