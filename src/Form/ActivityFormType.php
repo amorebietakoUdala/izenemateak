@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\ActivityType;
 use App\Entity\Clasification;
 use App\Entity\Activity;
-use App\Entity\ExtraField;
 use App\Repository\ClasificationRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -138,9 +137,8 @@ class ActivityFormType extends AbstractType
                 'label' => 'activity.accountingConcept',
                 'disabled' => $readonly,
                 'choices' => $this->prepareChoices($concepts, $locale),
-                'required' => true,
+                'required' => false,
             ])
-
             ->add('active', null, [
                 'label' => 'activity.active',
                 'disabled' => $readonly,
@@ -188,13 +186,13 @@ class ActivityFormType extends AbstractType
     }
 
     private function prepareChoices($concepts, $locale) {
-        $choices = [];
+        $choices = ["placeholder.choose" => null];
         foreach ($concepts as $concept) {
-            $conceptElem = $concept['concept']; 
+            $conceptElem = $concept['concept'];
             if ($locale === 'es' ) {
                 $choices[$conceptElem['name']] = $conceptElem['id'];
             } else {
-                $choices[$conceptElem['name_eu']] = $conceptElem['id'];
+                $choices[$conceptElem['nameEu']] = $conceptElem['id'];
             }
         }
         return $choices;

@@ -1,6 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
 
-//import $ from 'jquery';
 import '../js/common/autocomplete.js';
 
 export default class extends Controller {
