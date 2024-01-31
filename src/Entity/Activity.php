@@ -86,7 +86,7 @@ class Activity
     #[ORM\JoinColumn(nullable: false)]
     private ?Clasification $clasification = null;
 
-    #[ORM\Column(type: 'string', length: 10)]
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
     private ?string $accountingConcept = null;
 
     #[ORM\ManyToMany(targetEntity: ExtraField::class, inversedBy: 'activities', cascade: ['persist'])]
