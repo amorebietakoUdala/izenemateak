@@ -103,11 +103,11 @@ class ActivityController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, EntityManagerInterface $em, Activity $activity): Response
     {
-        $concepts = $this->getConcepts();
+//        $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $activity, [
             'readonly' => false,
             'locale' => $request->getLocale(),
-            'concepts' => $concepts['data'],
+//            'concepts' => $concepts['data'],
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -167,11 +167,11 @@ class ActivityController extends AbstractController
     public function clone(Request $request, EntityManagerInterface $em, Activity $activity): Response
     {
         $newActivity = $activity->clone();
-        $concepts = $this->getConcepts();
+//        $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $newActivity, [
             'readonly' => false,
             'locale' => $request->getLocale(),
-            'concepts' => $concepts['data'],
+//            'concepts' => $concepts['data'],
             'copyRegistrations' => true,
         ]);
         $form->handleRequest($request);
@@ -208,11 +208,11 @@ class ActivityController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function show(Request $request, Activity $activity): Response
     {
-        $concepts = $this->getConcepts();
+//        $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $activity, [
             'readonly' => true,
             'locale' => $request->getLocale(),
-            'concepts' => $concepts['data'],
+//            'concepts' => $concepts['data'],
         ]);
 
         return $this->render('activity/edit.html.twig', [
