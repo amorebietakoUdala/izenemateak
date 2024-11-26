@@ -133,12 +133,12 @@ class ActivityFormType extends AbstractType
                 'disabled' => $readonly,
                 'required' => false,
             ])
-            ->add('accountingConcept', ChoiceType::class, [
-                'label' => 'activity.accountingConcept',
-                'disabled' => $readonly,
-                'choices' => $this->prepareChoices($concepts, $locale),
-                'required' => false,
-            ])
+            // ->add('accountingConcept', ChoiceType::class, [
+            //     'label' => 'activity.accountingConcept',
+            //     'disabled' => $readonly,
+            //     'choices' => $this->prepareChoices($concepts, $locale),
+            //     'required' => false,
+            // ])
             ->add('active', null, [
                 'label' => 'activity.active',
                 'disabled' => $readonly,
