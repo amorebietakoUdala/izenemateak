@@ -37,11 +37,11 @@ class ActivityController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
-        $concepts = $this->getConcepts();
+        // $concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, new Activity(), [
             'readonly' => false,
             'locale' => $request->getLocale(),
-            'concepts' => $concepts['data'],
+            // 'concepts' => $concepts['data'],
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

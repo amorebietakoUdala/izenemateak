@@ -27,7 +27,7 @@ class ActivityFormType extends AbstractType
         $locale = $options['locale'];
         $copyRegistrations = $options['copyRegistrations'] ?? false;
         $status = $options['data']->getStatus() ?? 0;
-        $concepts = $options['concepts'] ?? [];
+        // $concepts = $options['concepts'] ?? [];
         $builder
             ->add('clasification',EntityType::class,[
                 'label' => 'activity.clasification',
@@ -133,12 +133,12 @@ class ActivityFormType extends AbstractType
                 'disabled' => $readonly,
                 'required' => false,
             ])
-            ->add('accountingConcept', ChoiceType::class, [
-                'label' => 'activity.accountingConcept',
-                'disabled' => $readonly,
-                'choices' => $this->prepareChoices($concepts, $locale),
-                'required' => false,
-            ])
+            // ->add('accountingConcept', ChoiceType::class, [
+            //     'label' => 'activity.accountingConcept',
+            //     'disabled' => $readonly,
+            //     'choices' => $this->prepareChoices($concepts, $locale),
+            //     'required' => false,
+            // ])
             ->add('active', null, [
                 'label' => 'activity.active',
                 'disabled' => $readonly,
