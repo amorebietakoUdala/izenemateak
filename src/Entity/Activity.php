@@ -276,7 +276,7 @@ class Activity
         $activity->setLimitPlaces($this->limitPlaces);
         $activity->setCost($this->cost);
         $activity->setCostForSubscribers($this->costForSubscribers);
-        $activity->setAccountingConcept($this->accountingConcept);
+        //$activity->setAccountingConcept($this->accountingConcept);
         $activity->setDomiciled($this->domiciled);
         $activity->setClasification($this->clasification);
         foreach($this->extraFields as $extraField) {
@@ -415,7 +415,7 @@ class Activity
         return $this->accountingConcept;
     }
 
-    public function setAccountingConcept(string $accountingConcept): self
+    public function setAccountingConcept(?string $accountingConcept): self
     {
         $this->accountingConcept = $accountingConcept;
 
