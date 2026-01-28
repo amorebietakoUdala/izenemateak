@@ -57,7 +57,7 @@
         "doctrine/doctrine-fixtures-bundle": "^3.3",
         "globalcitizen/php-iban": "^4.1",
         "league/csv": "^9.0",
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "^9.6",
         "rector/rector": "*",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
