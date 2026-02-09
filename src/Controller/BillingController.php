@@ -6,6 +6,7 @@ use App\Entity\Activity;
 use App\Form\BillingSearchFormType;
 use App\Repository\ActivityRepository;
 use App\Service\CsvGeneratorService;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -52,7 +53,7 @@ class BillingController extends AbstractController
     }
 
     #[Route(path: '/{id}/download', name: 'app_billing_download', methods: ['GET'])]
-    public function download(Activity $activity, CsvGeneratorService $cgs) {
+    public function download(#[MapEntity(id: 'id')] Activity $activity, CsvGeneratorService $cgs) {
         $registrations = $activity->getRegistrations();
 
         if (count($registrations) === 0) {

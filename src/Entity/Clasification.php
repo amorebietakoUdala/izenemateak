@@ -22,7 +22,7 @@ class Clasification
     private ?string $descriptionEu = null;
 
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'clasification')]
-    private readonly Collection $activitys;
+    private Collection $activitys;
 
     public function __construct()
     {
@@ -76,7 +76,7 @@ class Clasification
     public function addActivity(Activity $activity): self
     {
         if (!$this->activitys->contains($activity)) {
-            $this->acitivitys[] = $activity;
+            $this->activitys->add($activity);
             $activity->setClasification($this);
         }
 

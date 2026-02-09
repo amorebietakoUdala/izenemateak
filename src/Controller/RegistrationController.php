@@ -21,6 +21,7 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Knp\Snappy\Pdf;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -32,7 +33,9 @@ class RegistrationController extends AbstractController
         private readonly Pdf $pdf, 
         private readonly HttpClientInterface $client, 
         private readonly ActivityRepository $activityRepo, 
-        private readonly RegistrationRepository $registrationRepo)
+        private readonly RegistrationRepository $registrationRepo,
+        private readonly EntityManagerInterface $em,
+    )
     {
     }
 
@@ -42,7 +45,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route(path: '/{_locale}/active/activitys', name: 'app_active_activitys')]
-    public function listActiveActivitys(Request $request, ActivityRepository $repo) {
+    public function listActiveActivitys(Request $request) {
         $form = $this->createForm(ActiveActivitysSearchFormType::class, null,[
             'locale' => $request->getLocale(),
         ]);
@@ -50,9 +53,9 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array $data */
             $data = $form->getData();
-            $activeActivitys = $repo->findByActiveActivitysClasification($data['clasification']);
+            $activeActivitys = $this->activityRepo->findByActiveActivitysClasification($data['clasification']);
         } else {
-            $activeActivitys = $repo->findByActiveActivitys();
+            $activeActivitys = $this->activityRepo->findByActiveActivitys();
         }
 
         return $this->render('register/listActiveActivitys.html.twig', [
@@ -62,7 +65,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route(path: '/{_locale}/register', name: 'app_register_new')]
-    public function new(Request $request, EntityManagerInterface $em, RouterInterface $router): Response
+    public function new(Request $request, RouterInterface $router): Response
     {
         $registration = new Registration();
         if ( $request->getSession()->get('giltzaUser') === null && !$this->isGranted('ROLE_IZENEMATEAK', $this->getUser()) ) {
@@ -98,15 +101,15 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Registration $data */
             $data = $form->getData();
-            if (!$this->checkForErrors($data, $em)) {
+            if (!$this->checkForErrors($data)) {
                 $data->setUser($this->getUser());
                 $data = $form->getData();
                 if ( $data->getActivity()->getStatus() > Activity::STATUS_RAFFLED ) {
                     $lastOnWaitingList = $this->registrationRepo->getLastWaitingListOrderForActivity($data->getActivity());
                     $data->setWaitingListOrder($lastOnWaitingList + 1);
                 }
-                $em->persist($data);
-                $em->flush();
+                $this->em->persist($data);
+                $this->em->flush();
                 $this->sendRegistrationEmail($data, $request->getLocale());
                 $this->addFlash('success', 'registration.saved');
                 if (null !== $activity) {
@@ -141,18 +144,18 @@ class RegistrationController extends AbstractController
 
     #[Route(path: '{_locale}/admin/registration', name: 'app_registration_index')]
     #[IsGranted('ROLE_ADMIN')]
-    public function index(Request $request, RegistrationRepository $repo): Response
+    public function index(Request $request): Response
     {
         $form = $this->createForm(RegistrationSearchFormType::class, null, [
             'locale' => $request->getLocale(),
         ]);
-        $registrations = $repo->findByActiveActivitys();
+        $registrations = $this->registrationRepo->findByActiveActivitys();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $criteria = $this->removeBlankFilters($data);
-            $registrations = $repo->findRegistrationsBy($criteria);
+            $registrations = $this->registrationRepo->findRegistrationsBy($criteria);
         }
 
         return $this->render('register/index.html.twig', [
@@ -163,7 +166,7 @@ class RegistrationController extends AbstractController
 
     #[Route(path: '{_locale}/admin/registration/{id}/edit', name: 'app_registration_edit')]
     #[IsGranted('ROLE_ADMIN')]
-    public function edit(Registration $registration, Request $request, EntityManagerInterface $em): Response
+    public function edit(Request $request, #[MapEntity(id: 'id')] Registration $registration ): Response
     {
         $admin = $request->get('admin') ?? false;
         $new = false;
@@ -182,8 +185,8 @@ class RegistrationController extends AbstractController
             foreach ($registrationExtraFields as $ref) {
                 $ref->setRegistration($data);
             }
-            $em->persist($data);
-            $em->flush();
+            $this->em->persist($data);
+            $this->em->flush();
             $this->addFlash('success', 'registration.saved');
             return $this->redirectToRoute('app_registration_edit',[
                 'id' => $registration->getId(),
@@ -203,11 +206,11 @@ class RegistrationController extends AbstractController
 
     #[Route(path: '{_locale}/admin/registration/{id}/delete', name: 'app_registration_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function delete(Request $request, EntityManagerInterface $em, Registration $registration): Response
+    public function delete(Request $request, #[MapEntity(id: 'id')] Registration $registration): Response
     {
         if ($this->isCsrfTokenValid('delete'.$registration->getId(), $request->get('_token'))) {
-            $em->remove($registration);
-            $em->flush();
+            $this->em->remove($registration);
+            $this->em->flush();
             $this->addFlash('success','registration_deleted');
             return $this->redirectToRoute('app_registration_index');
         } else {
@@ -220,7 +223,7 @@ class RegistrationController extends AbstractController
 
     #[Route(path: '{_locale}/admin/registration/{id}/pdf', name: 'app_registration_pdf', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function pdf(Registration $registration): Response
+    public function pdf(#[MapEntity(id: 'id')] Registration $registration): Response
     {
         
         $html =  $this->renderView('register/registration-pdf.html.twig',[
@@ -238,7 +241,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route(path: '{_locale}/registration/{id}/confirm', name: 'app_registration_confirm', methods: ['GET', 'POST'])]
-    public function confirm(Request $request, EntityManagerInterface $em, Registration $registration): Response
+    public function confirm(Request $request, #[MapEntity(id: 'id')] Registration $registration): Response
     {
         $form = $this->createForm(RegistrationType::class, $registration,[
             'locale' => $request->getLocale(),
@@ -274,8 +277,8 @@ class RegistrationController extends AbstractController
             }
             $registration->setConfirmed(true);
             $registration->setConfirmationDate(new \DateTime());
-            $em->persist($registration);
-            $em->flush();
+            $this->em->persist($registration);
+            $this->em->flush();
             $this->sendConfirmationEmail($registration, $request->getLocale());
             $this->addFlash('success', 'messages.successfullyConfirmed');
             return $this->renderConfirmation(false, $registration, $admin, $form);
@@ -325,7 +328,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route(path: '{_locale}/registration/{id}/reject', name: 'app_registration_reject', methods: ['GET'])]
-    public function reject(Request $request, EntityManagerInterface $em, Registration $registration, RegistrationRepository $repo): Response
+    public function reject(Request $request, #[MapEntity(id: 'id')] Registration $registration): Response
     {
         $admin = $request->get('admin') ?? false;
         $token = $request->get('token');
@@ -339,14 +342,14 @@ class RegistrationController extends AbstractController
         }
         $registration->setConfirmed(false);
         $registration->setConfirmationDate(new \DateTime());
-        $em->persist($registration);
-        $em->flush();
+        $this->em->persist($registration);
+        $this->em->flush();
         if ($registration->getActivity()->getStatus() === Activity::STATUS_WAITING_CONFIRMATIONS) {
-            $next = $repo->findNextOnWaitingListActivity($registration->getActivity());
+            $next = $this->registrationRepo->findNextOnWaitingListActivity($registration->getActivity());
             $this->sendFortunateEmail($next, $request->getLocale());
             $next->setCalledOnWaitingList(true);
-            $em->persist($next);
-            $em->flush();
+            $this->em->persist($next);
+            $this->em->flush();
         }
         $this->addFlash('success', 'messages.successfullyRejected');
         return $this->renderConfirmation(false, $registration, $admin);
@@ -371,7 +374,7 @@ class RegistrationController extends AbstractController
 
     #[Route(path: '{_locale}/admin/registration/{id}', name: 'app_registration_show')]
     #[IsGranted('ROLE_ADMIN')]
-    public function show(Request $request, Registration $registration): Response
+    public function show(Request $request, #[MapEntity(id: 'id')] Registration $registration): Response
     {
         $admin = $request->get('admin') ?? false;
         $new = false;
@@ -447,8 +450,7 @@ class RegistrationController extends AbstractController
         $this->mailer->send($email);
     }
 
-    private function checkForErrors(Registration $registration, EntityManagerInterface $em) {
-        $repo = $em->getRepository(Registration::class);
+    private function checkForErrors(Registration $registration) {
         $activity = $registration->getActivity();
         $name = $registration->getName();
         $surname1 = $registration->getSurname1();
@@ -460,17 +462,17 @@ class RegistrationController extends AbstractController
             $this->addFlash('error', 'error.canNotRegisterToday');
             return true;
         }
-        $registration = $repo->findOneByDniActivity($registration->getDni(),$activity);
+        $registration = $this->registrationRepo->findOneByDniActivity($registration->getDni(),$activity);
         if ( null !== $registration ) {
             $this->addFlash('error', 'error.alreadyRegistered');
             return true;
         }
-        $registration = $repo->findOneByNameSurnamesActivity($name, $surname1, $surname2, $activity);
+        $registration = $this->registrationRepo->findOneByNameSurnamesActivity($name, $surname1, $surname2, $activity);
         if ( null !== $registration ) {
             $this->addFlash('error', 'error.alreadyRegistered');
             return true;
         }
-        $registration = $repo->findOneByNameSurname1DateOfBirthActivity($name,$surname1,$dateOfBirth,$activity);
+        $registration = $this->registrationRepo->findOneByNameSurname1DateOfBirthActivity($name,$surname1,$dateOfBirth,$activity);
         if ( null !== $registration ) {
             $this->addFlash('error', 'error.alreadyRegistered');
             return true;

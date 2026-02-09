@@ -11,6 +11,7 @@ use App\Repository\ExtraFieldRepository;
 use App\Repository\RegistrationRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,7 +30,10 @@ class ActivityController extends AbstractController
         private readonly TranslatorInterface $translator, 
         private readonly HttpClientInterface $client, 
         private readonly ExtraFieldRepository $extraFieldRepo, 
-        private readonly EntityManagerInterface $em)
+        private readonly EntityManagerInterface $em,
+        private readonly ActivityRepository $activityRepo,
+        private readonly RegistrationRepository $repo,
+    )
     {
     }
 
@@ -70,7 +74,7 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity', name: 'app_activity_index')]
     #[IsGranted('ROLE_ADMIN')]
-    public function index(Request $request, ActivityRepository $repo): Response
+    public function index(Request $request): Response
     {
         $ajax = $request->get('ajax') ?? "false";
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
@@ -82,14 +86,14 @@ class ActivityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $criteria = $this->removeBlankFilters($data);
-            $activitys = $repo->findActivitysBy($criteria);
+            $activitys = $this->activityRepo->findActivitysBy($criteria);
             return $this->render("activity/$template", [
                 'activitys' => $activitys,
                 'form' => $form,
             ]);
             }
 
-        $activitys = $repo->findActivitysBy([
+        $activitys = $this->activityRepo->findActivitysBy([
             'active' => true,
         ]);
         return $this->render("activity/$template", [
@@ -101,7 +105,7 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/edit', name: 'app_activity_edit')]
     #[IsGranted('ROLE_ADMIN')]
-    public function edit(Request $request, EntityManagerInterface $em, Activity $activity): Response
+    public function edit(Request $request, #[MapEntity(id: 'id')] Activity $activity): Response
     {
         //$concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $activity, [
@@ -116,8 +120,8 @@ class ActivityController extends AbstractController
                 $data = $form->getData();
                 /** If name is the same takes it from database instead of creating another one */
                 $this->checkExtraFields($data->getExtraFields());
-                $em->persist($data);
-                $em->flush();
+                $this->em->persist($data);
+                $this->em->flush();
                 $this->addFlash('success','activity.saved');
             } 
         }
@@ -146,15 +150,15 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/delete', name: 'app_activity_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function delete(Request $request, EntityManagerInterface $em, Activity $activity): Response
+    public function delete(Request $request, #[MapEntity(id: 'id')] Activity $activity): Response
     {
         if ( count($activity->getRegistrations()) > 0 ) {
             $this->addFlash('error','error.activity_has_registrations');
             return $this->redirectToRoute('app_activity_index');
         } 
         elseif ($this->isCsrfTokenValid('delete'.$activity->getId(), $request->get('_token'))) {
-            $em->remove($activity);
-            $em->flush();
+            $this->em->remove($activity);
+            $this->em->flush();
             $this->addFlash('success','activity_deleted');
             return $this->redirectToRoute('app_activity_index');
         } else {
@@ -164,7 +168,7 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/clone', name: 'app_activity_clone')]
     #[IsGranted('ROLE_ADMIN')]
-    public function clone(Request $request, EntityManagerInterface $em, Activity $activity): Response
+    public function clone(Request $request, #[MapEntity(id: 'id')]Activity $activity): Response
     {
         $newActivity = $activity->clone();
         //$concepts = $this->getConcepts();
@@ -190,8 +194,8 @@ class ActivityController extends AbstractController
             if ($data->getCopyRegistrations()) {
                 $this->copyRegistrations($data, $activity);
             }
-            $em->persist($data);
-            $em->flush();
+            $this->em->persist($data);
+            $this->em->flush();
             $this->addFlash('success', 'activity.cloned');
             return $this->redirectToRoute('app_activity_index');
         }
@@ -206,7 +210,7 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}', name: 'app_activity_show')]
     #[IsGranted('ROLE_ADMIN')]
-    public function show(Request $request, Activity $activity): Response
+    public function show(Request $request, #[MapEntity(id: 'id')] Activity $activity): Response
     {
         //$concepts = $this->getConcepts();
         $form = $this->createForm(ActivityFormType::class, $activity, [
@@ -226,7 +230,7 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/details', name: 'app_activity_status_details')]
     #[IsGranted('ROLE_ADMIN')]
-    public function raffleDetails(Activity $activity) {
+    public function raffleDetails(#[MapEntity(id: 'id')] Activity $activity) {
         $confirmedRegistrations = $activity->countConfirmed();
         $rejectedRegistrations = $activity->countRejected();
         return $this->render('activity/statusDetails.html.twig', [
@@ -239,7 +243,7 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/raffle/lottery', name: 'app_activity_raffle_lottery', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function raffleRandomize(Activity $activity) {
+    public function raffleRandomize(#[MapEntity(id: 'id')] Activity $activity) {
         if ($activity->getStatus() === Activity::STATUS_RAFFLED ) {
             $this->addFlash('error', 'messages.alreadyRaffled');
             return $this->redirectToRoute('app_activity_status_details', [
@@ -297,12 +301,12 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/mailing', name: 'app_activity_raffle_mailing', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function sendResultsByEmail(Request $request, Activity $activity, RegistrationRepository $repo, EntityManagerInterface $em) {
-        $fortunates = $repo->findBy([
+    public function sendResultsByEmail(Request $request, #[MapEntity(id: 'id')] Activity $activity) {
+        $fortunates = $this->repo->findBy([
             'activity' => $activity,
             'fortunate' => true
         ]);
-        $unfortunates = $repo->findBy([
+        $unfortunates = $this->repo->findBy([
             'activity' => $activity,
             'fortunate' => false
         ]);
@@ -311,8 +315,8 @@ class ActivityController extends AbstractController
             $this->sendFortunates($request->getLocale(), $fortunates);
             $this->sendUnFortunates($request->getLocale(), $unfortunates);
             $activity->setStatus(Activity::STATUS_WAITING_CONFIRMATIONS);
-            $em->persist($activity);
-            $em->flush();
+            $this->em->persist($activity);
+            $this->em->flush();
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
         } finally {
@@ -326,20 +330,20 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/change-status-waiting-list', name: 'app_activity_change_to_waiting-list', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function changeStatusWaitingList(Activity $activity, EntityManagerInterface $em) {
+    public function changeStatusWaitingList(#[MapEntity(id: 'id')] Activity $activity) {
         $activity->setStatus(Activity::STATUS_WAITING_LIST);
-        $em->persist($activity);
-        $em->flush();
+        $this->em->persist($activity);
+        $this->em->flush();
         $this->addFlash('success', 'messages.statusChangedToWaitingList');
         return $this->redirectToRoute('app_activity_status_details', [
-            'id' => $activity->getid(),
+            'id' => $activity->getId(),
         ]);
     }
 
     #[Route(path: '{_locale}/admin/activity/{id}/process-waiting-list', name: 'app_activity_email_waiting_list', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function emailWaitingList(Request $request, Activity $activity, RegistrationRepository $repo, EntityManagerInterface $em) {
-        $orderedWaitingList = $repo->findNotConfirmedAndNotFortunate($activity);
+    public function emailWaitingList(Request $request, #[MapEntity(id: 'id')] Activity $activity) {
+        $orderedWaitingList = $this->repo->findNotConfirmedAndNotFortunate($activity);
         $places = $activity->getPlaces();
         $confirmedRegistrations = $activity->countConfirmed();
         $freePlaces = $places - $confirmedRegistrations;
@@ -354,15 +358,15 @@ class ActivityController extends AbstractController
 
     #[Route(path: '{_locale}/admin/activity/{id}/close', name: 'app_activity_close', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function close(Activity $activity, EntityManagerInterface $em) {
+    public function close(#[MapEntity(id: 'id')] Activity $activity) {
         if ($activity->getStatus() === Activity::STATUS_CLOSED ) {
             $this->addFlash('error', 'messages.alreadyClosed');
             return $this->redirectToRoute('app_activity_index');
         }
 
         $activity->setStatus(Activity::STATUS_CLOSED);
-        $em->persist($activity);
-        $em->flush();
+        $this->em->persist($activity);
+        $this->em->flush();
         $this->addFlash('success', 'activity.closed');
         return $this->redirectToRoute('app_activity_index');
     }

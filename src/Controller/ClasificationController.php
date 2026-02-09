@@ -6,6 +6,7 @@ use App\Entity\Clasification;
 use App\Form\ClasificationType;
 use App\Repository\ClasificationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,18 +19,22 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ClasificationController extends AbstractController
 {
 
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+        private readonly ClasificationRepository $repo,
+        private readonly EntityManagerInterface $em,
+    )
     {       
     }
 
     #[Route(path: '/', name: 'app_clasification_index', methods: ['GET'])]
-    public function index(Request $request, ClasificationRepository $clasificationRepository): Response
+    public function index(Request $request): Response
     {
         $ajax = $request->get('ajax') ?? "false";
         $form = $this->createForm(ClasificationType::class);
         $template = $ajax === "true" ? '_list.html.twig' : 'index.html.twig';
         return $this->render("clasification/$template", [
-            'clasifications' => $clasificationRepository->findAll(),
+            'clasifications' => $this->repo->findAll(),
             'form' => $form,
         ]);
     }
@@ -38,7 +43,7 @@ class ClasificationController extends AbstractController
      * Creates or updates a Activity
      */
     #[Route(path: '/new', name: 'app_clasification_save', methods: ['GET', 'POST'])]
-    public function createOrSave(Request $request, ClasificationRepository $repo, EntityManagerInterface $em): Response
+    public function createOrSave(Request $request): Response
     {
         $clasification = new Clasification();
         $form = $this->createForm(ClasificationType::class, $clasification);
@@ -48,11 +53,11 @@ class ClasificationController extends AbstractController
             /** @var Clasification $data */
             $data = $form->getData();
             if (null !== $data->getId()) {
-                $clasification = $repo->find($data->getId());
+                $clasification = $this->repo->find($data->getId());
                 $clasification->fill($data);
             }
-            $em->persist($clasification);
-            $em->flush();
+            $this->em->persist($clasification);
+            $this->em->flush();
 
             if ($request->isXmlHttpRequest()) {
                 return new Response(null, Response::HTTP_NO_CONTENT);
@@ -68,7 +73,7 @@ class ClasificationController extends AbstractController
     }
 
     #[Route(path: '/{id}', name: 'app_clasification_show', methods: ['GET'])]
-    public function show(Request $request, Clasification $clasification, EntityManagerInterface $entityManager): Response
+    public function show(Request $request, #[MapEntity(id: 'id')] Clasification $clasification): Response
     {
         $form = $this->createForm(ClasificationType::class, $clasification, [
             'readonly' => true,
@@ -77,8 +82,8 @@ class ClasificationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Activity $clasification */
             $clasification = $form->getData();
-            $entityManager->persist($clasification);
-            $entityManager->flush();
+            $this->em->persist($clasification);
+            $this->em->flush();
         }
 
         $template = $request->isXmlHttpRequest() ? '_form.html.twig' : 'edit.html.twig';
@@ -90,36 +95,36 @@ class ClasificationController extends AbstractController
     }
 
     #[Route(path: '/{id}/edit', name: 'app_clasification_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Clasification $id, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, #[MapEntity(id: 'id')] Clasification $clasification): Response
     {
-        $form = $this->createForm(ClasificationType::class, $id, [
+        $form = $this->createForm(ClasificationType::class, $clasification, [
             'readonly' => false,
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Clasification $id */
-            $id = $form->getData();
-            $entityManager->persist($id);
-            $entityManager->flush();
+            $clasification = $form->getData();
+            $this->em->persist($clasification);
+            $this->em->flush();
         }
 
         $template = $request->isXmlHttpRequest() ? '_form.html.twig' : 'edit.html.twig';
         return $this->render('clasification/' . $template, [
-            'clasification' => $id,
+            'clasification' => $clasification,
             'form' => $form,
             'readonly' => false
         ], new Response(null, $form->isSubmitted() && !$form->isValid() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK,));
     }
 
     #[Route(path: '/{id}', name: 'app_clasification_delete', methods: ['POST', 'DELETE'])]
-    public function delete(Request $request, Clasification $id, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, #[MapEntity(id: 'id')] Clasification $clasification): Response
     {
-        if ( !$this->canBeDeleted($id) ) {
+        if ( !$this->canBeDeleted($clasification) ) {
             return new Response($this->translator->trans('error.clasificationHasActivities'),Response::HTTP_NOT_ACCEPTABLE);
         }
-        if ($this->isCsrfTokenValid('delete'.$id->getId(), $request->get('_token'))) {
-            $entityManager->remove($id);
-            $entityManager->flush();
+        if ($this->isCsrfTokenValid('delete'.$clasification->getId(), $request->get('_token'))) {
+            $this->em->remove($clasification);
+            $this->em->flush();
             if (!$request->isXmlHttpRequest()) {
                 return $this->redirectToRoute('app_clasification_index');
             } else {
